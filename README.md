@@ -1,7 +1,14 @@
+<a href="#"><img src="https://github.com/dtmilano/AndroidViewClient/wiki/images/culebra-logo-transparent-204x209-rb-border.png" align="left" hspace="0" vspace="6"></a>
+
 # CulebraTester2-public
 CulebraTester: Snaky Android Testing
 
-**⚠️ This is an alpha version of CulebraTester2**
+
+  ⚠️ Warning    |
+:------------------|
+**This is an alpha version of CulebraTester2** |
+
+
 
 # How to run CulebraTester2 ?
 1. Build and install the APK `./gradlew installDebug`
