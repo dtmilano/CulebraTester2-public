@@ -1,0 +1,52 @@
+#! /bin/bash
+
+set -u
+
+usage() {
+    printf '%s' "$usage"
+    exit 1
+}
+
+_help() {
+    printf '%s' "$usage"
+    printf '\n'
+    printf 'positional arguments:\n'
+    printf ' forward-port          uses adb to forward port %d\n' "$port"
+    printf ' run-instrumentation   runs the instrumentation and starts the server\n'
+    printf '\n'
+    printf ' optional arguments:\n'
+    printf ' -h, --help            show this help message and exit\n'
+    exit 0
+}
+
+progname="$(basename $0)"
+port=9987
+smul=$(tput smul)
+rmul=$(tput rmul)
+printf -v usage 'usage: %s [-h|--help] {%sf%sorward-port | %sr%sun-instrumentation}\n' "$progname" \
+        "$smul" "$rmul" "$smul" "$rmul"
+
+if [[ $# -ge 1 ]]
+then
+    if [[ "$1" == '-h' || "$1" == '--help' ]]
+    then
+        _help
+    fi
+
+    case "$1" in
+        forward-port|f)
+            adb forward tcp:$port tcp:$port
+            ;;
+
+        run-instrumentation|r)
+            adb shell am instrument -w -r -e debug false -e class 'com.dtmilano.android.culebratester2.UiAutomatorHelper' \
+                com.dtmilano.android.culebratester2.test/androidx.test.runner.AndroidJUnitRunner
+            ;;
+
+        *)
+            usage
+            ;;
+    esac
+else
+    usage
+fi

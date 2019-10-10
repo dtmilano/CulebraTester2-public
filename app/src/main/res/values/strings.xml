@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">CulebraTester2</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="skip">Skip</string>
+</resources>
