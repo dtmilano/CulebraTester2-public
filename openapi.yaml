@@ -1,0 +1,124 @@
+openapi: 3.0.0
+
+info:
+  title: CulebraTester
+  description: Snaky Android Test
+  version: 2.0.0
+  
+servers:
+  - url: "http://localhost:9987/v2"
+
+paths:
+  /culebra/help:
+    get:
+      summary: Gets help
+      description: Gets help info about the *API*
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/Help"
+        '400':
+          description: Invalid status value
+    parameters:
+      - name: api
+        in: query
+        description: Specify the API help is about
+        required: false
+        schema:
+          type: string
+
+
+  /device/displayRealSize:
+    get:
+      summary: Gets display real size
+      description: Gets the display real size
+      responses:
+        '200':
+          description: Display real size
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/DisplayRealSize"
+        '400':
+          description: Cannot obtain display real size
+
+
+  /uiDevice/screenshot:
+    get:
+      summary: Gets the device screenshot
+      description: Gets the device screenshot and can be influenced by the parameters
+      responses:
+        '200':
+          description: OK
+          content:
+            'image/png':
+              schema:
+                type: string
+                format: binary
+              examples:
+                exernal-image-example:
+                  summary: External example image
+                  externalValue: "http://www.fnordware.com/superpng/pnggrad16rgb.png"
+        '400':
+          description: Cannot obtain screenshot
+        '404':
+          description: Cannot obtain screenshot
+      parameters:
+        - name: 'scale'
+          in: query
+          required: false
+          description: The scale of the screenshot (i.e. 0.5)
+          schema:
+            type: integer
+        - name: "quality"
+          in: query
+          required: false
+          description: The quality of the screenshot (i.e. 100)
+          schema:
+            type: integer
+            
+            
+components:
+  schemas:
+    Help:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+      example:
+        text: CulebraTester Help
+
+    DisplayRealSize:
+      type: object
+      required:
+        - device
+        - x
+        - y
+      properties:
+        device:
+          type: string
+        x:
+          type: integer
+        y:
+          type: integer
+        artWidth:
+          type: integer
+        artHeight:
+          type: integer
+        screenshotWidth:
+          type: integer
+        screenshotX:
+          type: integer
+        screenshotY:
+          type: integer
+      example:
+          device: emulator
+          x: 960
+          y: 1080
+          screenshotWidth: 960
+
