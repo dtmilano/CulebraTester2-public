@@ -27,6 +27,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
+/**
+ * Ktor Application Test.
+ */
 class KtorApplicationTest {
 
     companion object {

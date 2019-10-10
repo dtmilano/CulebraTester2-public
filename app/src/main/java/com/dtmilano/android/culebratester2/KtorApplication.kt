@@ -147,7 +147,7 @@ fun Application.module(testing: Boolean = false) {
             }
 
             exception<Throwable> { cause ->
-                System.err.println("🛑 ERROR: ${cause}")
+                System.err.println("🛑 ERROR: $cause")
                 call.respond(HttpStatusCode.InternalServerError)
             }
 
@@ -179,7 +179,7 @@ suspend inline fun ApplicationCall.respondImage(
     // response.headers.append(HttpHeaders.ContentType, ContentType.Image.PNG.toString())
     // so we cannot use respondFile
     //respondFile(file)
-    val bytes = file.readBytes();
+    val bytes = file.readBytes()
     respondBytes(bytes, contentType, HttpStatusCode.OK)
 }
 

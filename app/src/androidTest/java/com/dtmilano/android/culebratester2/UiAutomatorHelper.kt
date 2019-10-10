@@ -12,7 +12,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.util.concurrent.CountDownLatch
 
 /**
  * The port.
@@ -77,6 +76,7 @@ class UiAutomatorHelper {
 
     // WARNING:
     // won't be found because this is inside the test application code and not the main app
+    @Suppress("unused")
     fun Application.module(testing: Boolean = false) {
     }
 }
