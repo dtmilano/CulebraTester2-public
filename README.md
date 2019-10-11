@@ -18,5 +18,5 @@ CulebraTester: Snaky Android Testing
 1. Open http://localhost:9987/ with a browser or `curl` 
 1. You should see `CulebraTester2: Go to http://localhost:<port>/help for usage details.`
 1. If the previous request worked, you can try something more ambitious as http://localhost:9987/v2/uiDevice/screenshot
-1. Take a look at `openapi.yaml` for more info
+1. Take a look at [`openapi.yaml`](https://github.com/dtmilano/CulebraTester2-public/blob/master/openapi.yaml) for more info
 1. When done testing, http://localhost:9987/quit will terminate the instrumentation
