@@ -3,6 +3,15 @@
 # CulebraTester2-public
 CulebraTester: Snaky Android Testing
 
+## Welcome to CulebraTester2.
+Android testing can be complicated, time-consuming, and tedious.
+What if it didn’t have to be? 
+
+**CulebraTester2** provides an API that facilitates the creation of test automation tools and UI's.
+Not sure what we mean?
+
+Continue reading and see how you can run this early preview.
+
 
   ⚠️ Warning    |
 :------------------|
