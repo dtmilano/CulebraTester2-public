@@ -3,7 +3,7 @@
 # CulebraTester2-public
 CulebraTester: Snaky Android Testing
 
-## Welcome to CulebraTester2.
+### Welcome to CulebraTester2.
 Android testing can be complicated, time-consuming, and tedious.
 What if it didn’t have to be? 
 
