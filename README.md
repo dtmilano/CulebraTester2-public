@@ -35,3 +35,8 @@ Continue reading and see how you can run this early preview.
 
 # culebra
 **CulebraTester2** is a new implementation in Kotlin of [culebra](culebra.dtmilano.com).
+
+# Communication
+Found issues? Use https://github.com/dtmilano/CulebraTester2-public/issues
+
+Have questions? Use https://stackoverflow.com/questions/tagged/androidviewclient.
