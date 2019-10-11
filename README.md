@@ -20,3 +20,6 @@ CulebraTester: Snaky Android Testing
 1. If the previous request worked, you can try something more ambitious as http://localhost:9987/v2/uiDevice/screenshot
 1. Take a look at [`openapi.yaml`](https://github.com/dtmilano/CulebraTester2-public/blob/master/openapi.yaml) for more info
 1. When done testing, http://localhost:9987/quit will terminate the instrumentation
+
+# AndroidViewClient
+**CulebraTester2** is a new backend for [AndroidViewClient/culebra](https://github.com/dtmilano/AndroidViewClient).
