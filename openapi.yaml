@@ -9,24 +9,37 @@ servers:
   - url: "http://localhost:9987/v2"
 
 paths:
-  /culebra/help:
+  /culebra/help/{api}:
     get:
       summary: Gets help
-      description: Gets help info about the *API*
+      description: Gets help info about the *API* specified as parameter.
+        For example you can obtain information about
+        
+        * click
+        
+        * displayRealSize
+        
+        * screenshot
+        
+        * etc.
       responses:
-        '200':
+        200:
           description: OK
           content:
-            'application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Help"
-        '400':
-          description: Invalid status value
+        404:
+          description: Invalid api
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
     parameters:
       - name: api
-        in: query
+        in: path
         description: Specify the API help is about
-        required: false
+        required: true
         schema:
           type: string
 
@@ -36,53 +49,145 @@ paths:
       summary: Gets display real size
       description: Gets the display real size
       responses:
-        '200':
+        200:
           description: Display real size
           content:
-            'application/json':
+            application/json:
               schema:
                 $ref: "#/components/schemas/DisplayRealSize"
-        '400':
+        400:
           description: Cannot obtain display real size
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+
+
+  /uiDevice/dumpWindowHierarchy:
+    get:
+      summary: Dumps the window hierarchy
+      description: Dumps the window hierarchy
+      responses:
+        200:
+          description: Window hierarchy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WindowHierarchy"
+        400:
+          description: Cannot dump window hierarchy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+
+
+  /uiDevice/click:
+    get:
+      summary: Clicks at the specified location
+      description: Clicks at the specified location
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+                
+            text/plain:
+              schema:
+                type: string
+              example: OK
+        400:
+          description: Cannot click
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+      parameters:
+        - name: "x"
+          in: query
+          required: true
+          description: x coordinate
+          schema:
+            type: integer
+            minimum: 0
+        - name: "y"
+          in: query
+          required: true
+          description: y coordinate
+          schema:
+            type: integer
+            minimum: 0
 
 
   /uiDevice/screenshot:
     get:
       summary: Gets the device screenshot
-      description: Gets the device screenshot and can be influenced by the parameters
+      description: >
+        Gets the device screenshot and can be influenced by the parameters.
+        For example the `scale` of the screenshot or its `quality` can be specified.
+        **NOTE**: [`UiDevice.takeScreenshot()`](https://developer.android.com/reference/android/support/test/uiautomator/UiDevice.html#takeScreenshot(java.io.File,%20float,%20int)) usually ignores these parameters so expect no change.
       responses:
-        '200':
+        200:
           description: OK
           content:
-            'image/png':
+            image/png:
               schema:
                 type: string
                 format: binary
               examples:
                 exernal-image-example:
                   summary: External example image
-                  externalValue: "http://www.fnordware.com/superpng/pnggrad16rgb.png"
-        '400':
+                  externalValue: "https://raw.githubusercontent.com/wiki/dtmilano/AndroidViewClient/images/emulator-launcher-shortcuts.png"
+        400:
           description: Cannot obtain screenshot
-        '404':
-          description: Cannot obtain screenshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
       parameters:
-        - name: 'scale'
+        - name: "scale"
           in: query
           required: false
           description: The scale of the screenshot (i.e. 0.5)
           schema:
-            type: integer
+            type: number
+            format: float
+            minimum: 0
+            exclusiveMinimum: true
+            maximum: 1.0
+          example: 0.5
         - name: "quality"
           in: query
           required: false
           description: The quality of the screenshot (i.e. 100)
           schema:
             type: integer
-            
+            minimum: 1
+            maximum: 100
+          example: 90
+
             
 components:
   schemas:
+    Status:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+            - ERROR
+            - UNKNOWKN
+        errorMessage:
+          type: string
+      example:
+        status: ERROR
+        errorMessage: Operation could not be completed
+        
     Help:
       type: object
       required:
@@ -121,4 +226,7 @@ components:
           x: 960
           y: 1080
           screenshotWidth: 960
+
+    WindowHierarchy:
+      type: object
 
