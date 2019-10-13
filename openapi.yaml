@@ -227,6 +227,61 @@ components:
           y: 1080
           screenshotWidth: 960
 
+    WindowHierarchyChild:
+      type: object
+      properties:
+        id:
+          type: integer
+        parent:
+          type: integer
+        text:
+          type: string
+        package:
+          type: string
+        checkable:
+          type: boolean
+        clickable:
+          type: boolean
+        __index:
+          type: integer
+        contentDescription:
+          type: integer
+        focusable:
+          type: boolean
+        resourceId:
+          type: string
+        enabled:
+          type: boolean
+        password:
+          type: boolean
+        longClickable:
+          type: boolean
+        __text:
+          type: string
+        clazz:
+          type: string
+        scrollable:
+          type: boolean
+        selected:
+          type: boolean
+        bounds:
+          type: array
+          items:
+            type: integer
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/WindowHierarchyChild'
+
     WindowHierarchy:
       type: object
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/WindowHierarchyChild'
 
