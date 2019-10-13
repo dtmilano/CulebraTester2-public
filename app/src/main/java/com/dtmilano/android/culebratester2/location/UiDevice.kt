@@ -2,13 +2,14 @@ package com.dtmilano.android.culebratester2.location
 
 import android.util.Log
 import com.dtmilano.android.culebratester2.Holder
+import com.dtmilano.android.culebratester2.convertWindowHierarchyDumpToJson
+import com.dtmilano.android.culebratester2.model.Status
 import io.ktor.locations.Location
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.lang.RuntimeException
 
 private const val TAG = "UiDevice"
 private const val REMOVE_TEMP_FILE_DELAY = 2000L
@@ -20,7 +21,7 @@ class UiDevice {
         fun response(): String {
             val output = ByteArrayOutputStream()
             Holder.uiDevice.dumpWindowHierarchy(output)
-            return output.toString()
+            return convertWindowHierarchyDumpToJson(output.toString())
         }
     }
 
@@ -60,10 +61,10 @@ class UiDevice {
 
     @Location("/click")
     data class Click(val x: Int, val y: Int) {
-        fun response() : String {
+        fun response() : Status {
             //Log.d("UiDevice", "clicking on ($x,$y)")
             if (Holder.uiDevice.click(x, y)) {
-                return "OK"
+                return Status("OK")
             }
             throw RuntimeException("Cannot click")
         }

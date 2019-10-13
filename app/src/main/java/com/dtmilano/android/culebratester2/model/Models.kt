@@ -1,5 +1,9 @@
 package com.dtmilano.android.culebratester2.model
 
+data class Status(
+    val status: String
+)
+
 data class Help(
     val text: String
 )

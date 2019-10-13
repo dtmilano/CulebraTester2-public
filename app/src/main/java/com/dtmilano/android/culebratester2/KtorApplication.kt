@@ -10,6 +10,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
+import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
@@ -44,6 +45,11 @@ fun Application.module(testing: Boolean = false) {
 
     // This feature enables compression automatically when accepted by the client.
     install(Compression)
+
+    // See https://enable-cors.org
+    install(CORS) {
+        anyHost()
+    }
 
     install(ContentNegotiation) {
         gson {
@@ -108,7 +114,7 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<UiDevice.Click> {
-                call.respondText(it.response())
+                call.respond(it.response())
             }
 
             get<UiDevice.DumpWindowHierarchy> {
