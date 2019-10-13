@@ -272,6 +272,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WindowHierarchyChild'
+      example:
+        $ref: '#/components/examples/windowHierarchyChild'
 
     WindowHierarchy:
       type: object
@@ -284,4 +286,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WindowHierarchyChild'
+      example:
+        id: "hierarchy"
+        text: "Window Hierarchy"
+        children:
+            $ref: '#/components/examples/windowHierarchyChild'
 
+
+  examples:
+    windowHierarchyChild:
+      summary: A sample window hierarchy child
+      value:
+        id: 1
+        parent: 0
+        text: "android.widget.FrameLayout__ id=1 parent=0"
+        package: "com.android.systemui"
+        checkable: false
+        clickable: false
+        __index: 0
+        contentDescription: "Some description"
+        focusable: false
+        resourceId: "id1"
+        enabled: true
+        password: false
+        longClickable: false
+        __text: "Some text"
+        clazz: "android.widget.FrameLayout"
+        scrollable: false
+        selected: false
+        bounds: [ 0, 1794, 1080, 1920 ]
+        children: []
