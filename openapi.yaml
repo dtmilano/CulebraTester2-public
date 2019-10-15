@@ -15,11 +15,11 @@ paths:
       description: Gets help info about the *API* specified as parameter.
         For example you can obtain information about
         
-        * click
+        * /uiDevice/click
         
-        * displayRealSize
+        * /device/displayRealSize
         
-        * screenshot
+        * /uiDevice/screenshot
         
         * etc.
       responses:
@@ -29,12 +29,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Help"
-        404:
-          description: Invalid api
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Status"
+        default:
+          $ref: '#/components/responses/error'
     parameters:
       - name: api
         in: path
@@ -42,6 +38,21 @@ paths:
         required: true
         schema:
           type: string
+
+
+  /culebra/info:
+    get:
+      summary: Gets information about this app
+      description: Gets information about this app
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CulebraInfo'
+        default:
+          $ref: '#/components/responses/error'
 
 
   /device/displayRealSize:
@@ -55,12 +66,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DisplayRealSize"
-        400:
-          description: Cannot obtain display real size
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Status"
+        default:
+          $ref: '#/components/responses/error'
 
 
   /uiDevice/dumpWindowHierarchy:
@@ -74,36 +81,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WindowHierarchy"
-        400:
-          description: Cannot dump window hierarchy
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Status"
+        default:
+          $ref: '#/components/responses/error'
 
 
   /uiDevice/click:
     get:
       summary: Clicks at the specified location
       description: Clicks at the specified location
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Status"
-                
-            text/plain:
-              schema:
-                type: string
-              example: OK
-        400:
-          description: Cannot click
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Status"
       parameters:
         - name: "x"
           in: query
@@ -119,6 +104,250 @@ paths:
           schema:
             type: integer
             minimum: 0
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+                
+            text/plain:
+              schema:
+                type: string
+              example: OK
+        default:
+          $ref: '#/components/responses/error'
+
+
+
+  /uiDevice/findObject:
+    get:
+      summary: Finds an object
+      description: Finds an object. The object found, if any, can be later used in other call like API.click.
+      parameters:
+        - name: resourceId
+          in: query
+          description: the resource id
+          example: 'com.android.calendar:id/d0_label'
+          schema:
+            type: string
+        - name: uiSelector
+          in: query
+          description: the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met.
+            The format of the selector string is
+
+              `sel@[$]value,...`
+            
+            Where `sel` can be one of
+            -  clickable
+            -  depth
+            -  desc
+            -  res
+            -  text
+            -  scrollable
+              
+            `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
+          example: 'res@com.android.calendar:id/d0_label'
+          schema:
+            type: string
+        - name: bySelector
+          in: query
+          description: the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met.
+            The format of the selector string is
+
+              `sel@[$]value,...`
+            
+            Where `sel` can be one of
+            - clickable
+            - depth
+            - desc
+            - res
+            - text
+            - scrollable
+              
+            `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
+          example: 'res@com.android.calendar:id/d0_label'
+          schema:
+            type: string
+      responses:
+        200:
+          description: Object found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+              example:
+                oid: 1
+                className: 'android.widget.TextView'
+        404:
+          description: Object not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+              example:
+                status: ERROR
+                errorStatus: 1001
+                errorMessage: Object not found
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/currentPackageName:
+    get:
+      summary: Gets the current package name
+      description: Gets the current package name
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentPackageName:
+                    type: string
+                    description: the current package name
+                example:
+                  currentPackageName: 'com.android.calendar'
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/displayHeight:
+    get:
+      summary: Gets the display height
+      description: Gets the display height
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  displayHeight:
+                    type: integer
+                    description: the current display height
+                example:
+                  displayHeight: 1776
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/displayRotation:
+    get:
+      summary: Gets the display rotation
+      description: Gets the display rotation
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  displayRotation:
+                    type: integer
+                    description: the current display rotation
+                    enum:
+                      - 0
+                      - 180
+                      - 270
+                      - 90
+                example:
+                  displayRotation: 0
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/displaySizeDp:
+    get:
+      summary: Gets the display size in DP
+      description: Gets the display size in DP
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  displaySizeDpX:
+                    type: integer
+                    description: the display x in DP
+                  displaySizeDpY:
+                    type: integer
+                    description: the display y in DP
+                example:
+                  displaySizeDpX: 2400
+                  displaySizeDpY: 1080
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/displayWidth:
+    get:
+      summary: Gets the display width
+      description: Gets the display width
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  displayWidth:
+                    type: integer
+                    description: the current display width
+                example:
+                  displayHeight: 1080
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/lastTraversedText:
+    get:
+      summary: Retrieves the text from the last UI traversal event received.
+      description: Retrieves the text from the last UI traversal event received.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastTraversedText:
+                    type: string
+                    description: text of the last traversal event, else return an empty string
+                example:
+                  lastTraversedText: ""
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/productName:
+    get:
+      summary: Retrieves the product name of the device.
+      description: Retrieves the product name of the device.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  productName:
+                    type: string
+                    description: product name of the device
+                example:
+                  productName: "sailfish"
+        default:
+          $ref: '#/components/responses/error'
 
 
   /uiDevice/screenshot:
@@ -168,7 +397,7 @@ paths:
             maximum: 100
           example: 90
 
-            
+
 components:
   schemas:
     Status:
@@ -182,12 +411,25 @@ components:
             - OK
             - ERROR
             - UNKNOWKN
+        statusCode:
+          type: integer
         errorMessage:
           type: string
       example:
         status: ERROR
+        statusCode: 100
         errorMessage: Operation could not be completed
-        
+
+    CulebraInfo:
+      type: object
+      properties:
+        versionName:
+          type: string
+        versionCode:
+          type: integer
+      required:
+        - versionName
+        - versionCode
     Help:
       type: object
       required:
@@ -291,6 +533,16 @@ components:
         text: "Window Hierarchy"
         children:
             $ref: '#/components/examples/windowHierarchyChild'
+            
+    ObjectRef:
+      type: object
+      properties:
+        oid:
+          type: integer
+        className:
+          type: string
+      required:
+        - oid
 
 
   examples:
@@ -316,3 +568,28 @@ components:
         selected: false
         bounds: [ 0, 1794, 1080, 1920 ]
         children: []
+
+    errorStatus:
+      summary: Error status
+      value:
+        status: ERROR
+        statusCode: 1001
+        errorMessage: There was a problem
+
+
+  responses:
+    error:
+      description: Operation was not successful
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Status"
+          example:
+            value:
+              status: ERROR
+              statusCode: 1001
+              errorMessage: There was a problem
+  # does not work:
+  #       example:
+  #           $ref: '#/components/examples/errorStatus'
+
