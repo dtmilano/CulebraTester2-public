@@ -363,6 +363,115 @@ paths:
           $ref: '#/components/responses/error'
 
 
+  /uiDevice/pressBack:
+    get:
+      summary: Simulates a short press on the BACK button.
+      description: Simulates a short press on the BACK button.
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+          
+
+  /uiDevice/pressDelete:
+    get:
+      summary: Simulates a short press on the DELETE key.
+      description: Simulates a short press on the DELETE key.
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/pressEnter:
+    get:
+      summary: Simulates a short press on the ENTER key.
+      description: Simulates a short press on the ENTER key.
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/pressHome:
+    get:
+      summary: Simulates a short press on the HOME button.
+      description: Simulates a short press on the HOME button.
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/waitForIdle:
+    get:
+      summary: Waits for the current application to idle.
+      description: Waits for the current application to idle.
+      parameters:
+        - name: timeout
+          description: in milliseconds
+          in: query
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/waitForWindowUpdate:
+    get:
+      summary: Waits for a window content update event to occur.
+      description:  If a package name for the window is specified, but the current window does not have the same package name, the function returns immediately.
+      parameters:
+        - name: packageName
+          description: the specified window package name (can be null). If null, a window update from any front-end window will end the wait
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: timeout
+          description: in milliseconds
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiDevice/pressKeyCode:
+    get:
+      summary: Simulates a short press using a key code.
+      description: Simulates a short press using a key code.
+      parameters:
+        - name: keyCode
+          description: the key code of the event.
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: metaState
+          description: an integer in which each bit set to 1 represents a pressed meta key
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
   /uiDevice/screenshot:
     get:
       summary: Gets the device screenshot
@@ -545,7 +654,7 @@ components:
         id: "hierarchy"
         text: "Window Hierarchy"
         children:
-            $ref: '#/components/examples/windowHierarchyChild'
+          - $ref: '#/components/examples/windowHierarchyChild'
             
     ObjectRef:
       type: object
@@ -591,6 +700,15 @@ components:
 
 
   responses:
+    ok:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+          example:
+            ststus: OK
+            
     error:
       description: Operation was not successful
       content:
@@ -598,10 +716,9 @@ components:
           schema:
             $ref: "#/components/schemas/Status"
           example:
-            value:
-              status: ERROR
-              statusCode: 1001
-              errorMessage: There was a problem
+            status: ERROR
+            statusCode: 1001
+            errorMessage: There was a problem
   # does not work:
   #       example:
   #           $ref: '#/components/examples/errorStatus'
