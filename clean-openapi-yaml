@@ -1,0 +1,3 @@
+#! /bin/bash
+
+sed -i.BAK 's/  *$//' openapi.yaml 

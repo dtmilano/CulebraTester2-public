@@ -4,20 +4,20 @@ info:
   title: CulebraTester
   description: >
     ## Snaky Android Test
-    
+
     ---
-    
+
     If you want to be able to try out the API using the **Execute** or **TRY** button from this page
-    
+
     - an android device should be connected using `adb`
-    
+
     - the server should have been started using `./culebratester2 start-server`
-    
-    
+
+
     then you will be able to invoke the API and see the responses.
-    
+
   version: 2.0.0
-  
+
 servers:
   - url: "http://localhost:9987/v2"
 
@@ -27,13 +27,13 @@ paths:
       summary: Gets help
       description: Gets help info about the *API* specified as parameter.
         For example you can obtain information about
-        
+
         * /uiDevice/click
-        
+
         * /device/displayRealSize
-        
+
         * /uiDevice/screenshot
-        
+
         * etc.
       responses:
         200:
@@ -124,7 +124,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Status"
-                
+
             text/plain:
               schema:
                 type: string
@@ -151,7 +151,7 @@ paths:
             The format of the selector string is
 
               `sel@[$]value,...`
-            
+
             Where `sel` can be one of
             -  clickable
             -  depth
@@ -159,7 +159,7 @@ paths:
             -  res
             -  text
             -  scrollable
-              
+
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
           example: 'res@com.android.calendar:id/d0_label'
           schema:
@@ -170,7 +170,7 @@ paths:
             The format of the selector string is
 
               `sel@[$]value,...`
-            
+
             Where `sel` can be one of
             - clickable
             - depth
@@ -178,7 +178,7 @@ paths:
             - res
             - text
             - scrollable
-              
+
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
           example: 'res@com.android.calendar:id/d0_label'
           schema:
@@ -217,13 +217,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  currentPackageName:
-                    type: string
-                    description: the current package name
-                example:
-                  currentPackageName: 'com.android.calendar'
+                $ref: '#/components/schemas/CurrentPackageName'
         default:
           $ref: '#/components/responses/error'
 
@@ -238,13 +232,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  displayHeight:
-                    type: integer
-                    description: the current display height
-                example:
-                  displayHeight: 1776
+                $ref: '#/components/schemas/DisplayHeight'
         default:
           $ref: '#/components/responses/error'
 
@@ -259,18 +247,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  displayRotation:
-                    type: integer
-                    description: the current display rotation
-                    enum:
-                      - 0
-                      - 180
-                      - 270
-                      - 90
-                example:
-                  displayRotation: 0
+                $ref: '#/components/schemas/DisplayRoation'
         default:
           $ref: '#/components/responses/error'
 
@@ -285,17 +262,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  displaySizeDpX:
-                    type: integer
-                    description: the display x in DP
-                  displaySizeDpY:
-                    type: integer
-                    description: the display y in DP
-                example:
-                  displaySizeDpX: 2400
-                  displaySizeDpY: 1080
+                $ref: '#/components/schemas/DisplaySizeDp'
         default:
           $ref: '#/components/responses/error'
 
@@ -310,13 +277,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  displayWidth:
-                    type: integer
-                    description: the current display width
-                example:
-                  displayHeight: 1080
+                $ref: '#/components/schemas/DisplayWidth'
         default:
           $ref: '#/components/responses/error'
 
@@ -331,13 +292,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  lastTraversedText:
-                    type: string
-                    description: text of the last traversal event, else return an empty string
-                example:
-                  lastTraversedText: ""
+                $ref: '#/components/schemas/LastTraversedText'
         default:
           $ref: '#/components/responses/error'
 
@@ -352,13 +307,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  productName:
-                    type: string
-                    description: product name of the device
-                example:
-                  productName: "sailfish"
+                $ref: '#/components/schemas/ProductName'
         default:
           $ref: '#/components/responses/error'
 
@@ -372,7 +321,7 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-          
+
 
   /uiDevice/pressDelete:
     get:
@@ -552,6 +501,61 @@ components:
       required:
         - versionName
         - versionCode
+
+    CurrentPackageName:
+      type: object
+      properties:
+        currentPackageName:
+          type: string
+          description: the current package name
+      example:
+        currentPackageName: 'com.android.calendar'
+
+    DisplayHeight:
+      type: object
+      properties:
+        displayHeight:
+          type: integer
+          description: the current display height
+      example:
+        displayHeight: 1776
+
+    DisplayRoation:
+      type: object
+      properties:
+        displayRotation:
+          type: integer
+          description: the current display rotation
+          enum:
+            - 0
+            - 180
+            - 270
+            - 90
+      example:
+        displayRotation: 0
+
+    DisplaySizeDp:
+      type: object
+      properties:
+        displaySizeDpX:
+          type: integer
+          description: the display x in DP
+        displaySizeDpY:
+          type: integer
+          description: the display y in DP
+      example:
+        displaySizeDpX: 2400
+        displaySizeDpY: 1080
+
+    DisplayWidth:
+      type: object
+      properties:
+        displayWidth:
+          type: integer
+          description: the current display width
+      example:
+        displayHeight: 1080
+
     Help:
       type: object
       required:
@@ -590,6 +594,15 @@ components:
           x: 960
           y: 1080
           screenshotWidth: 960
+
+    LastTraversedText:
+      type: object
+      properties:
+        lastTraversedText:
+          type: string
+          description: text of the last traversal event, else return an empty string
+      example:
+        lastTraversedText: ""
 
     WindowHierarchyChild:
       type: object
@@ -655,7 +668,7 @@ components:
         text: "Window Hierarchy"
         children:
           - $ref: '#/components/examples/windowHierarchyChild'
-            
+
     ObjectRef:
       type: object
       properties:
@@ -666,6 +679,14 @@ components:
       required:
         - oid
 
+    ProductName:
+      type: object
+      properties:
+        productName:
+          type: string
+          description: product name of the device
+      example:
+        productName: "sailfish"
 
   examples:
     windowHierarchyChild:
@@ -708,7 +729,7 @@ components:
             $ref: '#/components/schemas/Status'
           example:
             ststus: OK
-            
+
     error:
       description: Operation was not successful
       content:
