@@ -3,8 +3,9 @@ package com.dtmilano.android.culebratester2.location
 import android.util.Log
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.convertWindowHierarchyDumpToJson
-import com.dtmilano.android.culebratester2.model.Status
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
+import io.swagger.server.models.StatusResponse
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ import java.io.File
 private const val TAG = "UiDevice"
 private const val REMOVE_TEMP_FILE_DELAY = 2000L
 
+@KtorExperimentalLocationsAPI
 @Location("/uiDevice")
 class UiDevice {
     @Location("/dumpWindowHierarchy")
@@ -61,10 +63,10 @@ class UiDevice {
 
     @Location("/click")
     data class Click(val x: Int, val y: Int) {
-        fun response() : Status {
+        fun response() : io.swagger.server.models.StatusResponse {
             //Log.d("UiDevice", "clicking on ($x,$y)")
             if (Holder.uiDevice.click(x, y)) {
-                return Status("OK")
+                return io.swagger.server.models.StatusResponse(StatusResponse.Status.oK)
             }
             throw RuntimeException("Cannot click")
         }

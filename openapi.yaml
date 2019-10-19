@@ -123,7 +123,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Status"
+                $ref: "#/components/schemas/StatusResponse"
 
             text/plain:
               schema:
@@ -198,10 +198,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/StatusResponse'
               example:
                 status: ERROR
-                errorStatus: 1001
+                errorStatusResponse: 1001
                 errorMessage: Object not found
         default:
           $ref: '#/components/responses/error'
@@ -247,7 +247,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DisplayRoation'
+                $ref: '#/components/schemas/DisplayRotation'
         default:
           $ref: '#/components/responses/error'
 
@@ -445,7 +445,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Status"
+                $ref: "#/components/schemas/StatusResponse"
       parameters:
         - name: "scale"
           in: query
@@ -471,7 +471,7 @@ paths:
 
 components:
   schemas:
-    Status:
+    StatusResponse:
       type: object
       required:
         - status
@@ -520,7 +520,17 @@ components:
       example:
         displayHeight: 1776
 
-    DisplayRoation:
+    DisplayRotationEnum:
+      type: integer
+      description: the current display rotation
+      # the generation of this enum is incorrect: i.e.: 0("0")
+      enum:
+        - 0
+        - 180
+        - 270
+        - 90
+
+    DisplayRotation:
       type: object
       properties:
         displayRotation:
@@ -531,6 +541,10 @@ components:
             - 180
             - 270
             - 90
+        # there no way of doing this
+        #  schema:
+        #    $ref: '#/components/schemas/DisplayRotation'
+        # and even though, the generated enum is wrong
       example:
         displayRotation: 0
 
@@ -619,7 +633,7 @@ components:
           type: boolean
         clickable:
           type: boolean
-        __index:
+        index:
           type: integer
         contentDescription:
           type: integer
@@ -633,7 +647,9 @@ components:
           type: boolean
         longClickable:
           type: boolean
-        __text:
+        # __text produces an error in the generated file as __ are deleted and `text` already exists
+        #__text:
+        longText:
           type: string
         clazz:
           type: string
@@ -712,7 +728,7 @@ components:
         bounds: [ 0, 1794, 1080, 1920 ]
         children: []
 
-    errorStatus:
+    errorStatusResponse:
       summary: Error status
       value:
         status: ERROR
@@ -726,7 +742,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Status'
+            $ref: '#/components/schemas/StatusResponse'
           example:
             ststus: OK
 
@@ -735,12 +751,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Status"
+            $ref: "#/components/schemas/StatusResponse"
           example:
             status: ERROR
             statusCode: 1001
             errorMessage: There was a problem
   # does not work:
   #       example:
-  #           $ref: '#/components/examples/errorStatus'
+  #           $ref: '#/components/examples/errorStatusResponse'
 

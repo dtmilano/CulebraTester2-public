@@ -22,6 +22,7 @@ import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.http.withCharset
 import io.ktor.jackson.jackson
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.locations.get
 import io.ktor.response.respond
@@ -34,6 +35,7 @@ import io.ktor.server.engine.ShutDownUrl
 import io.ktor.swagger.experimental.HttpException
 import java.io.File
 
+@KtorExperimentalLocationsAPI
 @Suppress("unused")
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
