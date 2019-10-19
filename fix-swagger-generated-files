@@ -1,0 +1,6 @@
+#! /bin/bash
+
+set -e
+
+kt=./app/src/main/java/io/swagger/server/models/DisplayRotationEnum.kt
+sed -Ei '' 's/(\d+)\("\1"\)/R_\1(\1)/' $kt
