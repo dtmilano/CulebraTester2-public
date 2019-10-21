@@ -13,16 +13,5 @@
 
 /**
  *  * @param displayRotation the current display rotation*/
-data class DisplayRotation (    /* the current display rotation */    val displayRotation: DisplayRotation.DisplayRotationEnum? = null
-) {
-    /**
-    * the current display rotation
-    * Values: 0,180,270,90
-    */
-    enum class DisplayRotationEnum(val value: kotlin.Int){
-        R_0(0),
-        R_180(180),
-        R_270(270),
-        R_90(90);
-    }
-}
+data class DisplayRotation(    /* the current display rotation */    val displayRotation: DisplayRotationEnum? = null
+)

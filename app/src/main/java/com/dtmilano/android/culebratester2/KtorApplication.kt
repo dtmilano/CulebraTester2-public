@@ -119,12 +119,72 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiDevice.DisplayHeight> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.DisplayWidth> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.DumpWindowHierarchy> {
                 call.respondText(it.response())
             }
 
+            get<UiDevice.DisplayRotation> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.DisplaySizeDp> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.FindObject> {
+                call.respond(it.response() ?: "null returned")
+            }
+
+            get<UiDevice.CurrentPackageName> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.LastTraversedText> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressBack> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressDelete> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressEnter> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressHome> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressKeyCode> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.ProductName> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.Screenshot> {
                 call.respondImage(it.response())
+            }
+
+            get<UiDevice.WaitForIdle> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.WaitForWindowUpdate> {
+                call.respond(it.response())
             }
         }
 

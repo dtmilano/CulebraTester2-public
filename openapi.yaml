@@ -366,6 +366,8 @@ paths:
           in: query
           schema:
             type: integer
+            format: int64
+            default: 10000
       responses:
         200:
           $ref: '#/components/responses/ok'
@@ -390,6 +392,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         200:
           $ref: '#/components/responses/ok'

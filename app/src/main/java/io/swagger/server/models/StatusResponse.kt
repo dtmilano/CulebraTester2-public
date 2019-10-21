@@ -13,15 +13,27 @@
 
 /**
  *  * @param status  * @param statusCode  * @param errorMessage */
-data class StatusResponse (        val status: StatusResponse.Status,    val statusCode: kotlin.Int? = null,    val errorMessage: kotlin.String? = null
+data class StatusResponse(
+    val status: Status, val statusCode: Int? = null, val errorMessage: String? = null
 ) {
     /**
     * 
     * Values: oK,eRROR,uNKNOWKN
     */
-    enum class Status(val value: kotlin.String){
+    enum class Status(val value: String) {
         oK("OK"),
         eRROR("ERROR"),
-        uNKNOWKN("UNKNOWKN");
+        uNKNOWKN("UNKNOWN");
+    }
+
+    enum class StatusCode(val value: Int) {
+        TIMEOUT(1000),
+        TIMEOUT_WINDOW_UPDATE(1001),
+
+        ARGUMENT(3000),
+        ARGUMENT_MISSING(3001),
+
+        INTERACTION(5000),
+        INTERACTION_KEY(5001);
     }
 }
