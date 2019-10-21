@@ -4,16 +4,18 @@ import android.graphics.Point
 import android.view.Display
 import android.view.WindowManager
 import androidx.test.uiautomator.UiDevice
-import com.dtmilano.android.culebratester2.model.DisplayRealSize
-import com.dtmilano.android.culebratester2.model.Help
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.server.testing.contentType
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import io.swagger.server.models.DisplayRealSize
+import io.swagger.server.models.Help
+import io.swagger.server.models.StatusResponse
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
@@ -30,6 +32,7 @@ import kotlin.test.assertTrue
 /**
  * Ktor Application Test.
  */
+@KtorExperimentalLocationsAPI
 class KtorApplicationTest {
 
     companion object {
@@ -41,7 +44,7 @@ class KtorApplicationTest {
         private val realSize = mapOf("x" to 1080, "y" to 2400)
 
         fun setDisplaySize(point: Point) {
-            println("🚒 setDisplaySize called")
+            println("🖥 setDisplaySize called")
             point.x = realSize["x"] ?: error("missing value")
             point.y = realSize["y"] ?: error("missing value")
         }
@@ -61,7 +64,7 @@ class KtorApplicationTest {
         }
 
         val display: Display = mock {
-            on { getRealSize(argThat(MatchPoint())) } doAnswer {}
+            on { getRealSize(argThat(matcher = MatchPoint())) } doAnswer {}
         }
 
         val windowManager = mock<WindowManager> {
@@ -70,12 +73,12 @@ class KtorApplicationTest {
 
         val uiDevice = mock<UiDevice> {
             on { takeScreenshot(any(), any(), any()) } doReturn true
-            on { click(any(), any())} doReturn true
-            on { dumpWindowHierarchy(argThat(MatchOutputStream()))} doAnswer {}
+            on { click(any(), any()) } doReturn true
+            on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
         }
 
         val uiDeviceNoScreenshot = mock<UiDevice> {
-            on {takeScreenshot(any(), any(), any())} doReturn false
+            on { takeScreenshot(any(), any(), any()) } doReturn false
         }
 
         @BeforeClass
@@ -187,9 +190,9 @@ class KtorApplicationTest {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val displayRealSize =
                     Gson().fromJson<DisplayRealSize>(response.content, DisplayRealSize::class.java)
-                assertEquals(displayRealSize.device, "UNKNOWN")
-                assertEquals(displayRealSize.x, realSize["x"])
-                assertEquals(displayRealSize.y, realSize["y"])
+                assertEquals("UNKNOWN", displayRealSize.device)
+                assertEquals(realSize["x"], displayRealSize.x)
+                assertEquals(realSize["y"], displayRealSize.y)
             }
         }
     }
@@ -229,7 +232,9 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/click?x=100&y=50").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals(response.content, "OK")
+                val status =
+                    Gson().fromJson<StatusResponse>(response.content, StatusResponse::class.java)
+                assertEquals(StatusResponse.Status.oK, status.status)
             }
         }
     }

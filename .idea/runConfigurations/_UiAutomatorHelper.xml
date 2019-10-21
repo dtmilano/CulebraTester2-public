@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="UiAutomatorHelper" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" nameIsGenerated="true">
+  <configuration default="false" name="🚒 UiAutomatorHelper" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
     <module name="app" />
     <option name="TESTING_TYPE" value="2" />
     <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />

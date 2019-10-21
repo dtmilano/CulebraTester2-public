@@ -31,6 +31,12 @@ android {
         exclude 'META-INF/ktor-http-cio.kotlin_module'
         exclude 'META-INF/ktor-client-core.kotlin_module'
     }
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
+    }
 }
 
 ext {
@@ -74,4 +80,5 @@ dependencies {
     // other
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
+    testImplementation 'org.robolectric:robolectric:4.3'
 }
