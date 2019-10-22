@@ -99,7 +99,6 @@ class KtorApplicationTest {
         fun setupClass() {
             Holder.windowManager = windowManager
             Holder.cacheDir = File("/tmp")
-            Holder.uiDevice = uiDevice
         }
     }
 
@@ -271,9 +270,8 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/click?x=100&y=50").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val status =
-                    Gson().fromJson<StatusResponse>(response.content, StatusResponse::class.java)
-                assertEquals(StatusResponse.Status.OK, status.status)
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals(StatusResponse.Status.OK, statusResponse.status)
             }
         }
     }
