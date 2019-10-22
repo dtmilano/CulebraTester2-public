@@ -10,17 +10,17 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.server.testing.TestApplicationCall
 import io.ktor.server.testing.contentType
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import io.swagger.server.models.DisplayRealSize
-import io.swagger.server.models.Help
-import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.*
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
 import org.junit.contrib.java.lang.system.ExpectedSystemExit
 import org.mockito.ArgumentMatcher
+import org.mockito.ArgumentMatchers.anyInt
 import java.io.File
 import java.io.OutputStream
 import kotlin.test.Ignore
@@ -72,9 +72,22 @@ class KtorApplicationTest {
         }
 
         val uiDevice = mock<UiDevice> {
-            on { takeScreenshot(any(), any(), any()) } doReturn true
+            val x = realSize["x"] ?: error("x not defined")
+            val y = realSize["y"] ?: error("y not defined")
+            val p = Point()
+            setDisplaySize(p)
+
             on { click(any(), any()) } doReturn true
+            on { displayWidth } doReturn x
+            on { displayHeight } doReturn y
+            on { displaySizeDp } doReturn p
             on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
+            on { pressBack() } doReturn true
+            on { pressEnter() } doReturn true
+            on { pressDelete() } doReturn true
+            on { pressHome() } doReturn true
+            on { pressKeyCode(anyInt(), anyInt()) } doReturn true
+            on { takeScreenshot(any(), any(), any()) } doReturn true
         }
 
         val uiDeviceNoScreenshot = mock<UiDevice> {
@@ -94,6 +107,9 @@ class KtorApplicationTest {
     fun setup() {
         Holder.uiDevice = uiDevice
     }
+
+    private inline fun <reified T> TestApplicationCall.jsonResponse() =
+        Gson().fromJson<T>(response.content, T::class.java)
 
     @Test
     fun testRoot() {
@@ -198,6 +214,29 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test find object no selectors`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("ERROR", statusResponse.status.value, statusResponse.errorMessage)
+            }
+        }
+    }
+
+    @Test
+    fun `test find object resourceId selector`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject?resourceId=1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                // TODO: not implemented yet
+                assertEquals("ERROR", statusResponse.status.value, statusResponse.errorMessage)
+            }
+        }
+    }
+
+    @Test
     fun `test obtain screenshot`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/screenshot").apply {
@@ -234,7 +273,63 @@ class KtorApplicationTest {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val status =
                     Gson().fromJson<StatusResponse>(response.content, StatusResponse::class.java)
-                assertEquals(StatusResponse.Status.oK, status.status)
+                assertEquals(StatusResponse.Status.OK, status.status)
+            }
+        }
+    }
+
+    @Test
+    fun `test get current package name`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/currentPackageName").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val currentPackageName = jsonResponse<CurrentPackageName>()
+                assertEquals(null, currentPackageName.currentPackageName)
+            }
+        }
+    }
+
+    @Test
+    fun `test display height`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/displayHeight").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val displayHeight = jsonResponse<DisplayHeight>()
+                assertEquals(realSize["y"], displayHeight.displayHeight)
+            }
+        }
+    }
+
+    @Test
+    fun `test display width`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/displayWidth").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val displayWidth = jsonResponse<DisplayWidth>()
+                assertEquals(realSize["x"], displayWidth.displayWidth)
+            }
+        }
+    }
+
+    @Test
+    fun `test get display rotation`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/displayRotation").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val displayRotation = jsonResponse<DisplayRotation>()
+                assertEquals(0, displayRotation.displayRotation?.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test get display size dp`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/displaySizeDp").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val displaySizeDp = jsonResponse<DisplaySizeDp>()
+                assertEquals(realSize["x"], displaySizeDp.displaySizeDpX)
+                assertEquals(realSize["y"], displaySizeDp.displaySizeDpY)
             }
         }
     }
@@ -245,6 +340,121 @@ class KtorApplicationTest {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy").apply {
                 println(response.content)
                 assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test get last traversed text`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/lastTraversedText").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val lastTraversedText = jsonResponse<LastTraversedText>()
+                assertEquals(null, lastTraversedText.lastTraversedText)
+            }
+        }
+    }
+
+    @Test
+    fun `test press back`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressBack").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press delete`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressDelete").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press enter`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressEnter").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press home`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressHome").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press key code`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressKeyCode?keyCode=10").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test get product name`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/productName").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val productName = jsonResponse<ProductName>()
+                assertEquals(null, productName.productName)
+            }
+        }
+    }
+
+    @Test
+    fun `test wait for idle`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/waitForIdle").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test wait for window update`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/waitForWindowUpdate?timeout=10").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                // No window update will happen, so we expect ERROR
+                assertEquals("ERROR", statusResponse.status.value, statusResponse.errorMessage)
+            }
+        }
+    }
+
+    @Test
+    fun `test wait for window update with package name`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/waitForWindowUpdate?timeout=10&packageName=com.android.systemui"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                // No window update will happen, so we expect ERROR
+                assertEquals("ERROR", statusResponse.status.value, statusResponse.errorMessage)
             }
         }
     }

@@ -66,9 +66,9 @@ class UiDevice {
         fun response(): StatusResponse {
             //Log.d("UiDevice", "clicking on ($x,$y)")
             if (Holder.uiDevice.click(x, y)) {
-                return StatusResponse(StatusResponse.Status.oK)
+                return StatusResponse(StatusResponse.Status.OK)
             }
-            return StatusResponse(StatusResponse.Status.eRROR, errorMessage = "Cannot click")
+            return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot click")
         }
     }
 
@@ -144,12 +144,19 @@ class UiDevice {
         fun response(): Any? {
             if (resourceId ?: uiSelector ?: bySelector == null) {
                 return StatusResponse(
-                    StatusResponse.Status.eRROR,
+                    StatusResponse.Status.ERROR,
                     StatusResponse.StatusCode.ARGUMENT_MISSING.value,
                     errorMessage = "A selector must be specified"
                 )
             }
-            return null
+
+            // TODO: implement find Object
+
+            return StatusResponse(
+                StatusResponse.Status.ERROR,
+                StatusResponse.StatusCode.OBJECT_NOT_FOUND.value,
+                StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+            )
         }
     }
 
@@ -167,9 +174,9 @@ class UiDevice {
     companion object {
         fun pressKeyResponse(pressAny: () -> Boolean, name: String): StatusResponse {
             if (pressAny()) {
-                return StatusResponse(StatusResponse.Status.oK)
+                return StatusResponse(StatusResponse.Status.OK)
             }
-            return StatusResponse(StatusResponse.Status.eRROR, errorMessage = "Cannot press $name")
+            return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot press $name")
         }
     }
 
@@ -227,10 +234,10 @@ class UiDevice {
     class PressKeyCode(val keyCode: Int, val metaState: Int = 0) {
         fun response(): StatusResponse {
             if (Holder.uiDevice.pressKeyCode(keyCode, metaState)) {
-                return StatusResponse(StatusResponse.Status.oK)
+                return StatusResponse(StatusResponse.Status.OK)
             }
             return StatusResponse(
-                StatusResponse.Status.eRROR,
+                StatusResponse.Status.ERROR,
                 StatusResponse.StatusCode.INTERACTION_KEY.value,
                 errorMessage = "Cannot press KeyCode"
             )
@@ -257,7 +264,7 @@ class UiDevice {
     data class WaitForIdle(val timeout: Long = 10_000) {
         fun response(): StatusResponse {
             Holder.uiDevice.waitForIdle(timeout)
-            return StatusResponse(StatusResponse.Status.oK)
+            return StatusResponse(StatusResponse.Status.OK)
         }
     }
 
@@ -275,11 +282,11 @@ class UiDevice {
         fun response(): StatusResponse {
             val t0 = System.currentTimeMillis()
             if (Holder.uiDevice.waitForWindowUpdate(packageName, timeout)) {
-                return StatusResponse(StatusResponse.Status.oK)
+                return StatusResponse(StatusResponse.Status.OK)
             }
             val t1 = System.currentTimeMillis() - t0
             return StatusResponse(
-                StatusResponse.Status.eRROR,
+                StatusResponse.Status.ERROR,
                 StatusResponse.StatusCode.TIMEOUT_WINDOW_UPDATE.value,
                 if (packageName != null && t1 < timeout) "Current window does not have the same package name" else "Timeout waiting for window update"
             )
