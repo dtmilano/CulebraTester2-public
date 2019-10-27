@@ -133,7 +133,6 @@ paths:
           $ref: '#/components/responses/error'
 
 
-
   /uiDevice/findObject:
     get:
       summary: Finds an object
@@ -183,6 +182,42 @@ paths:
           example: 'res@com.android.calendar:id/d0_label'
           schema:
             type: string
+
+      responses:
+        200:
+          description: Object found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+              example:
+                oid: 1
+                className: 'android.widget.TextView'
+        404:
+          description: Object not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+              example:
+                status: ERROR
+                errorStatusResponse: 1001
+                errorMessage: Object not found
+        default:
+          $ref: '#/components/responses/error'
+
+    post:
+      summary: Finds an object
+      description: Finds an object. The object found, if any, can be later used in other call like API.click.
+      requestBody:
+        description: Selector
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Selector'
+            example:
+              $ref: '#/components/examples/selector'
       responses:
         200:
           description: Object found
@@ -688,6 +723,34 @@ components:
         children:
           - $ref: '#/components/examples/windowHierarchyChild'
 
+    Selector:
+      type: object
+      properties:
+        checkable:
+          type: boolean
+        clazz:
+          type: string
+        clickable:
+          type: boolean
+        depth:
+          type: integer
+        desc:
+          type: string
+        pkg:
+          type: string
+        res:
+          type: string
+        scrollable:
+          type: boolean
+        text:
+          type: string
+        index:
+          type: integer
+        instance:
+          type: integer
+      example:
+        $ref: '#/components/examples/selector'
+
     ObjectRef:
       type: object
       properties:
@@ -737,6 +800,13 @@ components:
         status: ERROR
         statusCode: 1001
         errorMessage: There was a problem
+
+    selector:
+      summary: Selector
+      value:
+        desc: "Equal"
+        clazz: "android.widget.Button"
+        depth: 1
 
 
   responses:
