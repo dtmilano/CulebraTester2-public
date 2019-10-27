@@ -216,8 +216,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Selector'
-            example:
-              $ref: '#/components/examples/selector'
       responses:
         200:
           description: Object found
@@ -227,7 +225,7 @@ paths:
                 $ref: '#/components/schemas/ObjectRef'
               example:
                 oid: 1
-                className: 'android.widget.TextView'
+                className: 'android.widget.Button'
         404:
           description: Object not found
           content:
