@@ -7,13 +7,11 @@ import androidx.test.uiautomator.UiDevice
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.server.testing.TestApplicationCall
-import io.ktor.server.testing.contentType
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.withTestApplication
+import io.ktor.server.testing.*
 import io.swagger.server.models.*
 import org.junit.Before
 import org.junit.BeforeClass
@@ -227,6 +225,29 @@ class KtorApplicationTest {
     fun `test find object resourceId selector`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject?resourceId=1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                // TODO: not implemented yet
+                assertEquals("ERROR", statusResponse.status.value, statusResponse.errorMessage)
+            }
+        }
+    }
+
+    @Test
+    fun `test find object post selector`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            clazz = "android.widget.Button",
+                            depth = 1,
+                            desc = "Equal"
+                        )
+                    )
+                )
+            }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val statusResponse = jsonResponse<StatusResponse>()
                 // TODO: not implemented yet

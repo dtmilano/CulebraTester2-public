@@ -1,14 +1,8 @@
 package com.dtmilano.android.culebratester2
 
-import com.dtmilano.android.culebratester2.location.Culebra
-import com.dtmilano.android.culebratester2.location.Device
-import com.dtmilano.android.culebratester2.location.Help
-import com.dtmilano.android.culebratester2.location.UiDevice
+import com.dtmilano.android.culebratester2.location.*
 import com.fasterxml.jackson.databind.SerializationFeature
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.application.install
+import io.ktor.application.*
 import io.ktor.auth.Authentication
 import io.ktor.features.CORS
 import io.ktor.features.Compression
@@ -25,6 +19,8 @@ import io.ktor.jackson.jackson
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.locations.get
+import io.ktor.locations.post
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.response.respondText
@@ -33,6 +29,7 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.ShutDownUrl
 import io.ktor.swagger.experimental.HttpException
+import io.swagger.server.models.Selector
 import java.io.File
 
 @KtorExperimentalLocationsAPI
@@ -46,7 +43,8 @@ fun Application.module(testing: Boolean = false) {
     }
 
     // This feature enables compression automatically when accepted by the client.
-    install(Compression)
+    install(Compression) {
+    }
 
     // See https://enable-cors.org
     install(CORS) {
@@ -73,6 +71,12 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
+        trace {
+            application.log.trace(it.buildText())
+            println("🚜")
+            println(it.buildText())
+        }
+
         get("/") {
             val local = call.request.local
             val scheme = local.scheme
@@ -139,8 +143,17 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
-            get<UiDevice.FindObject> {
-                call.respond(it.response() ?: "null returned")
+            get<UiDevice.FindObject.Get> {
+                call.respond(it.response())
+            }
+
+            post<UiDevice.FindObject.Post> {
+                // We have to get the body as ktor doesn't do it
+                // see https://github.com/ktorio/ktor/issues/190
+                // also, it.body is null here
+                // println("body ${it.body}");
+                val selector = call.receive<Selector>()
+                call.respond(it.response(selector))
             }
 
             get<UiDevice.CurrentPackageName> {
@@ -186,13 +199,21 @@ fun Application.module(testing: Boolean = false) {
             get<UiDevice.WaitForWindowUpdate> {
                 call.respond(it.response())
             }
+
+            get<UiObject2.Click> {
+                call.respond(it.response())
+            }
+
+            get<UiObject2.Dump> {
+                call.respond(it.response())
+            }
         }
 
         // Handles all the other non-matched routes returning a 404 not found.
         route("{...}") {
             println("🦄")
             handle {
-                println("🐹")
+                println("🐹 not found:")
                 println(call.request.local.uri)
                 if (call.request.local.uri != shutdownUrl) {
                     call.respond(HttpStatusCode.NotFound, "${call.request.local.uri} not found")

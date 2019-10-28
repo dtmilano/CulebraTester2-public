@@ -1,8 +1,12 @@
 package com.dtmilano.android.culebratester2.location
 
 import android.util.Log
+import androidx.test.uiautomator.By
 import com.dtmilano.android.culebratester2.Holder
+import com.dtmilano.android.culebratester2.ObjectStore
 import com.dtmilano.android.culebratester2.convertWindowHierarchyDumpToJson
+import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
+import com.dtmilano.android.culebratester2.utils.uiSelectorBundleFromString
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.swagger.server.models.*
@@ -128,35 +132,82 @@ class UiDevice {
         }
     }
 
-    /**
-     * Finds an object
-     * Finds an object. The object found, if any, can be later used in other call like API.click.
-     * @param resourceId the resource id (optional)
-     * @param uiSelector the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met. The format of the selector string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of -  clickable -  depth -  desc -  res -  text -  scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
-     * @param bySelector the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met. The format of the selector string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of - clickable - depth - desc - res - text - scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
-     */
     @Location("/findObject")
-    class FindObject(
-        val resourceId: String? = null,
-        val uiSelector: String? = null,
-        val bySelector: String? = null
-    ) {
-        fun response(): Any? {
-            if (resourceId ?: uiSelector ?: bySelector == null) {
+    class FindObject {
+        /**
+         * Finds an object
+         * Finds an object. The object found, if any, can be later used in other call like API.click.
+         * @param resourceId the resource id (optional)
+         * @param uiSelector the selectorStr sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selectorStr parameter and all other criteria for this selectorStr are met. The format of the selectorStr string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of -  clickable -  depth -  desc -  res -  text -  scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
+         * @param bySelector the selectorStr sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selectorStr parameter and all other criteria for this selectorStr are met. The format of the selectorStr string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of - clickable - depth - desc - res - text - scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
+         */
+        data class Get(
+            val resourceId: String? = null,
+            val uiSelector: String? = null,
+            val bySelector: String? = null
+        ) {
+            fun response(): Any {
+                if (resourceId ?: uiSelector ?: bySelector == null) {
+                    return StatusResponse(
+                        StatusResponse.Status.ERROR,
+                        StatusResponse.StatusCode.ARGUMENT_MISSING.value,
+                        errorMessage = "A selectorStr must be specified"
+                    )
+                }
+
+                resourceId?.let {
+                    val selector = By.res(resourceId)
+                    val obj = Holder.uiDevice.findObject(selector)
+                    val oid = ObjectStore.instance.put(it)
+                    return ObjectRef(oid, obj.className)
+                }
+
+                uiSelector?.let {
+                    val usb = uiSelectorBundleFromString(it)
+                    val obj = Holder.uiDevice.findObject(usb.selector)
+                    val oid = ObjectStore.instance.put(it)
+                    return ObjectRef(oid, obj.className)
+                }
+
+                bySelector?.let {
+                    val bsb = bySelectorBundleFromString(it)
+                    val obj = Holder.uiDevice.findObject(bsb.selector)
+                    val oid = ObjectStore.instance.put(it)
+                    return ObjectRef(oid, obj.className)
+                }
+
                 return StatusResponse(
                     StatusResponse.Status.ERROR,
-                    StatusResponse.StatusCode.ARGUMENT_MISSING.value,
-                    errorMessage = "A selector must be specified"
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
                 )
             }
+        }
 
-            // TODO: implement find Object
+        /**
+         * Finds an object
+         * Finds an object. The object found, if any, can be later used in other call like API.click.
+         * @param body Selector
+         */
+        // WARNING: ktor is not passing this argument so the '?' and null are needed
+        // see https://github.com/ktorio/ktor/issues/190
+        data class Post(val body: Selector? = null) {
+            fun response(selector: Selector): Any {
 
-            return StatusResponse(
-                StatusResponse.Status.ERROR,
-                StatusResponse.StatusCode.OBJECT_NOT_FOUND.value,
-                StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
-            )
+                val obj = Holder.uiDevice.findObject(selector.toBySelector())
+                println("🔮obj: $obj")
+
+                obj?.let {
+                    val oid = ObjectStore.instance.put(it)
+                    return ObjectRef(oid, it.className)
+                }
+
+                return StatusResponse(
+                    StatusResponse.Status.ERROR,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+                )
+            }
         }
     }
 
@@ -231,7 +282,7 @@ class UiDevice {
      * @param metaState an integer in which each bit set to 1 represents a pressed meta key (optional)
      */
     @Location("/pressKeyCode")
-    class PressKeyCode(val keyCode: Int, val metaState: Int = 0) {
+    class PressKeyCode(private val keyCode: Int, private val metaState: Int = 0) {
         fun response(): StatusResponse {
             if (Holder.uiDevice.pressKeyCode(keyCode, metaState)) {
                 return StatusResponse(StatusResponse.Status.OK)
