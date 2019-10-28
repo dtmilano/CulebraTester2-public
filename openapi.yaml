@@ -504,6 +504,40 @@ paths:
             maximum: 100
           example: 90
 
+  /uiObject2/{oid}/click:
+    get:
+      summary: Clicks on the specified object.
+      description: The target object should have been found using #findObject with *bySelector*.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
+  /uiObject2/{oid}/dump:
+    get:
+      summary: Dumps the specified object.
+      description: The target object should have been found using #findObject with *bySelector*.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
 
 components:
   schemas:
