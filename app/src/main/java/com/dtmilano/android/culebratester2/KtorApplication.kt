@@ -119,6 +119,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<TargetContext.StartActivity> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.Click> {
                 call.respond(it.response())
             }

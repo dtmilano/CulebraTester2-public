@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.lang.ref.WeakReference
 
 /**
  * The port.
@@ -29,6 +30,7 @@ class UiAutomatorHelper {
         // for your test to run with AndroidJUnitRunner.
         instrumentation = InstrumentationRegistry.getInstrumentation()
 
+        Holder.targetContext = WeakReference(instrumentation.targetContext)
         Holder.uiDevice = UiDevice.getInstance(instrumentation)
         Holder.cacheDir = instrumentation.targetContext.cacheDir
         Holder.windowManager = instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager

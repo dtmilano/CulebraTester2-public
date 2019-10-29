@@ -15,7 +15,7 @@ class UiObject2 {
     data class Click(val oid: Int) {
         fun response(): StatusResponse {
             uiObject2(oid).click()
-            return StatusResponse(StatusResponse.Status.OK)
+            return StatusResponse.OK
         }
     }
 

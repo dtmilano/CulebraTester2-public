@@ -57,4 +57,9 @@ data class StatusResponse(
 
         abstract fun message(): String
     }
+
+    companion object {
+        val OK: StatusResponse = StatusResponse(Status.OK)
+        val ERROR: StatusResponse = StatusResponse(Status.ERROR)
+    }
 }

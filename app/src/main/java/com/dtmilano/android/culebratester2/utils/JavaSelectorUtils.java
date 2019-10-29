@@ -20,8 +20,10 @@ import java.util.regex.Pattern;
 
 /**
  * Created by diego on 2017-02-13.
+ * @deprecated use {@link SelectorUtilsKt}.
  */
 
+@Deprecated
 public class JavaSelectorUtils {
 
     private static final String TAG = "☕️JavaSelectorUtils";
