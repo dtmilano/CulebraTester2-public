@@ -83,6 +83,30 @@ paths:
           $ref: '#/components/responses/error'
 
 
+  /targetContext/startActivity:
+    get:
+      summary: Starts an Activity
+      description: Starts an Activity
+      parameters:
+        - name: "pkg"
+          in: query
+          required: true
+          description: the package name
+          schema:
+            type: string
+        - name: "cls"
+          in: query
+          required: true
+          description: the class name
+          schema:
+            type: string
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
   /uiDevice/dumpWindowHierarchy:
     get:
       summary: Dumps the window hierarchy
@@ -507,7 +531,7 @@ paths:
   /uiObject2/{oid}/click:
     get:
       summary: Clicks on the specified object.
-      description: The target object should have been found using #findObject with *bySelector*.
+      description: The target object should have been found using `findObject` with a `selector`.
       parameters:
         - name: oid
           in: path
@@ -525,7 +549,7 @@ paths:
   /uiObject2/{oid}/dump:
     get:
       summary: Dumps the specified object.
-      description: The target object should have been found using #findObject with *bySelector*.
+      description: The target object should have been found using `findObject` with a `selector`.
       parameters:
         - name: oid
           in: path
