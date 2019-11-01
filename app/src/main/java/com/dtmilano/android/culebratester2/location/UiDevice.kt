@@ -151,7 +151,7 @@ class UiDevice {
                     return StatusResponse(
                         StatusResponse.Status.ERROR,
                         StatusResponse.StatusCode.ARGUMENT_MISSING.value,
-                        errorMessage = "A selectorStr must be specified"
+                        errorMessage = "A resource Id or selector must be specified"
                     )
                 }
 
@@ -159,21 +159,21 @@ class UiDevice {
                     val selector = By.res(resourceId)
                     val obj = Holder.uiDevice.findObject(selector)
                     val oid = ObjectStore.instance.put(it)
-                    return ObjectRef(oid, obj.className)
+                    return@response ObjectRef(oid, obj.className)
                 }
 
                 uiSelector?.let {
                     val usb = uiSelectorBundleFromString(it)
                     val obj = Holder.uiDevice.findObject(usb.selector)
                     val oid = ObjectStore.instance.put(it)
-                    return ObjectRef(oid, obj.className)
+                    return@response ObjectRef(oid, obj.className)
                 }
 
                 bySelector?.let {
                     val bsb = bySelectorBundleFromString(it)
                     val obj = Holder.uiDevice.findObject(bsb.selector)
                     val oid = ObjectStore.instance.put(it)
-                    return ObjectRef(oid, obj.className)
+                    return@response ObjectRef(oid, obj.className)
                 }
 
                 return StatusResponse(

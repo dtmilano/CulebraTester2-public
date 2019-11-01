@@ -559,7 +559,11 @@ paths:
             type: integer
       responses:
         200:
-          $ref: '#/components/responses/ok'
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Selector'
         default:
           $ref: '#/components/responses/error'
 

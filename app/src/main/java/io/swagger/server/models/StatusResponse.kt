@@ -19,32 +19,32 @@ data class StatusResponse(
 ) {
     /**
      *
-     * Values: oK,eRROR,uNKNOWKN
+     * Values: OK,ERROR,UNKNOWN
      */
     enum class Status(val value: String) {
         OK("OK"),
         ERROR("ERROR"),
-        UNKNOWKN("UNKNOWN");
+        UNKNOWN("UNKNOWN");
     }
 
     enum class StatusCode(val value: Int) {
         TIMEOUT_WINDOW_UPDATE(1001) {
             override fun message(): String {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                TODO("not implemented")
             }
         },
 
         ARGUMENT_MISSING(3001) {
 
             override fun message(): String {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                TODO("not implemented")
             }
         },
 
         INTERACTION_KEY(5001) {
 
             override fun message(): String {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                TODO("not implemented")
             }
         },
 

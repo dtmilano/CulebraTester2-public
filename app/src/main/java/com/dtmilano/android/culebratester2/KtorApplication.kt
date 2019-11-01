@@ -236,12 +236,13 @@ fun Application.module(testing: Boolean = false) {
             }
 
             exception<HttpException> { cause ->
-                call.respond(cause.code, cause.description)
+                call.respond(cause.code, cause.description + "\n")
             }
 
             exception<Throwable> { cause ->
-                System.err.println("🛑 ERROR: $cause")
-                call.respond(HttpStatusCode.InternalServerError)
+                val msg = "🛑 ERROR: $cause\n"
+                System.err.print(msg)
+                call.respond(HttpStatusCode.InternalServerError, msg)
             }
 
             status(HttpStatusCode.NotFound) {
