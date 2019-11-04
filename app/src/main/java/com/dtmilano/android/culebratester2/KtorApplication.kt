@@ -1,6 +1,7 @@
 package com.dtmilano.android.culebratester2
 
 import com.dtmilano.android.culebratester2.location.*
+import com.dtmilano.android.culebratester2.location.ObjectStore
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
 import io.ktor.auth.Authentication
@@ -116,6 +117,10 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<Device.DisplayRealSize> {
+                call.respond(it.response())
+            }
+
+            get<ObjectStore.List> {
                 call.respond(it.response())
             }
 

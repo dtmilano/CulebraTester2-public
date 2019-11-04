@@ -7,29 +7,22 @@ import java.util.*
  */
 class ObjectStore private constructor() {
 
-    // do nothing
     private val nextOid: Int
-        get() {
-            var lastOid = 0
-            try {
-                lastOid = objectMap.lastKey()
-            } catch (ex: NoSuchElementException) {
-            }
-
-            return lastOid + 1
-        }
+        get() = try {
+            objectMap.lastKey()
+        } catch (e: NoSuchElementException) {
+            0
+        } + 1
 
     fun size(): Int {
         return objectMap.size
     }
 
-    fun lastKey(): Int? {
+    fun lastKey(): Int {
         return objectMap.lastKey()
     }
 
-
     operator fun get(oid: Int): Any? {
-
         return objectMap[oid]
     }
 
@@ -42,9 +35,11 @@ class ObjectStore private constructor() {
     }
 
     fun put(obj: Any): Int {
-        val oid = nextOid
-        put(oid, obj)
-        return oid
+        nextOid.let { put(it, obj); return@put it }
+    }
+
+    fun clear() {
+        objectMap.clear()
     }
 
     private fun put(oid: Int, obj: Any) {

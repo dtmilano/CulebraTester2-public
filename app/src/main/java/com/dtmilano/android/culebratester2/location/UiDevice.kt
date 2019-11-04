@@ -158,8 +158,10 @@ class UiDevice {
                 resourceId?.let {
                     val selector = By.res(resourceId)
                     val obj = Holder.uiDevice.findObject(selector)
-                    val oid = ObjectStore.instance.put(it)
-                    return@response ObjectRef(oid, obj.className)
+                    if (obj != null) {
+                        val oid = ObjectStore.instance.put(it)
+                        return@response ObjectRef(oid, obj.className)
+                    }
                 }
 
                 uiSelector?.let {

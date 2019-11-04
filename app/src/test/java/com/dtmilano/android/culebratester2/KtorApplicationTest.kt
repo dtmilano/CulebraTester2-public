@@ -31,6 +31,8 @@ import kotlin.test.assertTrue
  * Ktor Application Test.
  */
 @KtorExperimentalLocationsAPI
+// We don't need Robolectric to run these test for now
+//@RunWith(RobolectricTestRunner::class)
 class KtorApplicationTest {
 
     companion object {
@@ -211,6 +213,22 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test object store list`() {
+        ObjectStore.instance.put("Some object")
+        ObjectStore.instance.put("Another object")
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/objectStore/list").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                println(response.content)
+                assertEquals(
+                    "[{\"oid\":1,\"obj\":\"Some object\"},{\"oid\":2,\"obj\":\"Another object\"}]",
+                    response.content
+                )
+            }
+        }
+    }
+
+    @Test
     fun `test find object no selectors`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject").apply {
@@ -227,8 +245,11 @@ class KtorApplicationTest {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject?resourceId=1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val statusResponse = jsonResponse<StatusResponse>()
-                // TODO: not implemented yet
-                assertEquals("ERROR", statusResponse.status.value, statusResponse.errorMessage)
+                assertEquals("ERROR", statusResponse.status.value)
+                assertEquals(
+                    statusResponse.statusCode,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value
+                )
             }
         }
     }
