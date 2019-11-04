@@ -107,6 +107,27 @@ paths:
           $ref: '#/components/responses/error'
 
 
+  /objectStore/list:
+    get:
+      summary: Lists the objects in store
+      description: Lists the objects in store
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    oid:
+                      type: integer
+                    object:
+                      type: object
+        default:
+          $ref: '#/components/responses/error'
+
   /uiDevice/dumpWindowHierarchy:
     get:
       summary: Dumps the window hierarchy
