@@ -1,0 +1,43 @@
+#! /bin/bash
+#
+# simple-calculator-test:
+# - Starts Calculator Activity
+# - Finds a Button corresponding to a digit (specified or random)
+# - Clicks that Button
+#
+# prerequisites:
+# - adb finds and list the device
+# - ./culebratester2 start-server
+# - jq installed (https://stedolan.github.io/jq/)
+#
+
+set -e
+set +x
+
+base_url=http://localhost:9987/v2/
+
+do_curl() {
+    curl -sf -H "accept: application/json" -H "Content-Type: application/json" "$@"
+}
+
+if [[ $1 == '-x' ]]
+then
+    shift
+    set -x
+fi
+
+# start calculator
+pkg='com.google.android.calculator'
+cls='com.android.calculator2.Calculator'
+do_curl -X GET "${base_url}/targetContext/startActivity?pkg=${pkg}&cls=${cls}" >/dev/null
+
+# digit to click
+digit=${1:-${RANDOM:1:1}}
+
+# find the button
+sleep 2
+oid=$(do_curl -X POST "${base_url}/uiDevice/findObject" \
+    -d "{'clazz': 'android.widget.Button', 'text':'${digit}'}" | jq .oid)
+
+# click it
+do_curl -X GET "${base_url}/uiObject2/${oid}/click" >/dev/null
