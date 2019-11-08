@@ -286,4 +286,3 @@ suspend inline fun ApplicationCall.respondImage(
 
 class AuthenticationException : RuntimeException()
 class AuthorizationException : RuntimeException()
-

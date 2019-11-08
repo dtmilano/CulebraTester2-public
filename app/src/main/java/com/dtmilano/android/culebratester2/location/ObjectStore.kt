@@ -21,7 +21,7 @@ class ObjectStore {
         fun response(): Any {
             val a = ArrayList<Any>()
             objectStore.list().forEach { (k, v) ->
-                a.add(OidObj(k, v))
+                a.add(OidObj(k, v.toString()))
             }
             return a
         }
