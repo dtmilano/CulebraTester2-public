@@ -24,4 +24,6 @@ class CulebraTesterApplication : Application() {
             return PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         }
     }
+
+    val appComponent = DaggerApplicationComponent.create()
 }

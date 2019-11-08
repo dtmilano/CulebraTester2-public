@@ -6,55 +6,59 @@ import org.junit.Assert.assertThat
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
+import javax.inject.Inject
 
 class ObjectStoreTest {
+    @Inject
+    lateinit var objectStore: ObjectStore
 
     @Before
     fun setUp() {
-        ObjectStore.instance.clear()
+        objectStore = DaggerApplicationComponent.create().objectStore()
+        objectStore.clear()
     }
 
     @After
     fun tearDown() {
-        ObjectStore.instance.clear()
+        objectStore.clear()
     }
 
     @Test
     fun size() {
-        assertThat(ObjectStore.instance.size(), `is`(0))
-        ObjectStore.instance.put("S")
-        assertThat(ObjectStore.instance.size(), `is`(1))
+        assertThat(objectStore.size(), `is`(0))
+        objectStore.put("S")
+        assertThat(objectStore.size(), `is`(1))
     }
 
     @Test
     fun lastKey() {
         try {
-            ObjectStore.instance.lastKey()
+            objectStore.lastKey()
             fail("No exception")
         } catch (e: NoSuchElementException) {
             // do nothing
         }
 
-        val oid = ObjectStore.instance.put("A")
-        assertThat(ObjectStore.instance.lastKey(), `is`(oid))
+        val oid = objectStore.put("A")
+        assertThat(objectStore.lastKey(), `is`(oid))
     }
 
     @Test
     fun get() {
         val obj = "G"
-        val oid = ObjectStore.instance.put(obj)
-        assertThat(ObjectStore.instance[oid] as String, `is`(obj))
+        val oid = objectStore.put(obj)
+        assertThat(objectStore[oid] as String, `is`(obj))
     }
 
     @Test
     fun remove() {
         val obj = "R"
-        val oid1 = ObjectStore.instance.put(obj)
-        val oid2 = ObjectStore.instance.put("Q")
-        assertThat(ObjectStore.instance.size(), `is`(2))
-        ObjectStore.instance.remove(oid2)
-        assertThat(ObjectStore.instance.size(), `is`(1))
-        assertThat(ObjectStore.instance[oid1] as String, `is`(obj))
+        val oid1 = objectStore.put(obj)
+        val oid2 = objectStore.put("Q")
+        assertThat(objectStore.size(), `is`(2))
+        objectStore.remove(oid2)
+        assertThat(objectStore.size(), `is`(1))
+        assertThat(objectStore[oid1] as String, `is`(obj))
     }
 
     @Test
@@ -63,19 +67,19 @@ class ObjectStoreTest {
         generateSequence(1) { it + 1 }
             .take(n)
             .toList()
-            .map(ObjectStore.instance::put)
-        val sm = ObjectStore.instance.list()
+            .map(objectStore::put)
+        val sm = objectStore.list()
         assertThat(sm.size, `is`(n))
     }
 
     @Test
     fun put() {
-        assertThat(ObjectStore.instance.size(), `is`(0))
-        val oid1 = ObjectStore.instance.put("P")
-        assertThat(ObjectStore.instance.size(), `is`(1))
-        val oid2 = ObjectStore.instance.put("Q")
-        assertThat(ObjectStore.instance.size(), `is`(2))
-        assertThat(ObjectStore.instance[oid1] as String, `is`("P"))
-        assertThat(ObjectStore.instance[oid2] as String, `is`("Q"))
+        assertThat(objectStore.size(), `is`(0))
+        val oid1 = objectStore.put("P")
+        assertThat(objectStore.size(), `is`(1))
+        val oid2 = objectStore.put("Q")
+        assertThat(objectStore.size(), `is`(2))
+        assertThat(objectStore[oid1] as String, `is`("P"))
+        assertThat(objectStore[oid2] as String, `is`("Q"))
     }
 }

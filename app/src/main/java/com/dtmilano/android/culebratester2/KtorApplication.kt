@@ -247,6 +247,8 @@ fun Application.module(testing: Boolean = false) {
             exception<Throwable> { cause ->
                 val msg = "🛑 ERROR: $cause\n"
                 System.err.print(msg)
+                System.err.println(cause.message)
+                cause.printStackTrace(System.err)
                 call.respond(HttpStatusCode.InternalServerError, msg)
             }
 

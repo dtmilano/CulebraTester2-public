@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import io.ktor.application.Application
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -19,10 +20,11 @@ import java.lang.ref.WeakReference
  */
 private const val PORT = 9987
 
+@KtorExperimentalLocationsAPI
 @RunWith(AndroidJUnit4::class)
 class UiAutomatorHelper {
+    private var appComponent: ApplicationComponent = DaggerApplicationComponent.create()
     private lateinit var instrumentation: Instrumentation
-
 
     @Before
     fun setUp() {
@@ -30,10 +32,16 @@ class UiAutomatorHelper {
         // for your test to run with AndroidJUnitRunner.
         instrumentation = InstrumentationRegistry.getInstrumentation()
 
-        Holder.targetContext = WeakReference(instrumentation.targetContext)
-        Holder.uiDevice = UiDevice.getInstance(instrumentation)
-        Holder.cacheDir = instrumentation.targetContext.cacheDir
-        Holder.windowManager = instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager
+        val holder = appComponent.holder().instance
+        println("====== initialized holder $holder ========== UiAutomatorHelper")
+//        Holder.targetContext = WeakReference(instrumentation.targetContext)
+//        Holder.uiDevice = UiDevice.getInstance(instrumentation)
+//        Holder.cacheDir = instrumentation.targetContext.cacheDir
+//        Holder.windowManager = instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager
+        holder.targetContext = WeakReference(instrumentation.targetContext)
+        holder.uiDevice = UiDevice.getInstance(instrumentation)
+        holder.cacheDir = instrumentation.targetContext.cacheDir
+        holder.windowManager = instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager
     }
 
     @Test

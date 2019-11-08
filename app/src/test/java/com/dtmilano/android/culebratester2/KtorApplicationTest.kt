@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers.anyInt
 import java.io.File
 import java.io.OutputStream
+import javax.inject.Inject
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -40,6 +41,12 @@ class KtorApplicationTest {
         @ClassRule
         @JvmField
         val exit: ExpectedSystemExit = ExpectedSystemExit.none()
+
+        val appComponent = DaggerApplicationComponent.create()
+
+        var holder: Holder = appComponent.holder().instance
+
+        var objectStore: ObjectStore = appComponent.objectStore()
 
         private val realSize = mapOf("x" to 1080, "y" to 2400)
 
@@ -97,14 +104,14 @@ class KtorApplicationTest {
         @BeforeClass
         @JvmStatic
         fun setupClass() {
-            Holder.windowManager = windowManager
-            Holder.cacheDir = File("/tmp")
+            holder.windowManager = windowManager
+            holder.cacheDir = File("/tmp")
         }
     }
 
     @Before
     fun setup() {
-        Holder.uiDevice = uiDevice
+        holder.uiDevice = uiDevice
     }
 
     private inline fun <reified T> TestApplicationCall.jsonResponse() =
@@ -214,8 +221,8 @@ class KtorApplicationTest {
 
     @Test
     fun `test object store list`() {
-        ObjectStore.instance.put("Some object")
-        ObjectStore.instance.put("Another object")
+        objectStore.put("Some object")
+        objectStore.put("Another object")
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/objectStore/list").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
@@ -299,7 +306,7 @@ class KtorApplicationTest {
 
     @Test
     fun `test cannot obtain screenshot`() {
-        Holder.uiDevice = uiDeviceNoScreenshot
+        holder.uiDevice = uiDeviceNoScreenshot
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/screenshot?scale=0.5&quality=50").apply {
                 assertEquals(HttpStatusCode.InternalServerError, response.status())

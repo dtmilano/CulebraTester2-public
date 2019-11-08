@@ -1,11 +1,16 @@
 package com.dtmilano.android.culebratester2
 
+import dagger.Component
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by diego on 2016-02-26.
  */
-class ObjectStore private constructor() {
+@Singleton
+//class ObjectStore private constructor() {
+class ObjectStore @Inject constructor() {
 
     private val nextOid: Int
         get() = try {
@@ -47,7 +52,7 @@ class ObjectStore private constructor() {
     }
 
     companion object {
-        val instance = ObjectStore()
+        //val instance = ObjectStore()
 
         private val objectMap = TreeMap<Int, Any>()
     }
