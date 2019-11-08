@@ -1,5 +1,8 @@
 package com.dtmilano.android.culebratester2.location
 
+import com.dtmilano.android.culebratester2.DaggerApplicationComponent
+import com.dtmilano.android.culebratester2.Holder
+import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
@@ -16,8 +19,17 @@ private const val TAG = "UiObject2"
 class UiObject2 {
     @Location("/{oid}/click")
     /*inner*/ class Click(val oid: Int) {
+        private var holder: Holder
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
         @Inject
         lateinit var objectStore: ObjectStore
+
+        init {
+            DaggerApplicationComponent.create().inject(this)
+            holder = holderHolder.instance
+        }
 
         fun response(): StatusResponse {
             uiObject2(oid, objectStore)?.let { it.click(); return@response StatusResponse.OK }
@@ -27,8 +39,17 @@ class UiObject2 {
 
     @Location("/{oid}/dump")
     /*inner*/ class Dump(val oid: Int) {
+        private var holder: Holder
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
         @Inject
         lateinit var objectStore: ObjectStore
+
+        init {
+            DaggerApplicationComponent.create().inject(this)
+            holder = holderHolder.instance
+        }
 
         fun response(): Selector {
             uiObject2(oid, objectStore)?.let { return@response Selector(it) }
