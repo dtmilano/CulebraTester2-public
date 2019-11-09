@@ -37,6 +37,12 @@ Continue reading and see how you can run this early preview.
 
 This previous version API specification can be found at [here](https://github.com/dtmilano/CulebraTester-public/wiki/RESTful-API). 
 
+# Example
+The script [simple-calculator-test](https://github.com/dtmilano/CulebraTester2-public/blob/master/simple-calculator-test) shows a rudimentary usage of this API by
+- starting Calculator activity
+- finding one of the digit Buttons, can be specified or a random one is slected
+- clicking on that Button
+
 # Communication
 Found issues? Use https://github.com/dtmilano/CulebraTester2-public/issues
 
