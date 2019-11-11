@@ -3,7 +3,10 @@ package com.dtmilano.android.culebratester2
 import android.graphics.Point
 import android.view.Display
 import android.view.WindowManager
+import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
+import com.dtmilano.android.culebratester2.location.OidObj
 import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.*
 import io.ktor.http.ContentType
@@ -21,11 +24,11 @@ import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers.anyInt
 import java.io.File
 import java.io.OutputStream
-import javax.inject.Inject
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.text.Regex.Companion.escape
 
 
 /**
@@ -70,12 +73,32 @@ class KtorApplicationTest {
             }
         }
 
+        const val MATCHES = "MATCHES"
+        const val DOES_NOT_MATCH = "DOES_NOT_MATCH"
+
+        class BySelectorMatcher : ArgumentMatcher<BySelector> {
+            override fun matches(selector: BySelector?): Boolean {
+                // There's no way of comparing other than via String
+                val res = "BySelector [RES='\\Q${DOES_NOT_MATCH}\\E']"
+                if (selector.toString().matches(Regex(escape(res)))) {
+                    return false
+                }
+                return true
+            }
+        }
+
         val display: Display = mock {
             on { getRealSize(argThat(matcher = MatchPoint())) } doAnswer {}
         }
 
         val windowManager = mock<WindowManager> {
             on { defaultDisplay } doReturn display
+        }
+
+        private const val MOCK_CLASS_NAME = "MockClassName"
+
+        val uiObject2 = mock<UiObject2> {
+            on { className } doReturn MOCK_CLASS_NAME
         }
 
         val uiDevice = mock<UiDevice> {
@@ -89,6 +112,7 @@ class KtorApplicationTest {
             on { displayHeight } doReturn y
             on { displaySizeDp } doReturn p
             on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
+            on { findObject(argThat(BySelectorMatcher())) } doReturn uiObject2
             on { pressBack() } doReturn true
             on { pressEnter() } doReturn true
             on { pressDelete() } doReturn true
@@ -112,10 +136,11 @@ class KtorApplicationTest {
     @Before
     fun setup() {
         holder.uiDevice = uiDevice
+        objectStore.clear()
     }
 
-    private inline fun <reified T> TestApplicationCall.jsonResponse() =
-        Gson().fromJson<T>(response.content, T::class.java)
+    private inline fun <reified T> TestApplicationCall.jsonResponse(content: String? = response.content) =
+        Gson().fromJson<T>(content, T::class.java)
 
     @Test
     fun testRoot() {
@@ -210,8 +235,7 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/device/displayRealSize").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val displayRealSize =
-                    Gson().fromJson<DisplayRealSize>(response.content, DisplayRealSize::class.java)
+                val displayRealSize = jsonResponse<DisplayRealSize>()
                 assertEquals("UNKNOWN", displayRealSize.device)
                 assertEquals(realSize["x"], displayRealSize.x)
                 assertEquals(realSize["y"], displayRealSize.y)
@@ -236,6 +260,22 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test object store list with uiobject2`() {
+        val uio21 = mock<UiObject2> {}
+        val uio22 = mock<UiObject2> {}
+        objectStore.put(uio21)
+        objectStore.put(uio22)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/objectStore/list").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                println(response.content)
+                val list = jsonResponse<Array<OidObj>>()
+                assertEquals(2, list.size)
+            }
+        }
+    }
+
+    @Test
     fun `test find object no selectors`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject").apply {
@@ -249,7 +289,11 @@ class KtorApplicationTest {
     @Test
     fun `test find object resourceId selector`() {
         withTestApplication({ module(testing = true) }) {
-            handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject?resourceId=1").apply {
+            assertEquals(0, objectStore.size())
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/findObject?resourceId=$DOES_NOT_MATCH"
+            ).apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val statusResponse = jsonResponse<StatusResponse>()
                 assertEquals("ERROR", statusResponse.status.value)
@@ -257,6 +301,41 @@ class KtorApplicationTest {
                     statusResponse.statusCode,
                     StatusResponse.StatusCode.OBJECT_NOT_FOUND.value
                 )
+            }
+            assertEquals(0, objectStore.size())
+        }
+    }
+
+    @Test
+    fun `test find object should not store object when not found`() {
+        withTestApplication({ module(testing = true) }) {
+            assertEquals(0, objectStore.size())
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/findObject?resourceId=$DOES_NOT_MATCH"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("ERROR", statusResponse.status.value)
+                assertEquals(
+                    statusResponse.statusCode,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value
+                )
+                assertEquals(0, objectStore.size())
+            }
+        }
+    }
+
+    @Test
+    fun `test find object should store object when found`() {
+        withTestApplication({ module(testing = true) }) {
+            assertEquals(0, objectStore.size())
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject?resourceId=$MATCHES").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objectRef = jsonResponse<ObjectRef>()
+                assertTrue(objectRef.oid > 0)
+                assertEquals(MOCK_CLASS_NAME, objectRef.className)
+                assertEquals(1, objectStore.size())
             }
         }
     }
@@ -277,9 +356,35 @@ class KtorApplicationTest {
                 )
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+                val objectRef = jsonResponse<ObjectRef>()
+                assertTrue(objectRef.oid > 0)
+                assertEquals(MOCK_CLASS_NAME, objectRef.className)
+            }
+        }
+    }
+
+    @Test
+    fun `test find object post selector not matching should respond not found`() {
+        withTestApplication({ module(testing = true) }) {
+            assertEquals(0, objectStore.size())
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            res = DOES_NOT_MATCH
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
                 val statusResponse = jsonResponse<StatusResponse>()
-                // TODO: not implemented yet
-                assertEquals("ERROR", statusResponse.status.value, statusResponse.errorMessage)
+                assertEquals("ERROR", statusResponse.status.value)
+                assertEquals(
+                    statusResponse.statusCode,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value
+                )
+                assertEquals(0, objectStore.size())
             }
         }
     }

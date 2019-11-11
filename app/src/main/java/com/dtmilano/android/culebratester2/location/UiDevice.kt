@@ -233,19 +233,6 @@ class UiDevice {
 
     @Location("/findObject")
     /*inner*/ class FindObject {
-        private var holder: Holder
-        @Inject
-        lateinit var holderHolder: HolderHolder
-
-        @Inject
-        lateinit var objectStore: ObjectStore
-
-        init {
-            DaggerApplicationComponent.create().inject(this)
-            holder = holderHolder.instance
-        }
-
-
         /**
          * Finds an object
          * Finds an object. The object found, if any, can be later used in other call like API.click.
@@ -309,8 +296,7 @@ class UiDevice {
 
                 return StatusResponse(
                     StatusResponse.Status.ERROR,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND
                 )
             }
         }
@@ -348,8 +334,7 @@ class UiDevice {
 
                 return StatusResponse(
                     StatusResponse.Status.ERROR,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND
                 )
             }
         }
@@ -382,7 +367,7 @@ class UiDevice {
     companion object {
         fun pressKeyResponse(pressAny: () -> Boolean, name: String): StatusResponse {
             if (pressAny()) {
-                return StatusResponse(StatusResponse.Status.OK)
+                return StatusResponse.OK
             }
             return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot press $name")
         }
@@ -505,7 +490,7 @@ class UiDevice {
 
         fun response(): StatusResponse {
             if (holder.uiDevice.pressKeyCode(keyCode, metaState)) {
-                return StatusResponse(StatusResponse.Status.OK)
+                return StatusResponse.OK
             }
             return StatusResponse(
                 StatusResponse.Status.ERROR,
@@ -560,7 +545,7 @@ class UiDevice {
 
         fun response(): StatusResponse {
             holder.uiDevice.waitForIdle(timeout)
-            return StatusResponse(StatusResponse.Status.OK)
+            return StatusResponse.OK
         }
     }
 
@@ -590,7 +575,7 @@ class UiDevice {
         fun response(): StatusResponse {
             val t0 = System.currentTimeMillis()
             if (holder.uiDevice.waitForWindowUpdate(packageName, timeout)) {
-                return StatusResponse(StatusResponse.Status.OK)
+                return StatusResponse.OK
             }
             val t1 = System.currentTimeMillis() - t0
             return StatusResponse(

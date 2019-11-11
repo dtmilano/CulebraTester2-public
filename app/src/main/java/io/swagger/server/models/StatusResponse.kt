@@ -17,6 +17,12 @@ package io.swagger.server.models
 data class StatusResponse(
     val status: Status, val statusCode: Int? = null, val errorMessage: String? = null
 ) {
+    constructor(status: Status, statusCode: StatusCode) : this(
+        status,
+        statusCode.value,
+        statusCode.message()
+    )
+
     /**
      *
      * Values: OK,ERROR,UNKNOWN
