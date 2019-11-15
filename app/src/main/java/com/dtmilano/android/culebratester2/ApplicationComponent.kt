@@ -40,5 +40,6 @@ interface ApplicationComponent {
     fun inject(displayRealSize: Device.DisplayRealSize)
     fun inject(click: UiObject2.Click)
     fun inject(dump: UiObject2.Dump)
+    fun inject(setText: UiObject2.SetText)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

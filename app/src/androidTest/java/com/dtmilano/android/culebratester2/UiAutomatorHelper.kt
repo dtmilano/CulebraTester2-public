@@ -33,11 +33,6 @@ class UiAutomatorHelper {
         instrumentation = InstrumentationRegistry.getInstrumentation()
 
         val holder = appComponent.holder().instance
-        println("====== initialized holder $holder ========== UiAutomatorHelper")
-//        Holder.targetContext = WeakReference(instrumentation.targetContext)
-//        Holder.uiDevice = UiDevice.getInstance(instrumentation)
-//        Holder.cacheDir = instrumentation.targetContext.cacheDir
-//        Holder.windowManager = instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager
         holder.targetContext = WeakReference(instrumentation.targetContext)
         holder.uiDevice = UiDevice.getInstance(instrumentation)
         holder.cacheDir = instrumentation.targetContext.cacheDir

@@ -10,6 +10,7 @@ import io.ktor.locations.Location
 import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.Text
 import javax.inject.Inject
 
 private const val TAG = "UiObject2"
@@ -53,6 +54,26 @@ class UiObject2 {
 
         fun response(): Selector {
             uiObject2(oid, objectStore)?.let { return@response Selector(it) }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/setText")
+    /*inner*/ class SetText(val oid: Int) {
+        private var holder: Holder
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            DaggerApplicationComponent.create().inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(text: Text): StatusResponse {
+            uiObject2(oid, objectStore)?.let { it.text = text.text; return@response StatusResponse.OK }
             throw notFound(oid)
         }
     }

@@ -588,6 +588,33 @@ paths:
         default:
           $ref: '#/components/responses/error'
 
+  /uiObject2/{oid}/setText:
+    post:
+      summary: Sets the text content if this object is an editable field.
+      description: The target object should have been found using `findObject` with a `selector`.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+      requestBody:
+        description: Text to enter in the field
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
 components:
   schemas:
     StatusResponse:

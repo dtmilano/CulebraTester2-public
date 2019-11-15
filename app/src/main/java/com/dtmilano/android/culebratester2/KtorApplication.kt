@@ -5,10 +5,7 @@ import com.dtmilano.android.culebratester2.location.ObjectStore
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
 import io.ktor.auth.Authentication
-import io.ktor.features.CORS
-import io.ktor.features.Compression
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.StatusPages
+import io.ktor.features.*
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -31,6 +28,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.ShutDownUrl
 import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.Selector
+import io.swagger.server.models.Text
 import java.io.File
 
 @KtorExperimentalLocationsAPI
@@ -39,6 +37,9 @@ import java.io.File
 fun Application.module(testing: Boolean = false) {
 
     val shutdownUrl = "/quit"
+
+    install(CallLogging) {
+    }
 
     install(Authentication) {
     }
@@ -215,6 +216,15 @@ fun Application.module(testing: Boolean = false) {
 
             get<UiObject2.Dump> {
                 call.respond(it.response())
+            }
+
+            post<UiObject2.SetText> {
+                // We have to get the body as ktor doesn't do it
+                // see https://github.com/ktorio/ktor/issues/190
+                // also, it.body is null here
+                // println("body ${it.body}");
+                val text = call.receive<Text>()
+                call.respond(it.response(text))
             }
         }
 
