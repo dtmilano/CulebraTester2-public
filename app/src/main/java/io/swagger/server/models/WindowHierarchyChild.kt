@@ -23,7 +23,7 @@ data class WindowHierarchyChild(
     val checkable: kotlin.Boolean? = null,
     val clickable: kotlin.Boolean? = null,
     val index: kotlin.Int? = null,
-    val contentDescription: kotlin.Int? = null,
+    val contentDescription: kotlin.String? = null,
     val focusable: kotlin.Boolean? = null,
     val resourceId: kotlin.String? = null,
     val enabled: kotlin.Boolean? = null,
