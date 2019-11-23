@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.1
+  version: 2.0.2
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -132,6 +132,13 @@ paths:
     get:
       summary: Dumps the window hierarchy
       description: Dumps the window hierarchy
+      parameters:
+        - name: format
+          in: query
+          required: false
+          description: the output format
+          schema:
+            type: string
       responses:
         200:
           description: Window hierarchy
