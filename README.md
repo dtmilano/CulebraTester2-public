@@ -35,6 +35,8 @@ Continue reading and see how you can run this early preview.
 # culebra
 **CulebraTester2** is a new implementation in Kotlin of [culebra](culebra.dtmilano.com).
 
+A python client implementation can be found at **[CulebraTester2-client](https://github.com/dtmilano/CulebraTester2-client)**.
+
 This previous version API specification can be found at [here](https://github.com/dtmilano/CulebraTester-public/wiki/RESTful-API). 
 
 # Example
