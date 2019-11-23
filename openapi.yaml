@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.2
+  version: 2.0.3
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -792,7 +792,7 @@ components:
         index:
           type: integer
         contentDescription:
-          type: integer
+          type: string
         focusable:
           type: boolean
         resourceId:
