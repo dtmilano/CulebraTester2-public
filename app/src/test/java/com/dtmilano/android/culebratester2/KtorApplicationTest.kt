@@ -66,9 +66,17 @@ class KtorApplicationTest {
             }
         }
 
+        // <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+        const val WINDOW_HIERARCHY = """
+            <hierarchy rotation="0">
+              <node index="0" text="" resource-id="com.android.systemui:id/navigation_bar_frame" class="android.widget.FrameLayout" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" visible-to-user="true" bounds="[0,1794][1080,1920]">
+              </node>
+            </hierarchy>
+        """
+
         class MatchOutputStream : ArgumentMatcher<OutputStream> {
             override fun matches(output: OutputStream?): Boolean {
-                output?.write("<hierarchy></hierarchy>".toByteArray())
+                output?.write(WINDOW_HIERARCHY.trimIndent().toByteArray())
                 return true
             }
         }
@@ -398,7 +406,7 @@ class KtorApplicationTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
                     Gson().toJson(
-                        Text(text="Some text")
+                        Text(text = "Some text")
                     )
                 )
             }.apply {
@@ -505,11 +513,40 @@ class KtorApplicationTest {
     }
 
     @Test
-    fun `test dump window hierarchy`() {
+    fun `test dump window hierarchy with default format`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy").apply {
                 println(response.content)
                 assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test dump window hierarchy json`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy?format=JSON").apply {
+                println(response.content)
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test dump window hierarchy xml`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy?format=XML").apply {
+                println(response.content)
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test dump window hierarchy invalid`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy?format=INVALID").apply {
+                assertEquals(HttpStatusCode.UnprocessableEntity, response.status())
             }
         }
     }

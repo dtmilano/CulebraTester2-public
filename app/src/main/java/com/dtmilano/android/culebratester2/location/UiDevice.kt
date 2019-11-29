@@ -6,8 +6,10 @@ import com.dtmilano.android.culebratester2.*
 import com.dtmilano.android.culebratester2.ObjectStore
 import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
 import com.dtmilano.android.culebratester2.utils.uiSelectorBundleFromString
+import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
+import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -38,7 +40,11 @@ class UiDevice {
         fun response(): String {
             val output = ByteArrayOutputStream()
             holder.uiDevice.dumpWindowHierarchy(output)
-            return convertWindowHierarchyDumpToJson(output.toString())
+            when (format.toUpperCase()) {
+                "JSON" -> return convertWindowHierarchyDumpToJson(output.toString())
+                "XML" -> return output.toString()
+                else -> throw HttpException(HttpStatusCode.UnprocessableEntity, "Unsupported format $format")
+            }
         }
     }
 

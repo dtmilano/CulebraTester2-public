@@ -142,6 +142,7 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<UiDevice.DumpWindowHierarchy> {
+                // We may check call.request.headers["accept"] to determine if it's xml/json
                 call.respondText(it.response())
             }
 
