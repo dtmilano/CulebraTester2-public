@@ -12,6 +12,7 @@ _help() {
     printf '\n'
     printf 'positional arguments:\n'
     printf ' forward-port          uses adb to forward port %d\n' "$port"
+    printf ' install               installs on device\n'
     printf ' run-instrumentation   runs the instrumentation and starts the server\n'
     printf ' start-server          starts the server on the device\n'
     printf '\n'
@@ -24,8 +25,8 @@ progname="$(basename $0)"
 port=9987
 smul=$(tput smul)
 rmul=$(tput rmul)
-printf -v usage 'usage: %s [-h|--help] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server}\n' "$progname" \
-        "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
+printf -v usage 'usage: %s [-h|--help] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall}\n' "$progname" \
+        "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
 
 if [[ $# -ge 1 ]]
 then
@@ -46,6 +47,10 @@ then
 
         start-server|s)
             $0 forward-port && $0 run-instrumentation
+            ;;
+
+        install|i)
+            ./gradlew installDebug installDebugAndroidTest
             ;;
 
         *)
