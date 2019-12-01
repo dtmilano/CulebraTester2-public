@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.3
+  version: 2.0.4
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -803,8 +803,6 @@ components:
           type: boolean
         longClickable:
           type: boolean
-        # __text produces an error in the generated file as __ are deleted and `text` already exists
-        #__text:
         longText:
           type: string
         clazz:
@@ -812,6 +810,10 @@ components:
         scrollable:
           type: boolean
         selected:
+          type: boolean
+        checked:
+          type: boolean
+        focused:
           type: boolean
         bounds:
           type: array
