@@ -526,6 +526,7 @@ class KtorApplicationTest {
     fun `test dump window hierarchy json`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy?format=JSON").apply {
+                println("✈️")
                 println(response.content)
                 assertEquals(HttpStatusCode.OK, response.status())
             }
@@ -537,6 +538,12 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy?format=XML").apply {
                 println(response.content)
+                assertEquals(
+                    "<hierarchy rotation=\"0\">\n" +
+                            "  <node index=\"0\" text=\"\" resource-id=\"com.android.systemui:id/navigation_bar_frame\" class=\"android.widget.FrameLayout\" package=\"com.android.systemui\" content-desc=\"\" checkable=\"false\" checked=\"false\" clickable=\"false\" enabled=\"true\" focusable=\"false\" focused=\"false\" scrollable=\"false\" long-clickable=\"false\" password=\"false\" selected=\"false\" visible-to-user=\"true\" bounds=\"[0,1794][1080,1920]\">\n" +
+                            "  </node>\n" +
+                            "</hierarchy>", response.content
+                )
                 assertEquals(HttpStatusCode.OK, response.status())
             }
         }

@@ -15,7 +15,6 @@ import java.util.regex.Pattern
 import javax.xml.parsers.ParserConfigurationException
 import javax.xml.parsers.SAXParser
 import javax.xml.parsers.SAXParserFactory
-import kotlin.collections.HashMap
 
 
 private const val DEBUG = false
@@ -58,6 +57,10 @@ fun convertWindowHierarchyDumpToJson(dump: String): String {
         throw ConvertDumpToJsonException(e)
     }
 
+    if (DEBUG) {
+        println("convertWindowHierarchyDumpToJson: returning:")
+        println(handler.json)
+    }
     return handler.json
 }
 
@@ -156,11 +159,12 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
         qName: String,
         attributes: Attributes
     ) {
+        val name = if (localName != "") localName else qName
         if (DEBUG) {
             Log.d(TAG, "startElement: $uri")
             Log.d(
                 TAG,
-                "startElement: " + localName + " " + attributes.getValue("resource-id") + " " + attributes.getValue(
+                "startElement: " + name + " " + attributes.getValue("resource-id") + " " + attributes.getValue(
                     "class"
                 ) + " " + mNodeCount + " " + mArrayCount
             )
@@ -170,11 +174,11 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
                 Log.d(TAG, "startElement: ${ellipsize(s)}")
             }
         }
-        when (localName) {
+        when (name) {
             "hierarchy" -> try {
                 mJsonWriter!!.beginObject()
-                mJsonWriter!!.name("id").value("hierarchy")
-                mJsonWriter!!.name("text").value("Window Hierarchy")
+                mJsonWriter!!.name("id")?.value("hierarchy")
+                mJsonWriter!!.name("text")?.value("Window Hierarchy")
                 mJsonWriter!!.name("children")
                 mJsonWriter!!.beginArray()
                 mUniqueId = 0
@@ -187,23 +191,23 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
                 mJsonWriter!!.beginObject()
                 mNodeCount++
                 // resource-id's are not unique (i.e. listviews) then we cannot use it as the id for the tree
-                mJsonWriter!!.name("id").value(mUniqueId)
-                mJsonWriter!!.name("parent").value(mParents.peek())
+                mJsonWriter!!.name("id")?.value(mUniqueId)
+                mJsonWriter!!.name("parent")?.value(mParents.peek())
                 if (DEBUG) {
                     Log.d(TAG, "startElement: node: id=" + mUniqueId + " parent=" + mParents.peek())
                 }
                 // FIXME: change this
                 // text is jstree's label, the original text is stored under __text
                 val text = attributes.getValue("text")
-                mJsonWriter!!.name("text").value(
-                    attributes.getValue("class") + "_" + attributes.getValue("resource-id") + "_" + (if (text != null && text.length > 20) text.substring(
-                        0,
-                        17
-                    ) + "..." else text) + " id=" + mUniqueId + " parent=" + mParents.peek()
+                mJsonWriter!!.name("longText")?.value(
+                    attributes.getValue("class") + "_" + attributes.getValue("resource-id") +
+                            "_" + ellipsize(text, 17) +
+                            " id=" + mUniqueId + " parent=" + mParents.peek()
                 )
-                for (xmlAttribute in XML_TO_JSON_MAP.keys) {
-                    val jsonPropertyDescription = XML_TO_JSON_MAP[xmlAttribute]
-                    when (jsonPropertyDescription?.mType) {
+
+                XML_TO_JSON_MAP.forEach { (xmlAttribute, jsonPropertyDescription) ->
+
+                    when (jsonPropertyDescription.mType) {
                         "int" -> {
                             if (DEBUG) {
                                 Log.d(
@@ -214,19 +218,19 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
                                 )
                             }
                             mJsonWriter!!.name(jsonPropertyDescription.mName)
-                                .value(Integer.parseInt(attributes.getValue(xmlAttribute)))
+                                ?.value(Integer.parseInt(attributes.getValue(xmlAttribute)))
                         }
 
-                        "boolean" -> mJsonWriter!!.name(jsonPropertyDescription.mName).value(
+                        "boolean" -> mJsonWriter!!.name(jsonPropertyDescription.mName)?.value(
                             java.lang.Boolean.parseBoolean(
                                 attributes.getValue(xmlAttribute)
                             )
                         )
 
-                        "String" -> mJsonWriter!!.name(jsonPropertyDescription.mName).value(
+                        "String" -> mJsonWriter!!.name(jsonPropertyDescription.mName)?.value(
                             attributes.getValue(xmlAttribute)
                         )
-                        else -> mJsonWriter!!.name(jsonPropertyDescription?.mName).value(
+                        else -> mJsonWriter!!.name(jsonPropertyDescription.mName)?.value(
                             attributes.getValue(
                                 xmlAttribute
                             )
@@ -240,13 +244,13 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
                 if (ba != null) {
                     val bounds = ba.split(("[" + Pattern.quote("][,") + "]").toRegex())
                         .dropLastWhile { it.isEmpty() }.toTypedArray()
-                    mJsonWriter!!.name("bounds").beginArray()
+                    mJsonWriter!!.name("bounds")?.beginArray()
                     for (i in intArrayOf(1, 2, 4, 5)) {
                         mJsonWriter!!.value(Integer.valueOf(bounds[i]))
                     }
                     mJsonWriter!!.endArray()
                 }
-                mJsonWriter!!.name("children").beginArray()
+                mJsonWriter!!.name("children")?.beginArray()
                 mParents.push(mUniqueId)
                 mUniqueId++
                 mArrayCount++
@@ -259,7 +263,7 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
                 )
             }
 
-            else -> Log.w(TAG, "startElement: $localName not handled")
+            else -> Log.w(TAG, "startElement: $name not handled")
         }
     }
 
@@ -269,25 +273,24 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
         /**
          * Maps the XML attribute to JSON.
          */
-        private val XML_TO_JSON_MAP = HashMap<String, JsonPropertyDescription>()
-
-        init {
-            XML_TO_JSON_MAP["index"] = JsonPropertyDescription("__index", "int")
-            XML_TO_JSON_MAP["resource-id"] = JsonPropertyDescription("resourceId", "String")
-            XML_TO_JSON_MAP["content-desc"] =
-                JsonPropertyDescription("contentDescription", "String")
-            XML_TO_JSON_MAP["class"] = JsonPropertyDescription("clazz", "String")
-            XML_TO_JSON_MAP["text"] = JsonPropertyDescription("__text", "String")
-            XML_TO_JSON_MAP["package"] = JsonPropertyDescription("package", "String")
-            XML_TO_JSON_MAP["checkable"] = JsonPropertyDescription("checkable", "boolean")
-            XML_TO_JSON_MAP["clickable"] = JsonPropertyDescription("clickable", "boolean")
-            XML_TO_JSON_MAP["enabled"] = JsonPropertyDescription("enabled", "boolean")
-            XML_TO_JSON_MAP["focusable"] = JsonPropertyDescription("focusable", "boolean")
-            XML_TO_JSON_MAP["scrollable"] = JsonPropertyDescription("scrollable", "boolean")
-            XML_TO_JSON_MAP["long-clickable"] = JsonPropertyDescription("longClickable", "boolean")
-            XML_TO_JSON_MAP["password"] = JsonPropertyDescription("password", "boolean")
-            XML_TO_JSON_MAP["selected"] = JsonPropertyDescription("selected", "boolean")
-        }
+        private val XML_TO_JSON_MAP = mapOf<String, JsonPropertyDescription>(
+            "index" to JsonPropertyDescription("index", "int"),
+            "resource-id" to JsonPropertyDescription("resourceId", "String"),
+            "content-desc" to JsonPropertyDescription("contentDescription", "String"),
+            "class" to JsonPropertyDescription("clazz", "String"),
+            "text" to JsonPropertyDescription("text", "String"),
+            "package" to JsonPropertyDescription("package", "String"),
+            "checkable" to JsonPropertyDescription("checkable", "boolean"),
+            "clickable" to JsonPropertyDescription("clickable", "boolean"),
+            "enabled" to JsonPropertyDescription("enabled", "boolean"),
+            "focusable" to JsonPropertyDescription("focusable", "boolean"),
+            "scrollable" to JsonPropertyDescription("scrollable", "boolean"),
+            "long-clickable" to JsonPropertyDescription("longClickable", "boolean"),
+            "password" to JsonPropertyDescription("password", "boolean"),
+            "selected" to JsonPropertyDescription("selected", "boolean"),
+            "checked" to JsonPropertyDescription("checked", "boolean"),
+            "focused" to JsonPropertyDescription("focused", "boolean")
+        )
     }
 }
 

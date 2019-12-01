@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.*
 import javax.inject.Inject
 
 private const val TAG = "UiDevice"
@@ -40,9 +41,9 @@ class UiDevice {
         fun response(): String {
             val output = ByteArrayOutputStream()
             holder.uiDevice.dumpWindowHierarchy(output)
-            when (format.toUpperCase()) {
-                "JSON" -> return convertWindowHierarchyDumpToJson(output.toString())
-                "XML" -> return output.toString()
+            return when (format.toUpperCase(Locale.ROOT)) {
+                "JSON" -> convertWindowHierarchyDumpToJson(output.toString())
+                "XML" -> output.toString()
                 else -> throw HttpException(HttpStatusCode.UnprocessableEntity, "Unsupported format $format")
             }
         }
@@ -277,7 +278,7 @@ class UiDevice {
                     val selector = By.res(resourceId)
                     val obj = holder.uiDevice.findObject(selector)
                     if (obj != null) {
-                        val oid = objectStore.put(it)
+                        val oid = objectStore.put(obj)
                         return@response ObjectRef(oid, obj.className)
                     }
                 }
@@ -286,7 +287,7 @@ class UiDevice {
                     val usb = uiSelectorBundleFromString(it)
                     val obj = holder.uiDevice.findObject(usb.selector)
                     if (obj != null) {
-                        val oid = objectStore.put(it)
+                        val oid = objectStore.put(obj)
                         return@response ObjectRef(oid, obj.className)
                     }
                 }
@@ -295,14 +296,17 @@ class UiDevice {
                     val bsb = bySelectorBundleFromString(it)
                     val obj = holder.uiDevice.findObject(bsb.selector)
                     if (obj != null) {
-                        val oid = objectStore.put(it)
+                        val oid = objectStore.put(obj)
                         return@response ObjectRef(oid, obj.className)
                     }
                 }
 
-                return StatusResponse(
-                    StatusResponse.Status.ERROR,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND
+                throw HttpException(
+                    HttpStatusCode.NotFound,
+                    StatusResponse(
+                        StatusResponse.Status.ERROR,
+                        StatusResponse.StatusCode.OBJECT_NOT_FOUND
+                    ).toString()
                 )
             }
         }
