@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.4
+  version: 2.0.5
 
 servers:
   - url: "http://localhost:9987/v2"
