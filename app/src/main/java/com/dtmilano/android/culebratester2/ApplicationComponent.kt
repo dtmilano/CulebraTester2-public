@@ -41,5 +41,6 @@ interface ApplicationComponent {
     fun inject(click: UiObject2.Click)
     fun inject(dump: UiObject2.Dump)
     fun inject(setText: UiObject2.SetText)
+    fun inject(longClick: UiObject2.LongClick)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

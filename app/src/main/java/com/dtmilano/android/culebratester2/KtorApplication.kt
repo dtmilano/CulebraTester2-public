@@ -219,6 +219,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject2.LongClick> {
+                call.respond(it.response())
+            }
+
             post<UiObject2.SetText> {
                 // We have to get the body as ktor doesn't do it
                 // see https://github.com/ktorio/ktor/issues/190

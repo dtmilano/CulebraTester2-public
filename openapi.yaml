@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.5
+  version: 2.0.6
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -595,6 +595,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Selector'
+        default:
+          $ref: '#/components/responses/error'
+
+  /uiObject2/{oid}/longClick:
+    get:
+      summary: Long-clicks on the specified object.
+      description: The target object should have been found using `findObject` with a `selector`.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
 
