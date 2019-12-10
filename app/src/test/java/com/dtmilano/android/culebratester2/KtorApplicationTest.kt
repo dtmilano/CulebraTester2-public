@@ -303,6 +303,10 @@ class KtorApplicationTest {
                 "/v2/uiDevice/findObject?resourceId=$DOES_NOT_MATCH"
             ).apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    response.content
+                )
             }
             assertEquals(0, objectStore.size())
         }
@@ -317,6 +321,10 @@ class KtorApplicationTest {
                 "/v2/uiDevice/findObject?resourceId=$DOES_NOT_MATCH"
             ).apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    response.content
+                )
                 assertEquals(0, objectStore.size())
             }
         }
@@ -373,12 +381,10 @@ class KtorApplicationTest {
                     )
                 )
             }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                val statusResponse = jsonResponse<StatusResponse>()
-                assertEquals("ERROR", statusResponse.status.value)
+                assertEquals(HttpStatusCode.NotFound, response.status())
                 assertEquals(
-                    statusResponse.statusCode,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.value
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    response.content
                 )
                 assertEquals(0, objectStore.size())
             }

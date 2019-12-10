@@ -44,7 +44,10 @@ class UiDevice {
             return when (format.toUpperCase(Locale.ROOT)) {
                 "JSON" -> convertWindowHierarchyDumpToJson(output.toString())
                 "XML" -> output.toString()
-                else -> throw HttpException(HttpStatusCode.UnprocessableEntity, "Unsupported format $format")
+                else -> throw HttpException(
+                    HttpStatusCode.UnprocessableEntity,
+                    "Unsupported format $format"
+                )
             }
         }
     }
@@ -303,10 +306,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusResponse(
-                        StatusResponse.Status.ERROR,
-                        StatusResponse.StatusCode.OBJECT_NOT_FOUND
-                    ).toString()
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
                 )
             }
         }
@@ -342,9 +342,9 @@ class UiDevice {
                     return ObjectRef(oid, it.className)
                 }
 
-                return StatusResponse(
-                    StatusResponse.Status.ERROR,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND
+                throw HttpException(
+                    HttpStatusCode.NotFound,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
                 )
             }
         }
