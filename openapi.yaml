@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.6
+  version: 2.0.7
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -207,15 +207,20 @@ paths:
               `sel@[$]value,...`
 
             Where `sel` can be one of
-            -  clickable
-            -  depth
-            -  desc
-            -  res
-            -  text
-            -  scrollable
+            - clazz or className
+            - clickable
+            - depth
+            - desc
+            - index
+            - instance
+            - package
+            - parentIndex
+            - res
+            - scrollable
+            - text
 
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
-          example: 'res@com.android.calendar:id/d0_label'
+          example: 'res@com.android.calendar:id/d0_label,instance@1'
           schema:
             type: string
         - name: bySelector
@@ -226,15 +231,18 @@ paths:
               `sel@[$]value,...`
 
             Where `sel` can be one of
+            - checkable
+            - clazz
             - clickable
             - depth
             - desc
+            - package
             - res
-            - text
             - scrollable
+            - text
 
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
-          example: 'res@com.android.calendar:id/d0_label'
+          example: 'res@com.android.calendar:id/d0_label,depth@2'
           schema:
             type: string
 
@@ -294,6 +302,55 @@ paths:
         default:
           $ref: '#/components/responses/error'
 
+  /uiDevice/findObjects:
+    get:
+      summary: Finds *all* objects that match the selector criteria.
+      description: Finds an object. The object found, if any, can be later used in other call like API.click.
+      parameters:
+        - name: bySelector
+          in: query
+          description: the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met.
+            The format of the selector string is
+
+            `sel@[$]value,...`
+
+            Where `sel` can be one of
+            - checkable
+            - clazz
+            - clickable
+            - depth
+            - desc
+            - package
+            - res
+            - scrollable
+            - text
+
+            `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
+          example: 'res@com.android.calendar:id/d0_label,depth@2'
+          schema:
+            type: string
+      responses:
+        200:
+          description: Objects found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ObjectRef'
+              example: [{'oid': 1, 'className': 'android.widget.Button'}, {'oid': 2, 'className': 'android.widget.TextView'}]
+        404:
+          description: Object not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+              example:
+                status: ERROR
+                errorStatusResponse: 1001
+                errorMessage: Object not found
+        default:
+          $ref: '#/components/responses/error'
 
   /uiDevice/currentPackageName:
     get:
@@ -598,6 +655,28 @@ paths:
         default:
           $ref: '#/components/responses/error'
 
+
+  /uiObject2/{oid}/getText:
+    get:
+      summary: Gets the text content if this object is an editable field.
+      description: The target object should have been found using `findObject` with a `selector`.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Text'
+        default:
+          $ref: '#/components/responses/error'
+
   /uiObject2/{oid}/longClick:
     get:
       summary: Long-clicks on the specified object.
@@ -641,7 +720,6 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
 components:
   schemas:
     StatusResponse:
@@ -906,6 +984,15 @@ components:
           description: product name of the device
       example:
         productName: "sailfish"
+
+    Text:
+      type: object
+      properties:
+        text:
+          type: string
+          description: the text in the object
+      example:
+        text: "lorem ipsum"
 
   examples:
     windowHierarchyChild:

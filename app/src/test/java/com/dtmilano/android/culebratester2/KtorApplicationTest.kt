@@ -107,6 +107,7 @@ class KtorApplicationTest {
 
         val uiObject2 = mock<UiObject2> {
             on { className } doReturn MOCK_CLASS_NAME
+            on { text } doReturn "Hello Culebra!"
         }
 
         val uiDevice = mock<UiDevice> {
@@ -312,6 +313,35 @@ class KtorApplicationTest {
         }
     }
 
+    @Ignore
+    @Test
+    fun `test find object uiSelector selector`() {
+        withTestApplication({ module(testing = true) }) {
+            assertEquals(0, objectStore.size())
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/findObject?uiSelector=clazz@$MATCHES"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+            assertEquals(1, objectStore.size())
+        }
+    }
+
+    @Test
+    fun `test find object bySelector selector`() {
+        withTestApplication({ module(testing = true) }) {
+            assertEquals(0, objectStore.size())
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/findObject?bySelector=clazz@$MATCHES"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+            assertEquals(1, objectStore.size())
+        }
+    }
+
     @Test
     fun `test find object should not store object when not found`() {
         withTestApplication({ module(testing = true) }) {
@@ -387,6 +417,19 @@ class KtorApplicationTest {
                     response.content
                 )
                 assertEquals(0, objectStore.size())
+            }
+        }
+    }
+
+    @Test
+    fun `test get text`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/getText").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val text = jsonResponse<Text>()
+                assertEquals("Hello Culebra!", text.text)
             }
         }
     }

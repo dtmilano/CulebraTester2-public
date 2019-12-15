@@ -167,6 +167,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response(selector))
             }
 
+            get<UiDevice.FindObjects.Get> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.CurrentPackageName> {
                 call.respond(it.response())
             }
@@ -216,6 +220,10 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<UiObject2.Dump> {
+                call.respond(it.response())
+            }
+
+            get<UiObject2.GetText> {
                 call.respond(it.response())
             }
 

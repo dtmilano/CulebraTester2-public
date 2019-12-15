@@ -58,6 +58,26 @@ class UiObject2 {
         }
     }
 
+    @Location("/{oid}/getText")
+    /*inner*/ class GetText(val oid: Int) {
+        private var holder: Holder
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            DaggerApplicationComponent.create().inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): Text {
+            uiObject2(oid, objectStore)?.let { return@response Text(it.text) }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/longClick")
     /*inner*/ class LongClick(val oid: Int) {
         private var holder: Holder

@@ -350,6 +350,58 @@ class UiDevice {
         }
     }
 
+    @Location("/findObjects")
+    /*inner*/ class FindObjects {
+        /**
+         * Finds objects
+         * Finds all object matching selector. The object found, if any, can be later used in other call like API.click.
+         * @param bySelector the selectorStr sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selectorStr parameter and all other criteria for this selectorStr are met. The format of the selectorStr string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of - clickable - depth - desc - res - text - scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
+         */
+        /*inner*/ class Get(
+            val bySelector: String? = null
+        ) {
+            private var holder: Holder
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: ObjectStore
+
+            init {
+                DaggerApplicationComponent.create().inject(this)
+                holder = holderHolder.instance
+            }
+
+
+            fun response(): Any {
+                if (bySelector == null) {
+                    return StatusResponse(
+                        StatusResponse.Status.ERROR,
+                        StatusResponse.StatusCode.ARGUMENT_MISSING.value,
+                        errorMessage = "A resource Id or selector must be specified"
+                    )
+                }
+
+                bySelector.let {
+                    val bsb = bySelectorBundleFromString(it)
+                    val objs = holder.uiDevice.findObjects(bsb.selector)
+                    if (objs.isNotEmpty()) {
+                        return@response objs.map {
+                            val oid = objectStore.put(it)
+                            return ObjectRef(oid, it.className)
+                        }
+                    }
+                }
+
+                throw HttpException(
+                    HttpStatusCode.NotFound,
+                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+                )
+            }
+        }
+
+    }
+
     /**
      * Retrieves the text from the last UI traversal event received.
      * Retrieves the text from the last UI traversal event received.
@@ -379,7 +431,10 @@ class UiDevice {
             if (pressAny()) {
                 return StatusResponse.OK
             }
-            return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot press $name")
+            return StatusResponse(
+                StatusResponse.Status.ERROR,
+                errorMessage = "Cannot press $name"
+            )
         }
     }
 
