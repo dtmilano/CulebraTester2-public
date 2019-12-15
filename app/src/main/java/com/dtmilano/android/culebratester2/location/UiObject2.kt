@@ -73,7 +73,9 @@ class UiObject2 {
         }
 
         fun response(): Text {
-            uiObject2(oid, objectStore)?.let { return@response Text(it.text) }
+            uiObject2(oid, objectStore)?.let {
+                return@response Text(it.text)
+            }
             throw notFound(oid)
         }
     }
@@ -113,7 +115,10 @@ class UiObject2 {
         }
 
         fun response(text: Text): StatusResponse {
-            uiObject2(oid, objectStore)?.let { it.text = text.text; return@response StatusResponse.OK }
+            uiObject2(oid, objectStore)?.let {
+                it.text = text.text
+                return@response StatusResponse.OK
+            }
             throw notFound(oid)
         }
     }

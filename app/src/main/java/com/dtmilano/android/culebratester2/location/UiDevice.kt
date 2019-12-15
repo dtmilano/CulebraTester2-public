@@ -386,10 +386,7 @@ class UiDevice {
                     val bsb = bySelectorBundleFromString(it)
                     val objs = holder.uiDevice.findObjects(bsb.selector)
                     if (objs.isNotEmpty()) {
-                        return@response objs.map {
-                            val oid = objectStore.put(it)
-                            return ObjectRef(oid, it.className)
-                        }
+                        return@response objs.map { ObjectRef(objectStore.put(it), it.className) }
                     }
                 }
 
