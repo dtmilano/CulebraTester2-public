@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.7
+  version: 2.0.8
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -207,17 +207,17 @@ paths:
               `sel@[$]value,...`
 
             Where `sel` can be one of
-            - clazz or className
-            - clickable
-            - depth
-            - desc
-            - index
-            - instance
-            - package
-            - parentIndex
-            - res
-            - scrollable
-            - text
+             - clazz or className
+             - clickable
+             - depth
+             - desc
+             - index
+             - instance
+             - package
+             - parentIndex
+             - res
+             - scrollable
+             - text
 
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
           example: 'res@com.android.calendar:id/d0_label,instance@1'
@@ -231,15 +231,15 @@ paths:
               `sel@[$]value,...`
 
             Where `sel` can be one of
-            - checkable
-            - clazz
-            - clickable
-            - depth
-            - desc
-            - package
-            - res
-            - scrollable
-            - text
+             - checkable
+             - clazz
+             - clickable
+             - depth
+             - desc
+             - package
+             - res
+             - scrollable
+             - text
 
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
           example: 'res@com.android.calendar:id/d0_label,depth@2'
@@ -312,18 +312,18 @@ paths:
           description: the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met.
             The format of the selector string is
 
-            `sel@[$]value,...`
+              `sel@[$]value,...`
 
             Where `sel` can be one of
-            - checkable
-            - clazz
-            - clickable
-            - depth
-            - desc
-            - package
-            - res
-            - scrollable
-            - text
+             - checkable
+             - clazz
+             - clickable
+             - depth
+             - desc
+             - package
+             - res
+             - scrollable
+             - text
 
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
           example: 'res@com.android.calendar:id/d0_label,depth@2'
@@ -658,7 +658,7 @@ paths:
 
   /uiObject2/{oid}/getText:
     get:
-      summary: Gets the text content if this object is an editable field.
+      summary: Gets the text content.
       description: The target object should have been found using `findObject` with a `selector`.
       parameters:
         - name: oid

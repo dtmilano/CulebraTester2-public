@@ -13,7 +13,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 28
         versionCode 2006
-        versionName "2.0.7-alpha"
+        versionName "2.0.8-alpha"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
