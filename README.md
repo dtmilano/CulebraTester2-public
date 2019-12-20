@@ -22,7 +22,7 @@ Continue reading and see how you can run this early preview.
 # How to run CulebraTester2 ?
 1. Copy `local.properties.SAMPLE` to `local.properties` and adapt the values to your environment
 1. Build and install the APK `./culebratester2 install` (or run `./gradlew installDebug installDebugAndroidTest`)
-1. Forward the port `./culebratester2 start-server`
+1. Start server `./culebratester2 start-server`
 1. Open http://localhost:9987/ with a browser or `curl` 
 1. You should see `CulebraTester2: Go to http://localhost:<port>/help for usage details.`
 1. If the previous request worked, you can try something more ambitious as http://localhost:9987/v2/uiDevice/screenshot
