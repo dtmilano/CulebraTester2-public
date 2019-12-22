@@ -184,6 +184,15 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test culebra info`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/culebra/info").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
     fun testJsonGson() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/json/gson").apply {

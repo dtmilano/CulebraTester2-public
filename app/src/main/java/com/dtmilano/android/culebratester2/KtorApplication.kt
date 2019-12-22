@@ -109,6 +109,10 @@ fun Application.module(testing: Boolean = false) {
 
         route("/v2") {
 
+            get<Culebra.Info> {
+                call.respond(it.response())
+            }
+
             get<Culebra.Help> {
                 call.respond(it.response())
             }
