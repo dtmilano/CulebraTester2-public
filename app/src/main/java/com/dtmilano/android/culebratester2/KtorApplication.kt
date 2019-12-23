@@ -203,6 +203,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiDevice.PressRecentApps> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.ProductName> {
                 call.respond(it.response())
             }

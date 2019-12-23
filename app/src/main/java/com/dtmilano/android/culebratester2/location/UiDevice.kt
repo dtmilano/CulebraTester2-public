@@ -563,6 +563,29 @@ class UiDevice {
     }
 
     /**
+     * Simulates a short press on the Recent Apps button.
+     * Simulates a short press on the Recent Apps button.
+     */
+    @Location("/pressRecentApps")
+    /*inner*/ class PressRecentApps {
+        private var holder: Holder
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            DaggerApplicationComponent.create().inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            return pressKeyResponse(holder.uiDevice::pressRecentApps, "RECENT_APPS")
+        }
+    }
+
+    /**
      * Retrieves the product name of the device.
      * Retrieves the product name of the device.
      */

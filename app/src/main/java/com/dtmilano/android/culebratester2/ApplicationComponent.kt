@@ -44,5 +44,6 @@ interface ApplicationComponent {
     fun inject(longClick: UiObject2.LongClick)
     fun inject(get: UiDevice.FindObjects.Get)
     fun inject(getText: UiObject2.GetText)
+    fun inject(pressRecentApps: UiDevice.PressRecentApps)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

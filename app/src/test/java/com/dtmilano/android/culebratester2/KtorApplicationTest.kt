@@ -127,6 +127,7 @@ class KtorApplicationTest {
             on { pressDelete() } doReturn true
             on { pressHome() } doReturn true
             on { pressKeyCode(anyInt(), anyInt()) } doReturn true
+            on { pressRecentApps() } doReturn true
             on { takeScreenshot(any(), any(), any()) } doReturn true
         }
 
@@ -663,6 +664,17 @@ class KtorApplicationTest {
     fun `test press key code`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/pressKeyCode?keyCode=10").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press recent app`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressRecentApps").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val statusResponse = jsonResponse<StatusResponse>()
                 assertEquals("OK", statusResponse.status.value)

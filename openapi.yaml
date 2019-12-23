@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.8
+  version: 2.0.9
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -501,6 +501,17 @@ paths:
           $ref: '#/components/responses/error'
 
 
+  /uiDevice/pressRecentApps:
+    get:
+      summary: Simulates a short press on the Recent Apps button.
+      description: Simulates a short press on the Recent Apps button.
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
+
   /uiDevice/waitForIdle:
     get:
       summary: Waits for the current application to idle.
@@ -526,7 +537,7 @@ paths:
       description:  If a package name for the window is specified, but the current window does not have the same package name, the function returns immediately.
       parameters:
         - name: packageName
-          description: the specified window package name (can be null). If null, a window update from any front-end window will end the wait
+          description: the specified window package name (can be null or not present). If null, a window update from any front-end window will end the wait
           in: query
           required: false
           schema:
