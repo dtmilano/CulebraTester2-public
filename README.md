@@ -22,7 +22,9 @@ Continue reading and see how you can run this early preview.
 # How to run CulebraTester2 ?
 1. Copy `local.properties.SAMPLE` to `local.properties` and adapt the values to your environment
 1. Have you device or emulator connected to `adb`
-1. Build and install the APK `./culebratester2 install` (or run `./gradlew installDebug installDebugAndroidTest`)
+1. Install APKs
+   1. Build and install `./culebratester2 install` (or run `./gradlew installDebug installDebugAndroidTest`)
+   1. or downalod prebuilt **app** and **instrumentation** APKs from [Github Actions](https://github.com/dtmilano/CulebraTester2-public/actions)
 1. Start server `./culebratester2 start-server`
 1. Open http://localhost:9987/ with a browser or `curl` 
 1. You should see `CulebraTester2: Go to http://localhost:<port>/help for usage details.`
