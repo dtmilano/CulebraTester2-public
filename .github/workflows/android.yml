@@ -20,5 +20,8 @@ jobs:
       with:
         name: app
         path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Upload Instrumentation    
+      uses: actions/upload-artifact@v1
+      with:
         name: instrumentation
         path: app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
