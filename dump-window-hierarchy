@@ -1,0 +1,32 @@
+#! /bin/bash
+#
+# prerequisites:
+# - adb finds and list the device
+# - APKs installed (./culebratester2 install)
+# - ./culebratester2 start-server
+# - jq installed (https://stedolan.github.io/jq/) if JSON used
+#
+
+set -e
+set +x
+
+base_url=http://localhost:9987/v2/
+
+do_curl() {
+    curl -sf -H "accept: application/$format" -H "Content-Type: application/json" "$@"
+}
+
+if [[ $1 == '-x' ]]
+then
+    shift
+    set -x
+fi
+
+# If there is an argument it should be the format: JSON or XML
+case $# in
+    0) format=JSON; formatter=jq;;
+    1) format="$1"; formatter=cat;;
+    *) printf 'ERROR\n';;
+esac
+
+do_curl -X GET "${base_url}/uiDevice/dumpWindowHierarchy?format=$format" | $formatter
