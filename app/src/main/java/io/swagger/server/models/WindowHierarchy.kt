@@ -10,10 +10,11 @@
 * Do not edit the class manually.
 */package io.swagger.server.models
 
-import io.swagger.server.models.WindowHierarchyChild
-
 /**
  *  * @param id  * @param text  * @param children */
-data class WindowHierarchy (    val id: kotlin.String? = null,    val text: kotlin.String? = null,    val children: kotlin.Array<WindowHierarchyChild>? = null
-) {
-}
+data class WindowHierarchy(
+    val id: kotlin.String? = null,
+    val text: kotlin.String? = null,
+    val timestamp: String? = null,
+    val children: kotlin.Array<WindowHierarchyChild>? = null
+)

@@ -10,6 +10,8 @@ import org.xml.sax.helpers.DefaultHandler
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.StringWriter
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
 import javax.xml.parsers.ParserConfigurationException
@@ -179,6 +181,8 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
                 mJsonWriter!!.beginObject()
                 mJsonWriter!!.name("id")?.value("hierarchy")
                 mJsonWriter!!.name("text")?.value("Window Hierarchy")
+                val timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+                mJsonWriter!!.name("timestamp")?.value(timestamp)
                 mJsonWriter!!.name("children")
                 mJsonWriter!!.beginArray()
                 mUniqueId = 0

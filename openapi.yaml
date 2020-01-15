@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.9
+  version: 2.0.10
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -939,6 +939,8 @@ components:
           type: string
         text:
           type: string
+        timestamp:
+          type: string
         children:
           type: array
           items:
@@ -946,6 +948,7 @@ components:
       example:
         id: "hierarchy"
         text: "Window Hierarchy"
+        timestamp: "2020-01-15T06:11:10Z"
         children:
           - $ref: '#/components/examples/windowHierarchyChild'
 
