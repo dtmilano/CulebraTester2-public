@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 private const val TAG = "UiDevice"
 private const val REMOVE_TEMP_FILE_DELAY = 2000L
@@ -115,7 +116,7 @@ class UiDevice {
         fun response(): StatusResponse {
             //Log.d("UiDevice", "clicking on ($x,$y)")
             if (holder.uiDevice.click(x, y)) {
-                return StatusResponse(StatusResponse.Status.OK)
+                return StatusResponse.OK
             }
             return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot click")
         }
@@ -605,6 +606,73 @@ class UiDevice {
 
         fun response(): io.swagger.server.models.ProductName {
             return ProductName(holder.uiDevice.productName)
+        }
+    }
+
+    /**
+     * Performs a swipe.
+     */
+    @Location("/swipe")
+    /*inner*/ class Swipe {
+
+        /**
+         * Performs a swipe from one coordinate to another using the number of steps to determine
+         * smoothness and speed. Each step execution is throttled to 5ms per step. So for a 100 steps,
+         * the swipe will take about 1/2 second to complete.
+         */
+        class Get(val startX: Int, val startY: Int, val endX: Int, val endY: Int, val steps: Int) {
+            private var holder: Holder
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: ObjectStore
+
+            init {
+                DaggerApplicationComponent.create().inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(): StatusResponse {
+                //Log.d("UiDevice", "clicking on ($x,$y)")
+                if (holder.uiDevice.swipe(startX, startY, endX, endY, steps)) {
+                    return StatusResponse(StatusResponse.Status.OK)
+                }
+                return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot swipe")
+            }
+        }
+
+        /**
+         * Performs a swipe between points in the Point array. Each step execution is throttled to
+         * 5ms per step. So for a 100 steps, the swipe will take about 1/2 second to complete
+         */
+        // WARNING: ktor is not passing this argument so the '?' and null are needed
+        // see https://github.com/ktorio/ktor/issues/190
+        /*inner*/ class Post(val body: SwipeBody? = null) {
+            private var holder: Holder
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: ObjectStore
+
+            init {
+                DaggerApplicationComponent.create().inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(body: SwipeBody): Any {
+                val list = ArrayList<android.graphics.Point>()
+                body.segments?.forEach {
+                    list.add(android.graphics.Point(it.x!!, it.y!!))
+                }
+                val segments = arrayOfNulls<android.graphics.Point>(list.size)
+                list.toArray(segments)
+                if (holder.uiDevice.swipe(segments, body.segmentSteps!!)) {
+                    return StatusResponse.OK
+                }
+                return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot swipe")
+            }
         }
     }
 

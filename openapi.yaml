@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.10
+  version: 2.0.11
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -512,6 +512,73 @@ paths:
           $ref: '#/components/responses/error'
 
 
+  /uiDevice/swipe:
+    get:
+      summary: Performs a swipe.
+      description: Performs a swipe from one coordinate to another using the number of steps to determine smoothness and speed. Each step execution is throttled to 5ms per step. So for a 100 steps, the swipe will take about 1/2 second to complete.
+      parameters:
+        - name: startX
+          description: from x
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: startY
+          description: from y
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: endX
+          description: to x
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: endY
+          description: end y
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: steps
+          description: is the number of move steps sent to the system
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+    post:
+      summary: Performs a swipe between points in the Point array.
+      description: Each step execution is throttled to 5ms per step. So for a 100 steps, the swipe will take about 1/2 second to complete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                segments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Point'
+                segmentSteps:
+                  type: integer
+                  minimum: 0
+      responses:
+        200:
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+
   /uiDevice/waitForIdle:
     get:
       summary: Waits for the current application to idle.
@@ -989,6 +1056,14 @@ components:
           type: string
       required:
         - oid
+
+    Point:
+      type: object
+      properties:
+        x:
+          type: integer
+        y:
+          type: integer
 
     ProductName:
       type: object

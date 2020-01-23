@@ -28,6 +28,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.ShutDownUrl
 import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.Selector
+import io.swagger.server.models.SwipeBody
 import io.swagger.server.models.Text
 import java.io.File
 
@@ -213,6 +214,19 @@ fun Application.module(testing: Boolean = false) {
 
             get<UiDevice.Screenshot> {
                 call.respondImage(it.response())
+            }
+
+            get<UiDevice.Swipe.Get> {
+                call.respond(it.response())
+            }
+
+            post<UiDevice.Swipe.Post> {
+                // We have to get the body as ktor doesn't do it
+                // see https://github.com/ktorio/ktor/issues/190
+                // also, it.body is null here
+                // println("body ${it.body}");
+                val body = call.receive<SwipeBody>()
+                call.respond(it.response(body))
             }
 
             get<UiDevice.WaitForIdle> {

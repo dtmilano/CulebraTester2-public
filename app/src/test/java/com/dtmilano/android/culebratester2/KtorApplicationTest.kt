@@ -473,6 +473,40 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test swipe`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/swipe?startX=0&startY=0&endX=100&endY=100&steps=10"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test swipe post`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/swipe") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        SwipeBody(
+                            arrayOf(
+                                io.swagger.server.models.Point(0, 0),
+                                io.swagger.server.models.Point(5, 5),
+                                io.swagger.server.models.Point(10, 10)
+                            ), 10
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
     fun `test obtain screenshot with params`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/screenshot?scale=0.5&quality=50").apply {

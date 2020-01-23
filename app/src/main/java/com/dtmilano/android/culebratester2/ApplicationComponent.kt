@@ -45,5 +45,7 @@ interface ApplicationComponent {
     fun inject(get: UiDevice.FindObjects.Get)
     fun inject(getText: UiObject2.GetText)
     fun inject(pressRecentApps: UiDevice.PressRecentApps)
+    fun inject(get: UiDevice.Swipe.Get)
+    fun inject(post: UiDevice.Swipe.Post)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }
