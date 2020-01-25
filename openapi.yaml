@@ -16,7 +16,7 @@ info:
 
     then you will be able to invoke the API and see the responses.
 
-  version: 2.0.11
+  version: 2.0.12
 
 servers:
   - url: "http://localhost:9987/v2"
@@ -561,18 +561,11 @@ paths:
       summary: Performs a swipe between points in the Point array.
       description: Each step execution is throttled to 5ms per step. So for a 100 steps, the swipe will take about 1/2 second to complete
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                segments:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Point'
-                segmentSteps:
-                  type: integer
-                  minimum: 0
+              $ref: '#/components/schemas/SwipeBody'
       responses:
         200:
           $ref: '#/components/responses/ok'
@@ -1082,6 +1075,17 @@ components:
           description: the text in the object
       example:
         text: "lorem ipsum"
+
+    SwipeBody:
+      type: object
+      properties:
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Point'
+        segmentSteps:
+          type: integer
+          minimum: 0
 
   examples:
     windowHierarchyChild:
