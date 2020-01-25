@@ -21,10 +21,21 @@ _help() {
     exit 0
 }
 
+check_installed() {
+    n=$(adb shell pm list packages | grep -c com.dtmilano.android.culebratester2)
+    if (( n != 2 ))
+    then
+        printf '%s%s: ⛔️ app and instrumentation apks should be installed.\n%s' "$red" "$progname" "$sgr0" >&2
+        exit 1
+    fi
+}
+
 progname="$(basename $0)"
 port=9987
 smul=$(tput smul)
 rmul=$(tput rmul)
+red=$(tput setaf 1)
+sgr0=$(tput sgr0)
 printf -v usage 'usage: %s [-h|--help] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall}\n' "$progname" \
         "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
 
@@ -46,6 +57,7 @@ then
             ;;
 
         start-server|s)
+            check_installed
             $0 forward-port && $0 run-instrumentation
             ;;
 
