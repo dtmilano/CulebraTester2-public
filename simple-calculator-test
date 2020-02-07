@@ -17,7 +17,7 @@ set +x
 base_url=http://localhost:9987/v2/
 
 do_curl() {
-    curl -sf -H "accept: application/json" -H "Content-Type: application/json" "$@"
+    curl -s -H "accept: application/json" -H "Content-Type: application/json" "$@"
 }
 
 if [[ $1 == '-x' ]]
@@ -26,18 +26,20 @@ then
     set -x
 fi
 
-# start calculator
+# start activity
 pkg='com.google.android.calculator'
 cls='com.android.calculator2.Calculator'
-do_curl -X GET "${base_url}/targetContext/startActivity?pkg=${pkg}&cls=${cls}" >/dev/null
+
+status=$(do_curl -X GET --output /dev/stderr -w '%{http_code}' "${base_url}/targetContext/startActivity?pkg=${pkg}&cls=${cls}")
+[[ "$status" =~ 2.. ]] || exit 1
 
 # digit to click
 digit=${1:-${RANDOM:1:1}}
 
 # find the button
 sleep 2
-oid=$(do_curl -X POST "${base_url}/uiDevice/findObject" \
+oid=$(do_curl -f -X POST "${base_url}/uiDevice/findObject" \
     -d "{'clazz': 'android.widget.Button', 'text':'${digit}'}" | jq .oid)
 
 # click it
-do_curl -X GET "${base_url}/uiObject2/${oid}/click" >/dev/null
+do_curl -f -X GET "${base_url}/uiObject2/${oid}/click" >/dev/null
