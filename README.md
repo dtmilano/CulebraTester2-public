@@ -49,6 +49,14 @@ The script [simple-calculator-test](https://github.com/dtmilano/CulebraTester2-p
 - finding one of the digit Buttons, can be specified or a random one is slected
 - clicking on that Button
 
+# UI
+We mentioned **CulebraTester2** provides an API that facilitates the creation of test automation tools and UI's.
+
+Here we are, this is in the making.
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=prE0aKoMLfc" target="_blank"><img src="http://img.youtube.com/vi/prE0aKoMLfc/0.jpg" 
+alt="CulebraTester2-ui preview" width="560" height="315" border="1" /></a>
+
 # Communication
 Found issues? Use https://github.com/dtmilano/CulebraTester2-public/issues
 
