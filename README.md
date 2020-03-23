@@ -55,7 +55,7 @@ We mentioned **CulebraTester2** provides an API that facilitates the creation of
 Here we are, this is in the making.
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=prE0aKoMLfc" target="_blank"><img src="http://img.youtube.com/vi/prE0aKoMLfc/0.jpg" 
-alt="CulebraTester2-ui preview" width="560" height="315" border="1" /></a>
+alt="CulebraTester2-ui preview" width="560" height="395" border="1" /></a>
 
 # Communication
 Found issues? Use https://github.com/dtmilano/CulebraTester2-public/issues
