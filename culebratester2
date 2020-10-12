@@ -7,6 +7,11 @@ usage() {
     exit 1
 }
 
+fatal() {
+    printf '⛔️ %sERROR: %s%s\n' "$red" "$@" "$sgr0" >&2
+    exit 1
+}
+
 _help() {
     printf '%s' "$usage"
     printf '\n'
@@ -22,11 +27,10 @@ _help() {
 }
 
 check_installed() {
-    n=$(adb shell pm list packages | grep -c com.dtmilano.android.culebratester2)
+    n=$(adb $D shell pm list packages | grep -c com.dtmilano.android.culebratester2)
     if (( n != 2 ))
     then
-        printf '%s%s: ⛔️ app and instrumentation apks should be installed.\n%s' "$red" "$progname" "$sgr0" >&2
-        exit 1
+        fatal 'app and instrumentation apks should be installed.'
     fi
 }
 
@@ -46,13 +50,19 @@ then
         _help
     fi
 
+    if ! which -s android-select-device
+    then
+       fatal 'Missing "android-select-device". Install from https://gist.github.com/dtmilano/4537110'
+    fi
+    [[ -z "${D+X}" ]] && export D=$(android-select-device)
+
     case "$1" in
         forward-port|f)
-            adb forward tcp:$port tcp:$port
+            adb $D forward tcp:$port tcp:$port
             ;;
 
         run-instrumentation|r)
-            adb shell am instrument -w -r -e debug false -e class 'com.dtmilano.android.culebratester2.UiAutomatorHelper' \
+            adb $D shell am instrument -w -r -e debug false -e class 'com.dtmilano.android.culebratester2.UiAutomatorHelper' \
                 com.dtmilano.android.culebratester2.test/androidx.test.runner.AndroidJUnitRunner
             ;;
 
