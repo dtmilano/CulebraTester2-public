@@ -36,6 +36,37 @@ Continue reading and see how you can run this early preview.
 # AndroidViewClient
 **CulebraTester2** is a new backend for [AndroidViewClient/culebra](https://github.com/dtmilano/AndroidViewClient).
 
+It can be used like other backends, in this case you have to specify the command option
+
+```
+-h, --use-uiautomator-helper     use UiAutomatorHelper Android app
+```
+
+for example
+
+```
+$ dump -ah emulator-5554 | jq
+⚠️ CulebraTester2 server should have been started and port redirected.
+{
+  "id": "hierarchy",
+  "text": "Window Hierarchy",
+  "timestamp": "2020-10-12T02:18:45.639Z",
+  "children": [
+    {
+      "id": 0,
+      "parent": -1,
+      "text": "",
+      "package": "com.android.systemui",
+      "checkable": false,
+      "clickable": false,
+      "index": 0,
+      "content_description": "",
+      "focusable": false,
+    ...
+```
+
+or set `useuiautomatorhelper=true` when you create a `ViewClient` object.
+
 # culebra
 **CulebraTester2** is a new implementation in Kotlin of [culebra](culebra.dtmilano.com).
 
