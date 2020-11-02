@@ -7,13 +7,13 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.dtmilano.android.culebratester2"
         minSdkVersion 26
-        targetSdkVersion 28
-        versionCode 20012
-        versionName "2.0.12-alpha"
+        targetSdkVersion 30
+        versionCode 20013
+        versionName "2.0.13-alpha"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
