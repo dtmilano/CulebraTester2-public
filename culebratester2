@@ -2,6 +2,10 @@
 #
 # This can be executed remotely via
 #
+# bash <(curl -sL https://git.io/JT5nc) [opts...] [args...]
+#
+# or without the shortened url
+#
 # bash <(curl -s https://raw.githubusercontent.com/dtmilano/CulebraTester2-public/master/culebratester2) [opts...] [args...]
 #
 
