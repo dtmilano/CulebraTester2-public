@@ -6,4 +6,11 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="skip">Skip</string>
+    <string name="title_activity_onboarding">Onboarding</string>
+    <string name="onboarding_text">Connect to your device to blah, blah, blah...</string>
+    <string name="todo">TODO</string>
+    <string name="msg_instrumentation_not_installed">Instrumentation not installed</string>
+    <string name="action_install">Install</string>
+    <string name="main_message_default" />
+    <string name="msg_instrumentation_installed">Instrumentation installed</string>
 </resources>

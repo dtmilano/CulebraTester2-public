@@ -1,4 +1,9 @@
 #! /bin/bash
+#
+# This can be executed remotely via
+#
+# bash <(curl -s https://raw.githubusercontent.com/dtmilano/CulebraTester2-public/master/culebratester2) [opts...] [args...]
+#
 
 set -u
 
@@ -34,7 +39,22 @@ check_installed() {
     fi
 }
 
-progname="$(basename $0)"
+forward_port() {
+    adb $D forward tcp:$port tcp:$port
+}
+
+run_instrumentation() {
+    adb $D shell am instrument -w -r -e debug false -e class 'com.dtmilano.android.culebratester2.UiAutomatorHelper' \
+                com.dtmilano.android.culebratester2.test/androidx.test.runner.AndroidJUnitRunner
+
+}
+
+if [[ "$0" =~ ^/dev/fd ]]
+then
+    progname='culebratester2'
+else
+    progname="$(basename $0)"
+fi
 port=9987
 smul=$(tput smul)
 rmul=$(tput rmul)
@@ -58,17 +78,16 @@ then
 
     case "$1" in
         forward-port|f)
-            adb $D forward tcp:$port tcp:$port
+            forward_port
             ;;
 
         run-instrumentation|r)
-            adb $D shell am instrument -w -r -e debug false -e class 'com.dtmilano.android.culebratester2.UiAutomatorHelper' \
-                com.dtmilano.android.culebratester2.test/androidx.test.runner.AndroidJUnitRunner
+            run_instrumentation
             ;;
 
         start-server|s)
             check_installed
-            $0 forward-port && $0 run-instrumentation
+            forward_port && run_instrumentation
             ;;
 
         install|i)

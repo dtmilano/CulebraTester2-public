@@ -11,8 +11,8 @@ class CulebraTesterApplication : Application() {
         /**
          * Preferences store whether the welcome activity was showed.
          */
-        const val PREFERENCE_WELCOME_SHOWED =
-            "com.dtmilano.android.culebratester2.PREFERENCE_WELCOME_SHOWED"
+        const val PREFERENCE_ONBOARDING_SHOWED =
+            "com.dtmilano.android.culebratester2.PREFERENCE_ONBOARDING_SHOWED"
 
         /**
          * Gets the default shared preferences for this application.
