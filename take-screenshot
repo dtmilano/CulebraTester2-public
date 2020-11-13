@@ -1,0 +1,23 @@
+#! /bin/bash
+#
+# Very fast way of obtaining device screenshots.
+#
+# prerequisites:
+# - adb finds and list the device
+# - ./culebratester2 start-server
+#
+
+set -e
+set +x
+
+base_url=http://localhost:9987/v2/
+
+do_curl() {
+    curl -sf -H 'accept: image/png' -H 'Content-Type: application/json' "$@"
+}
+
+[[ $1 == '-x' ]] && { opt=-v; set -x; }
+
+temp=$(mktemp -t culebra).png
+do_curl -X GET "${base_url}/uiDevice/screenshot" $opt > "$temp" && \
+    printf '🌄 Image in file://%s\n' "$temp"
