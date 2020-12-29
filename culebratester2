@@ -74,7 +74,7 @@ then
         _help
     fi
 
-    if ! which -s android-select-device
+    if ! which android-select-device >/dev/null
     then
        fatal 'Missing "android-select-device". Install from https://gist.github.com/dtmilano/4537110'
     fi
