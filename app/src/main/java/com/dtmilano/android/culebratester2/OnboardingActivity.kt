@@ -1,6 +1,5 @@
 package com.dtmilano.android.culebratester2
 
-import androidx.appcompat.app.AppCompatActivity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -8,18 +7,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_welcome.*
+import androidx.appcompat.app.AppCompatActivity
+import com.dtmilano.android.culebratester2.databinding.ActivityOnboardingBinding
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 class OnboardingActivity : AppCompatActivity() {
-    private lateinit var fullscreenContent: View
-    private lateinit var fullscreenContentControls: LinearLayout
+    private lateinit var onboarding: ActivityOnboardingBinding
+
+    //private lateinit var fullscreenContent: View
+    //private lateinit var fullscreenContentControls: LinearLayout
     private val hideHandler = Handler()
 
     @SuppressLint("InlinedApi")
@@ -29,7 +28,7 @@ class OnboardingActivity : AppCompatActivity() {
         // Note that some of these constants are new as of API 16 (Jelly Bean)
         // and API 19 (KitKat). It is safe to use them, as they are inlined
         // at compile-time and do nothing on earlier devices.
-        fullscreenContent.systemUiVisibility =
+        onboarding.fullscreenContent.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LOW_PROFILE or
                     View.SYSTEM_UI_FLAG_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
@@ -40,7 +39,7 @@ class OnboardingActivity : AppCompatActivity() {
     private val showPart2Runnable = Runnable {
         // Delayed display of UI elements
         supportActionBar?.show()
-        fullscreenContentControls.visibility = View.VISIBLE
+        onboarding.fullscreenContentControls.visibility = View.VISIBLE
     }
     private var isFullscreen: Boolean = false
 
@@ -67,16 +66,20 @@ class OnboardingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_onboarding)
+        onboarding = ActivityOnboardingBinding.inflate(layoutInflater)
+        val view = onboarding.root
+        setContentView(view)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         isFullscreen = true
 
         // Set up the user interaction to manually show or hide the system UI.
-        fullscreenContent = findViewById(R.id.fullscreen_content)
-        fullscreenContent.setOnClickListener { toggle() }
+        //fullscreenContent = findViewById(R.id.fullscreen_content)
+        //fullscreenContent.setOnClickListener { toggle() }
+        onboarding.fullscreenContent.setOnClickListener { toggle() }
 
-        fullscreenContentControls = findViewById(R.id.fullscreen_content_controls)
+        //fullscreenContentControls = findViewById(R.id.fullscreen_content_controls)
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
@@ -84,7 +87,7 @@ class OnboardingActivity : AppCompatActivity() {
         //findViewById<Button>(R.id.dummy_button).setOnTouchListener(delayHideTouchListener)
 
         // Finish when Skip is clicked
-        skip_button.setOnClickListener { finish(); MainActivity.start(this) }
+        onboarding.skipButton.setOnClickListener { finish(); MainActivity.start(this) }
 
         LauncherActivity.onboardingShowed(this)
     }
@@ -109,7 +112,7 @@ class OnboardingActivity : AppCompatActivity() {
     private fun hide() {
         // Hide UI first
         supportActionBar?.hide()
-        fullscreenContentControls.visibility = View.GONE
+        onboarding.fullscreenContentControls.visibility = View.GONE
         isFullscreen = false
 
         // Schedule a runnable to remove the status and navigation bar after a delay
@@ -119,7 +122,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun show() {
         // Show the system bar
-        fullscreenContent.systemUiVisibility =
+        onboarding.fullscreenContent.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         isFullscreen = true

@@ -1,6 +1,6 @@
 package com.dtmilano.android.culebratester2.location
 
-import com.dtmilano.android.culebratester2.DaggerApplicationComponent
+import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.ObjectStore
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
@@ -15,7 +15,7 @@ class ObjectStore {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
         }
 
         fun response(): Any {

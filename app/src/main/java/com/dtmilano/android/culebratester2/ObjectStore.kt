@@ -1,6 +1,5 @@
 package com.dtmilano.android.culebratester2
 
-import dagger.Component
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -11,7 +10,6 @@ import javax.inject.Singleton
 @Singleton
 //class ObjectStore private constructor() {
 class ObjectStore @Inject constructor() {
-
     private val nextOid: Int
         get() = try {
             objectMap.lastKey()

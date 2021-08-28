@@ -1,23 +1,24 @@
 package io.ktor.swagger.experimental
 
 import com.fasterxml.jackson.module.kotlin.*
-import kotlin.coroutines.*
-import kotlin.coroutines.intrinsics.*
-import kotlinx.coroutines.*
 import io.ktor.application.*
-import io.ktor.auth.authenticate
+import io.ktor.auth.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.response.*
+import io.ktor.client.statement.*
 import io.ktor.content.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
+import kotlinx.coroutines.*
 import java.lang.reflect.*
 import java.lang.reflect.Type
+import kotlin.coroutines.*
+import kotlin.coroutines.intrinsics.*
 
 class HttpException(val code: HttpStatusCode, val description: String = code.description) : RuntimeException(description)
 
@@ -25,18 +26,16 @@ fun httpException(code: HttpStatusCode, message: String = code.description): Not
 fun httpException(code: Int, message: String = "Error $code"): Nothing = throw HttpException(HttpStatusCode(code, message))
 @Suppress("unused")
 inline fun <T> T.verifyParam(name: String, callback: (T) -> Boolean): T {
-    if (!callback(this)) throw IllegalArgumentException("$name"); return this
+    if (!callback(this)) throw IllegalArgumentException(name); return this
 }
 
 inline fun <T> T.checkRequest(cond: Boolean, callback: () -> String) {
     if (!cond) httpException(HttpStatusCode.BadRequest, callback())
 }
 
-interface SwaggerBaseApi {
-}
+interface SwaggerBaseApi
 
-interface SwaggerBaseServer {
-}
+interface SwaggerBaseServer
 
 class ApplicationCallContext(val call: ApplicationCall) : CoroutineContext.Element {
     object KEY : CoroutineContext.Key<ApplicationCallContext>
@@ -88,7 +87,7 @@ fun <T : SwaggerBaseApi> createClient(clazz: Class<T>, client: HttpClient, rootU
             launch {
                 try {
                     val fullUrl = "$rootUrlTrim/$pathReplaced"
-                    val res = client.call(fullUrl) {
+                    val res = client.request<HttpStatement>(fullUrl) {
                         this.method = HttpMethod(info.httpMethod)
                         val body = linkedMapOf<String, Any?>()
                         val formData = linkedMapOf<String, Any?>()
@@ -98,21 +97,29 @@ fun <T : SwaggerBaseApi> createClient(clazz: Class<T>, client: HttpClient, rootU
                                 Source.HEADER -> header(param.name, "${param.value}")
                                 Source.BODY -> body[param.name] = param.value
                                 Source.FORM_DATA -> formData[param.name] = param.value
+                                Source.PATH -> { /* do nothing for now */
+                                }
                             }
                         }
                         if (body.isNotEmpty()) {
                             this.contentType(io.ktor.http.ContentType.Application.Json)
-                            this.body = ByteArrayContent(Json.stringify(body).toByteArray(Charsets.UTF_8))
+                            this.body =
+                                ByteArrayContent(Json.stringify(body).toByteArray(Charsets.UTF_8))
                         }
                         if (formData.isNotEmpty()) {
                             this.contentType(io.ktor.http.ContentType.Application.FormUrlEncoded)
-                            this.body = ByteArrayContent(formData.map { it.key to it.value.toString() }.formUrlEncode().toByteArray(Charsets.UTF_8))
+                            this.body =
+                                ByteArrayContent(formData.map { it.key to it.value.toString() }
+                                    .formUrlEncode().toByteArray(Charsets.UTF_8))
                         }
                     }
-                    if (res.response.status.value < 400) {
-                        cont.resume(Json.parse(res.response.readText(), realReturnType))
+                    if (res.execute().status.value < 400) {
+                        cont.resume(Json.parse(res.execute().readText(), realReturnType))
                     } else {
-                        throw HttpExceptionWithContent(res.response.status, res.response.readText())
+                        throw HttpExceptionWithContent(
+                            res.execute().status,
+                            res.execute().readText()
+                        )
                     }
                 } catch (e: Throwable) {
                     cont.resumeWithException(e)
@@ -302,7 +309,7 @@ val java.lang.Class<*>.allTypes: Set<Class<*>>
         val types = LinkedHashSet<Class<*>>()
         val explore = arrayListOf(this)
         while (explore.isNotEmpty()) {
-            val item = explore.removeAt(explore.size - 1) ?: continue
+            val item = explore.removeAt(explore.size - 1)
             types += item
             explore += item.superclass
             explore += item.interfaces

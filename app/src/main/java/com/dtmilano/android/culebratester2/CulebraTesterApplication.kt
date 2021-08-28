@@ -4,7 +4,10 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import dagger.hilt.android.HiltAndroidApp
+import io.ktor.locations.*
 
+@HiltAndroidApp
 class CulebraTesterApplication : Application() {
     companion object {
 
@@ -25,5 +28,17 @@ class CulebraTesterApplication : Application() {
         }
     }
 
-    val appComponent = DaggerApplicationComponent.create()
+    // Instance of the ApplicationComponent that will be used by all the Activities in the project
+    @KtorExperimentalLocationsAPI
+    val appComponent: ApplicationComponent by lazy {
+        initializeComponent()
+    }
+
+    @KtorExperimentalLocationsAPI
+    fun initializeComponent(): ApplicationComponent {
+        // Creates an instance of ApplicationComponent using its factory method
+        // We pass the applicationContext that will be used as Context in the graph
+        //return DaggerApplicationComponent.factory().create(applicationContext)
+        return DaggerApplicationComponent.factory().create()
+    }
 }

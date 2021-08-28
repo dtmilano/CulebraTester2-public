@@ -12,6 +12,14 @@ import javax.inject.Singleton
 @Singleton
 @Component
 interface ApplicationComponent {
+    // Factory to create instances of the ApplicationComponent
+    @Component.Factory
+    interface Factory {
+        // With @BindsInstance, the Context passed in will be available in the graph
+        //fun create(@BindsInstance context: Context): ApplicationComponent
+        fun create(): ApplicationComponent
+    }
+
     fun holder(): HolderHolder
     fun objectStore(): ObjectStore
     fun inject(objectStore: com.dtmilano.android.culebratester2.location.ObjectStore)

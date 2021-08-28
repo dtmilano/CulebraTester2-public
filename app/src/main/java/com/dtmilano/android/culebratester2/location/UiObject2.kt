@@ -4,10 +4,9 @@ import com.dtmilano.android.culebratester2.DaggerApplicationComponent
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.swagger.experimental.HttpException
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.swagger.experimental.*
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.Text
@@ -21,6 +20,7 @@ class UiObject2 {
     @Location("/{oid}/click")
     /*inner*/ class Click(val oid: Int) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
@@ -28,7 +28,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            DaggerApplicationComponent.factory().create().inject(this)
             holder = holderHolder.instance
         }
 
@@ -41,6 +41,7 @@ class UiObject2 {
     @Location("/{oid}/dump")
     /*inner*/ class Dump(val oid: Int) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
@@ -48,7 +49,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            DaggerApplicationComponent.factory().create().inject(this)
             holder = holderHolder.instance
         }
 
@@ -61,6 +62,7 @@ class UiObject2 {
     @Location("/{oid}/getText")
     /*inner*/ class GetText(val oid: Int) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
@@ -68,7 +70,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            DaggerApplicationComponent.factory().create().inject(this)
             holder = holderHolder.instance
         }
 
@@ -83,6 +85,7 @@ class UiObject2 {
     @Location("/{oid}/longClick")
     /*inner*/ class LongClick(val oid: Int) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
@@ -90,7 +93,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            DaggerApplicationComponent.factory().create().inject(this)
             holder = holderHolder.instance
         }
 
@@ -103,6 +106,7 @@ class UiObject2 {
     @Location("/{oid}/setText")
     /*inner*/ class SetText(val oid: Int) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
@@ -110,7 +114,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            DaggerApplicationComponent.factory().create().inject(this)
             holder = holderHolder.instance
         }
 

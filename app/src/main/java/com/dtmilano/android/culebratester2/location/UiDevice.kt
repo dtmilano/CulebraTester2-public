@@ -2,15 +2,21 @@ package com.dtmilano.android.culebratester2.location
 
 import android.util.Log
 import androidx.test.uiautomator.By
-import com.dtmilano.android.culebratester2.*
-import com.dtmilano.android.culebratester2.ObjectStore
+import com.dtmilano.android.culebratester2.CulebraTesterApplication
+import com.dtmilano.android.culebratester2.Holder
+import com.dtmilano.android.culebratester2.HolderHolder
+import com.dtmilano.android.culebratester2.convertWindowHierarchyDumpToJson
 import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
 import com.dtmilano.android.culebratester2.utils.uiSelectorBundleFromString
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.swagger.experimental.HttpException
-import io.swagger.server.models.*
+import io.swagger.server.models.DisplayRotationEnum
+import io.swagger.server.models.ObjectRef
+import io.swagger.server.models.Selector
+import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.SwipeBody
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,20 +35,21 @@ class UiDevice {
 
 
     @Location("/dumpWindowHierarchy")
-    /*inner*/ class DumpWindowHierarchy(val format: String = "JSON") {
+    /*inner*/ class DumpWindowHierarchy(private val format: String = "JSON") {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
         fun response(): String {
             val output = ByteArrayOutputStream()
             holder.uiDevice.dumpWindowHierarchy(output)
-            return when (format.toUpperCase(Locale.ROOT)) {
+            return when (format.uppercase(Locale.ROOT)) {
                 "JSON" -> convertWindowHierarchyDumpToJson(output.toString())
                 "XML" -> output.toString()
                 else -> throw HttpException(
@@ -54,16 +61,17 @@ class UiDevice {
     }
 
     @Location("/screenshot")
-    /*inner*/ class Screenshot(val scale: Float = 1.0F, val quality: Int = 90) {
+    /*inner*/ class Screenshot(private val scale: Float = 1.0F, private val quality: Int = 90) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -100,16 +108,17 @@ class UiDevice {
     }
 
     @Location("/click")
-    /*inner*/ class Click(val x: Int, val y: Int) {
+    /*inner*/ class Click(private val x: Int, private val y: Int) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -133,15 +142,15 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
         fun response(): io.swagger.server.models.CurrentPackageName {
-            return CurrentPackageName(holder.uiDevice.currentPackageName)
+            return io.swagger.server.models.CurrentPackageName(holder.uiDevice.currentPackageName)
         }
     }
 
@@ -156,16 +165,16 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
 
         fun response(): io.swagger.server.models.DisplayHeight {
-            return DisplayHeight(holder.uiDevice.displayHeight)
+            return io.swagger.server.models.DisplayHeight(holder.uiDevice.displayHeight)
         }
     }
 
@@ -180,16 +189,16 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
 
         fun response(): io.swagger.server.models.DisplayRotation {
-            return DisplayRotation(DisplayRotationEnum.of(holder.uiDevice.displayRotation))
+            return io.swagger.server.models.DisplayRotation(DisplayRotationEnum.of(holder.uiDevice.displayRotation))
         }
     }
 
@@ -204,17 +213,17 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
 
         fun response(): io.swagger.server.models.DisplaySizeDp {
             val dp = holder.uiDevice.displaySizeDp
-            return DisplaySizeDp(dp.x, dp.y)
+            return io.swagger.server.models.DisplaySizeDp(dp.x, dp.y)
         }
     }
 
@@ -229,16 +238,16 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
 
         fun response(): io.swagger.server.models.DisplayWidth {
-            return DisplayWidth(holder.uiDevice.displayWidth)
+            return io.swagger.server.models.DisplayWidth(holder.uiDevice.displayWidth)
         }
     }
 
@@ -252,19 +261,19 @@ class UiDevice {
          * @param bySelector the selectorStr sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selectorStr parameter and all other criteria for this selectorStr are met. The format of the selectorStr string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of - clickable - depth - desc - res - text - scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
          */
         /*inner*/ class Get(
-            val resourceId: String? = null,
-            val uiSelector: String? = null,
-            val bySelector: String? = null
+            private val resourceId: String? = null,
+            private val uiSelector: String? = null,
+            private val bySelector: String? = null
         ) {
             private var holder: Holder
             @Inject
             lateinit var holderHolder: HolderHolder
 
             @Inject
-            lateinit var objectStore: ObjectStore
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
             init {
-                DaggerApplicationComponent.create().inject(this)
+                CulebraTesterApplication().appComponent.inject(this)
                 holder = holderHolder.instance
             }
 
@@ -319,16 +328,17 @@ class UiDevice {
          */
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        /*inner*/ class Post(val body: Selector? = null) {
+        /*inner*/ class Post(private val body: Selector? = null) {
             private var holder: Holder
+
             @Inject
             lateinit var holderHolder: HolderHolder
 
             @Inject
-            lateinit var objectStore: ObjectStore
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
             init {
-                DaggerApplicationComponent.create().inject(this)
+                CulebraTesterApplication().appComponent.inject(this)
                 holder = holderHolder.instance
             }
 
@@ -359,17 +369,17 @@ class UiDevice {
          * @param bySelector the selectorStr sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selectorStr parameter and all other criteria for this selectorStr are met. The format of the selectorStr string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of - clickable - depth - desc - res - text - scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
          */
         /*inner*/ class Get(
-            val bySelector: String? = null
+            private val bySelector: String? = null
         ) {
             private var holder: Holder
             @Inject
             lateinit var holderHolder: HolderHolder
 
             @Inject
-            lateinit var objectStore: ObjectStore
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
             init {
-                DaggerApplicationComponent.create().inject(this)
+                CulebraTesterApplication().appComponent.inject(this)
                 holder = holderHolder.instance
             }
 
@@ -383,8 +393,8 @@ class UiDevice {
                     )
                 }
 
-                bySelector.let {
-                    val bsb = bySelectorBundleFromString(it)
+                bySelector.let { selector ->
+                    val bsb = bySelectorBundleFromString(selector)
                     val objs = holder.uiDevice.findObjects(bsb.selector)
                     if (objs.isNotEmpty()) {
                         return@response objs.map { ObjectRef(objectStore.put(it), it.className) }
@@ -411,16 +421,16 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
 
         fun response(): io.swagger.server.models.LastTraversedText {
-            return LastTraversedText(holder.uiDevice.lastTraversedText)
+            return io.swagger.server.models.LastTraversedText(holder.uiDevice.lastTraversedText)
         }
     }
 
@@ -447,10 +457,10 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -471,10 +481,10 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -495,10 +505,10 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -518,10 +528,10 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -543,10 +553,10 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -574,10 +584,10 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -597,15 +607,15 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
         fun response(): io.swagger.server.models.ProductName {
-            return ProductName(holder.uiDevice.productName)
+            return io.swagger.server.models.ProductName(holder.uiDevice.productName)
         }
     }
 
@@ -620,16 +630,23 @@ class UiDevice {
          * smoothness and speed. Each step execution is throttled to 5ms per step. So for a 100 steps,
          * the swipe will take about 1/2 second to complete.
          */
-        class Get(val startX: Int, val startY: Int, val endX: Int, val endY: Int, val steps: Int) {
+        class Get(
+            private val startX: Int,
+            private val startY: Int,
+            private val endX: Int,
+            private val endY: Int,
+            private val steps: Int
+        ) {
             private var holder: Holder
+
             @Inject
             lateinit var holderHolder: HolderHolder
 
             @Inject
-            lateinit var objectStore: ObjectStore
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
             init {
-                DaggerApplicationComponent.create().inject(this)
+                CulebraTesterApplication().appComponent.inject(this)
                 holder = holderHolder.instance
             }
 
@@ -654,10 +671,10 @@ class UiDevice {
             lateinit var holderHolder: HolderHolder
 
             @Inject
-            lateinit var objectStore: ObjectStore
+            lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
             init {
-                DaggerApplicationComponent.create().inject(this)
+                CulebraTesterApplication().appComponent.inject(this)
                 holder = holderHolder.instance
             }
 
@@ -682,16 +699,17 @@ class UiDevice {
      * @param timeout in milliseconds (optional)
      */
     @Location("/waitForIdle")
-    /*inner*/ class WaitForIdle(val timeout: Long = 10_000) {
+    /*inner*/ class WaitForIdle(private val timeout: Long = 10_000) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -710,7 +728,7 @@ class UiDevice {
      */
     @Location("/waitForWindowUpdate")
     /*inner*/ class WaitForWindowUpdate(
-        val timeout: Long,
+        private val timeout: Long,
         val packageName: String? = null
     ) {
         private var holder: Holder
@@ -718,10 +736,10 @@ class UiDevice {
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: ObjectStore
+        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 

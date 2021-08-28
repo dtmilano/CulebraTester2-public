@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  *
  */
 
-private val TAG = "SelectorUtils"
+private const val TAG = "SelectorUtils"
 private val DEBUG = BuildConfig.DEBUG
 
 fun unescapeSelectorChars(selector: String): String {

@@ -8,7 +8,6 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import com.dtmilano.android.culebratester2.location.OidObj
 import com.google.gson.Gson
-import com.nhaarman.mockitokotlin2.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -19,24 +18,33 @@ import io.swagger.server.models.*
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
+import org.junit.runner.RunWith
 import org.junit.contrib.java.lang.system.ExpectedSystemExit
+import org.junit.contrib.java.lang.system.SystemErrRule
+import org.junit.contrib.java.lang.system.SystemOutRule
 import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.robolectric.RobolectricTestRunner
 import java.io.File
 import java.io.OutputStream
 import kotlin.test.Ignore
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.text.Regex.Companion.escape
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 
 /**
  * Ktor Application Test.
  */
 @KtorExperimentalLocationsAPI
-// We don't need Robolectric to run these test for now
-//@RunWith(RobolectricTestRunner::class)
+// We need Robolectric to run these tests because some classes use Log.[we]
+@RunWith(RobolectricTestRunner::class)
 class KtorApplicationTest {
 
     companion object {
@@ -45,7 +53,7 @@ class KtorApplicationTest {
         @JvmField
         val exit: ExpectedSystemExit = ExpectedSystemExit.none()
 
-        val appComponent = DaggerApplicationComponent.create()
+        val appComponent: ApplicationComponent = DaggerApplicationComponent.create()
 
         var holder: Holder = appComponent.holder().instance
 
@@ -204,7 +212,7 @@ class KtorApplicationTest {
         }
     }
 
-    @Ignore
+    @Ignore("TODO")
     @Test
     fun `test static image`() {
         withTestApplication({ module(testing = true) }) {
@@ -255,7 +263,7 @@ class KtorApplicationTest {
             handleRequest(HttpMethod.Get, "/v2/device/displayRealSize").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val displayRealSize = jsonResponse<DisplayRealSize>()
-                assertEquals("UNKNOWN", displayRealSize.device)
+                assertEquals("robolectric", displayRealSize.device)
                 assertEquals(realSize["x"], displayRealSize.x)
                 assertEquals(realSize["y"], displayRealSize.y)
             }
@@ -323,7 +331,7 @@ class KtorApplicationTest {
         }
     }
 
-    @Ignore
+    @Ignore("TODO")
     @Test
     fun `test find object uiSelector selector`() {
         withTestApplication({ module(testing = true) }) {

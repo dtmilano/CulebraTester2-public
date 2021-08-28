@@ -17,4 +17,25 @@ import io.swagger.server.models.Point
  *  * @param segments  * @param segmentSteps */
 data class SwipeBody(
     val segments: kotlin.Array<Point>? = null, val segmentSteps: kotlin.Int? = null
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SwipeBody
+
+        if (segments != null) {
+            if (other.segments == null) return false
+            if (!segments.contentEquals(other.segments)) return false
+        } else if (other.segments != null) return false
+        if (segmentSteps != other.segmentSteps) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = segments?.contentHashCode() ?: 0
+        result = 31 * result + (segmentSteps ?: 0)
+        return result
+    }
+}

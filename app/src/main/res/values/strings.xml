@@ -13,4 +13,5 @@
     <string name="action_install">Install</string>
     <string name="main_message_default" />
     <string name="msg_instrumentation_installed">Instrumentation installed</string>
+    <string name="fab_content_description">TODO</string>
 </resources>

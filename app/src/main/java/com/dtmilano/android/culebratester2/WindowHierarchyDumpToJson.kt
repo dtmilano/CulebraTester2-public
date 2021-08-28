@@ -19,7 +19,7 @@ import javax.xml.parsers.SAXParser
 import javax.xml.parsers.SAXParserFactory
 
 
-private const val DEBUG = false
+private const val DEBUG = true
 private const val TAG = "WindowHierarchyDump"
 
 /**
@@ -37,6 +37,9 @@ fun ellipsize(s: String, max: Int = 30): String {
 fun convertWindowHierarchyDumpToJson(dump: String): String {
     if (DEBUG) {
         Log.w(TAG, "Should convert ${ellipsize(dump)} to JSON")
+        println("=================================================")
+        println("Should convert\n$dump\nto JSON")
+        println("=================================================")
     }
     // FIXME: we don't need a newInstance() every time...
     val spf = SAXParserFactory.newInstance()
@@ -53,7 +56,7 @@ fun convertWindowHierarchyDumpToJson(dump: String): String {
         throw ConvertDumpToJsonException(e)
     } catch (e: SAXException) {
         Log.e(TAG, "Exception in parser", e)
-        throw ConvertDumpToJsonException(e)
+        throw ConvertDumpToJsonException("⛔️ Exception in parser", e)
     } catch (e: IOException) {
         Log.e(TAG, "IO Error", e)
         throw ConvertDumpToJsonException(e)
@@ -93,16 +96,22 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
             Log.d(TAG, "endDocument")
         }
         super.endDocument()
+
         try {
-            mJsonWriter!!.close()
+            mJsonWriter!!.flush()
+            // WARNING: if we close here we receive an exception
+        } catch (e: IOException) {
+            throw SAXException("Closing JSON writer", e)
+        }
+
+        try {
             mWriter!!.close()
             if (DEBUG) {
                 Log.d(TAG, "JSON: ${ellipsize(mWriter.toString())}")
             }
         } catch (e: IOException) {
-            throw SAXException(e)
+            throw SAXException("Closing writer", e)
         }
-
     }
 
     @SuppressLint("LongLogTag")
@@ -271,7 +280,7 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
         }
     }
 
-    private class JsonPropertyDescription(internal var mName: String, internal var mType: String)
+    private class JsonPropertyDescription(var mName: String, var mType: String)
 
     companion object {
         /**
@@ -301,5 +310,8 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
 /**
  * Created by diego on 2015-11-05.
  */
-class ConvertDumpToJsonException(e: Throwable) : Exception(e)
+class ConvertDumpToJsonException : Exception {
+    constructor(e: Throwable) : super(e)
+    constructor(msg: String, e: Throwable) : super(msg, e)
+}
 

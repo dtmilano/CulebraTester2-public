@@ -6,24 +6,31 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.dtmilano.android.culebratester2.databinding.ActivityMainBinding
+import com.dtmilano.android.culebratester2.databinding.ContentMainBinding
 import com.dtmilano.android.culebratester2.utils.PackageUtils
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private lateinit var main: ActivityMainBinding
+    private lateinit var content: ContentMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        main = ActivityMainBinding.inflate(layoutInflater)
+        val view = main.root
+        setContentView(view)
 
-        main_message.text = getString(R.string.main_message_default)
+        setSupportActionBar(main.toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        content.mainMessage.text = getString(R.string.main_message_default)
+
+        main.fab.setOnClickListener { _view ->
+            Snackbar.make(_view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
 
@@ -56,10 +63,10 @@ class MainActivity : AppCompatActivity() {
             // Do something
             // We are resuming and instrumentation is installed, so we should start the tests, however it's not
             // possible from the Activity
-            main_message.append("\n" + getString(R.string.msg_instrumentation_installed))
+            content.mainMessage.append("\n" + getString(R.string.msg_instrumentation_installed))
         } else {
             val snackbar = Snackbar.make(
-                coordinator,
+                main.coordinator,
                 R.string.msg_instrumentation_not_installed,
                 Snackbar.LENGTH_INDEFINITE
             ).setAction(R.string.action_install) {

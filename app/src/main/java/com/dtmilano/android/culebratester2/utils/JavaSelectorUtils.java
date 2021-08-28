@@ -4,6 +4,7 @@ package com.dtmilano.android.culebratester2.utils;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
 import androidx.test.uiautomator.Direction;
@@ -27,9 +28,10 @@ import java.util.regex.Pattern;
 public class JavaSelectorUtils {
 
     private static final String TAG = "☕️JavaSelectorUtils";
-    private static boolean DEBUG = BuildConfig.DEBUG;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
-    public static String unescapeSelectorChars(String selector) {
+    @NonNull
+    public static String unescapeSelectorChars(@NonNull String selector) {
         return selector.replace("\\@", "@").replaceAll("\\,", ",");
     }
 

@@ -6,8 +6,8 @@ import android.view.WindowManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import io.ktor.application.Application
-import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.application.*
+import io.ktor.locations.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -23,7 +23,7 @@ private const val PORT = 9987
 @KtorExperimentalLocationsAPI
 @RunWith(AndroidJUnit4::class)
 class UiAutomatorHelper {
-    private var appComponent: ApplicationComponent = DaggerApplicationComponent.create()
+    private var appComponent: ApplicationComponent = CulebraTesterApplication().appComponent
     private lateinit var instrumentation: Instrumentation
 
     @Before
@@ -36,14 +36,15 @@ class UiAutomatorHelper {
         holder.targetContext = WeakReference(instrumentation.targetContext)
         holder.uiDevice = UiDevice.getInstance(instrumentation)
         holder.cacheDir = instrumentation.targetContext.cacheDir
-        holder.windowManager = instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager
+        holder.windowManager =
+            instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager
     }
 
     @Test
     fun uiAutomatorHelper() {
         val ktorApplicationConfigurationFile = createKtorApplicationConfigurationFile()
         val args = arrayOf("-config=${ktorApplicationConfigurationFile!!.absolutePath}")
-        io.ktor.server.cio.EngineMain.main(args)
+        io.ktor.server.netty.EngineMain.main(args)
     }
 
     /**
