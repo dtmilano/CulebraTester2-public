@@ -204,7 +204,12 @@ fun bySelectorBundleFromString(selectorStr: String): BySelectorBundle {
         val kv =
             token.split("(?<=[^\\\\])@".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (kv.size != 2) {
-            Log.e(TAG, "Malformed selectorStr: " + Arrays.toString(kv))
+            Log.e(TAG, "Malformed selectorStr: " + kv.contentToString())
+            continue
+        }
+        if (kv.any { it.isBlank() }) {
+            val msg = "kv contains empty or null elements: " + kv.contentToString()
+            Log.e(TAG, msg)
             continue
         }
         when (kv[0]) {

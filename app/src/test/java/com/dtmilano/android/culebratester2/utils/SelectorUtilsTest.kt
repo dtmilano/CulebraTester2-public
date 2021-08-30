@@ -7,9 +7,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 
 @RunWith(RobolectricTestRunner::class)
+@Config(minSdk = 26, maxSdk = 29)
 class SelectorUtilsTestRobolectric {
 
     @Before
@@ -93,7 +95,9 @@ class SelectorUtilsTestRobolectric {
         assertNotNull(bundle.selector)
     }
 
-    @Test(expected = KotlinNullPointerException::class)
+    // was this exception before but it seems it changed (comes from a "bundle!!" evaluation)
+    //@Test(expected = KotlinNullPointerException::class)
+    @Test(expected = java.lang.NullPointerException::class)
     fun `test bySelectorBundleFromString_missing_value`() {
         val selector = "clickable"
         val bundle = bySelectorBundleFromString(selector)

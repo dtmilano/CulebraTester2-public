@@ -30,6 +30,7 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.File
 import java.io.OutputStream
 import kotlin.test.Ignore
@@ -45,6 +46,7 @@ import kotlin.test.assertEquals
 @KtorExperimentalLocationsAPI
 // We need Robolectric to run these tests because some classes use Log.[we]
 @RunWith(RobolectricTestRunner::class)
+@Config(minSdk = 26, maxSdk = 29)
 class KtorApplicationTest {
 
     companion object {
@@ -53,7 +55,7 @@ class KtorApplicationTest {
         @JvmField
         val exit: ExpectedSystemExit = ExpectedSystemExit.none()
 
-        val appComponent: ApplicationComponent = DaggerApplicationComponent.create()
+        val appComponent: ApplicationComponent = DaggerApplicationComponent.factory().create()
 
         var holder: Holder = appComponent.holder().instance
 
@@ -179,6 +181,8 @@ class KtorApplicationTest {
             exit.expectSystemExit()
             handleRequest(HttpMethod.Get, "/quit").apply {
                 assertEquals(HttpStatusCode.Gone, response.status())
+                // added sleep to try to alleviate an exception for "shutdown in progress"
+                Thread.sleep(2000)
             }
         }
     }
@@ -331,7 +335,7 @@ class KtorApplicationTest {
         }
     }
 
-    @Ignore("TODO")
+    @Ignore("TODO: expected:<200 OK> but was:<404 Not Found>")
     @Test
     fun `test find object uiSelector selector`() {
         withTestApplication({ module(testing = true) }) {
