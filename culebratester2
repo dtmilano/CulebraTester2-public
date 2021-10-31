@@ -11,6 +11,9 @@
 
 set -u
 
+PKG='com.dtmilano.android.culebratester2'
+PKGRE=$(sed 's@\.@\\.@g' <<<"$PKG")
+
 usage() {
     printf '%s' "$usage"
     exit 1
@@ -36,21 +39,52 @@ _help() {
 }
 
 check_installed() {
-    n=$(adb $D shell pm list packages | grep -c com.dtmilano.android.culebratester2)
-    if (( n != 2 ))
+    pkgs=$(adb $D shell pm list packages)
+    if [[ $? -ne 0 ]]
     then
-        fatal 'app and instrumentation apks should be installed.'
+        fatal 'Cannot get the installed packages.'
     fi
+    n=$(grep -c "$PKGRE" <<<"$pkgs")
+    case "$n" in
+        0)
+            echo hey
+            fatal 'app and instrumentation apks should be installed. None found.'
+            ;;
+
+        1)
+            # we are missing one
+            if ! grep "$PKGRE\.test\$" <<<"$pkgs"
+            then
+                fatal 'app found but instrumentation apk has not been installed.'
+            fi
+
+            if ! grep "$PKGRE\$" <<<"$pkgs"
+            then
+                fatal 'instrumentation found but app apk has not been installed.'
+            fi
+            ;;
+
+        2)
+            :
+            ;;
+
+        *)
+            fatal "unexpected number of matching apks installed: $n"
+            ;;
+    esac
 }
 
 forward_port() {
     adb $D forward tcp:$port tcp:$port
+    if [[ $? -ne 0 ]]
+    then
+        fatal "Could not forward port $port"
+    fi
 }
 
 run_instrumentation() {
-    adb $D shell am instrument -w -r -e debug false -e class 'com.dtmilano.android.culebratester2.UiAutomatorHelper' \
-                com.dtmilano.android.culebratester2.test/androidx.test.runner.AndroidJUnitRunner
-
+    adb $D shell am instrument -w -r -e debug false -e class "$PKG.UiAutomatorHelper" \
+                "$PKG.test/androidx.test.runner.AndroidJUnitRunner"
 }
 
 if [[ "$0" =~ ^/dev/fd ]]
