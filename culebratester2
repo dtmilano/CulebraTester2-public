@@ -47,7 +47,6 @@ check_installed() {
     n=$(grep -c "$PKGRE" <<<"$pkgs")
     case "$n" in
         0)
-            echo hey
             fatal 'app and instrumentation apks should be installed. None found.'
             ;;
 
