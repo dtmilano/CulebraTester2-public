@@ -33,7 +33,7 @@ class UiObject2 {
         }
 
         fun response(): StatusResponse {
-            uiObject2(oid, objectStore)?.let { it.click(); return@response StatusResponse.OK }
+            uiObject2(oid, objectStore)?.let { it.click(); return@response StatusResponse(StatusResponse.Status.OK) }
             throw notFound(oid)
         }
     }
@@ -98,7 +98,7 @@ class UiObject2 {
         }
 
         fun response(): StatusResponse {
-            uiObject2(oid, objectStore)?.let { it.longClick(); return@response StatusResponse.OK }
+            uiObject2(oid, objectStore)?.let { it.longClick(); return@response StatusResponse(StatusResponse.Status.OK) }
             throw notFound(oid)
         }
     }
@@ -121,7 +121,7 @@ class UiObject2 {
         fun response(text: Text): StatusResponse {
             uiObject2(oid, objectStore)?.let {
                 it.text = text.text
-                return@response StatusResponse.OK
+                return@response StatusResponse(StatusResponse.Status.OK)
             }
             throw notFound(oid)
         }

@@ -12,7 +12,7 @@
 
 
 /**
- *  * @param displaySizeDpX the display x in DP * @param displaySizeDpY the display y in DP*/
-data class DisplaySizeDp (    /* the display x in DP */    val displaySizeDpX: kotlin.Int? = null,    /* the display y in DP */    val displaySizeDpY: kotlin.Int? = null
+ *  * @param text */
+data class OidSetTextBody (    val text: kotlin.String? = null
 ) {
 }

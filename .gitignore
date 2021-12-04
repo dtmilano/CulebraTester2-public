@@ -74,3 +74,6 @@ fastlane/readme.md
 
 # backup
 .BAK
+
+# Culebratester scripts
+generate-culebratester-*

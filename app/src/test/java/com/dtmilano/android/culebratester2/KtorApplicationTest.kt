@@ -327,7 +327,7 @@ class KtorApplicationTest {
             ).apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
                 assertEquals(
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
                     response.content
                 )
             }
@@ -374,7 +374,7 @@ class KtorApplicationTest {
             ).apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
                 assertEquals(
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
                     response.content
                 )
                 assertEquals(0, objectStore.size())
@@ -435,7 +435,7 @@ class KtorApplicationTest {
             }.apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
                 assertEquals(
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
                     response.content
                 )
                 assertEquals(0, objectStore.size())

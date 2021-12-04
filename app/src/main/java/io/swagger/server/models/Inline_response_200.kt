@@ -12,7 +12,7 @@
 
 
 /**
- *  * @param displaySizeDpX the display x in DP * @param displaySizeDpY the display y in DP*/
-data class DisplaySizeDp (    /* the display x in DP */    val displaySizeDpX: kotlin.Int? = null,    /* the display y in DP */    val displaySizeDpY: kotlin.Int? = null
+ *  * @param oid  * @param &#x60;object&#x60; */
+data class InlineResponse200 (    val oid: kotlin.Int? = null,    val `object`: kotlin.Any? = null
 ) {
 }

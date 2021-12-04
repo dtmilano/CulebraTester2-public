@@ -1,47 +1,34 @@
-openapi: 3.0.0
-
+openapi: 3.0.2
 info:
   title: CulebraTester
-  description: >
+  description: |
     ## Snaky Android Test
-
     ---
-
     If you want to be able to try out the API using the **Execute** or **TRY** button from this page
-
     - an android device should be connected using `adb`
-
     - the server should have been started using `./culebratester2 start-server`
 
-
     then you will be able to invoke the API and see the responses.
-
-  version: 2.0.12
-
+  version: 2.0.16
 servers:
-  - url: "http://localhost:9987/v2"
-
+  - url: http://localhost:9987/v2
 paths:
   /culebra/help/{api}:
     get:
       summary: Gets help
-      description: Gets help info about the *API* specified as parameter.
-        For example you can obtain information about
-
+      description: |-
+        Gets help info about the *API* specified as parameter. For example you can obtain information about
         * /uiDevice/click
-
         * /device/displayRealSize
-
         * /uiDevice/screenshot
-
         * etc.
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Help"
+                $ref: '#/components/schemas/Help'
         default:
           $ref: '#/components/responses/error'
     parameters:
@@ -51,14 +38,12 @@ paths:
         required: true
         schema:
           type: string
-
-
   /culebra/info:
     get:
       summary: Gets information about this app
       description: Gets information about this app
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -66,53 +51,56 @@ paths:
                 $ref: '#/components/schemas/CulebraInfo'
         default:
           $ref: '#/components/responses/error'
-
-
   /device/displayRealSize:
     get:
       summary: Gets display real size
       description: Gets the display real size
       responses:
-        200:
+        '200':
           description: Display real size
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DisplayRealSize"
+                $ref: '#/components/schemas/DisplayRealSize'
         default:
           $ref: '#/components/responses/error'
-
-
   /targetContext/startActivity:
     get:
       summary: Starts an Activity
       description: Starts an Activity
       parameters:
-        - name: "pkg"
+        - name: pkg
           in: query
           required: true
           description: the package name
           schema:
             type: string
-        - name: "cls"
+        - name: cls
           in: query
           required: true
           description: the class name
           schema:
             type: string
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
+  /objectStore/clear:
+    get:
+      summary: Clears all the objects in store
+      description: Clears all the objects in store
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /objectStore/list:
     get:
       summary: Lists the objects in store
       description: Lists the objects in store
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -127,7 +115,22 @@ paths:
                       type: object
         default:
           $ref: '#/components/responses/error'
-
+  /objectStore/remove:
+    get:
+      summary: Removes an object
+      description: Removes an object that has been stored in ObjectStore
+      parameters:
+        - name: oid
+          in: query
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /uiDevice/dumpWindowHierarchy:
     get:
       summary: Dumps the window hierarchy
@@ -140,32 +143,30 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: Window hierarchy
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WindowHierarchy"
+                $ref: '#/components/schemas/WindowHierarchy'
             application/xml:
               schema:
-                $ref: "#/components/schemas/WindowHierarchy"
+                $ref: '#/components/schemas/WindowHierarchy'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/click:
     get:
       summary: Clicks at the specified location
       description: Clicks at the specified location
       parameters:
-        - name: "x"
+        - name: x
           in: query
           required: true
           description: x coordinate
           schema:
             type: integer
             minimum: 0
-        - name: "y"
+        - name: 'y'
           in: query
           required: true
           description: y coordinate
@@ -173,21 +174,18 @@ paths:
             type: integer
             minimum: 0
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StatusResponse"
-
+                $ref: '#/components/schemas/StatusResponse'
             text/plain:
               schema:
                 type: string
               example: OK
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/findObject:
     get:
       summary: Finds an object
@@ -196,58 +194,31 @@ paths:
         - name: resourceId
           in: query
           description: the resource id
-          example: 'com.android.calendar:id/d0_label'
+          example: com.android.calendar:id/d0_label
           schema:
             type: string
         - name: uiSelector
           in: query
-          description: the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met.
-            The format of the selector string is
-
-              `sel@[$]value,...`
-
-            Where `sel` can be one of
-             - clazz or className
-             - clickable
-             - depth
-             - desc
-             - index
-             - instance
-             - package
-             - parentIndex
-             - res
-             - scrollable
-             - text
-
+          description: |-
+            the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met. The format of the selector string is
+            `sel@[$]value,...`
+            Where `sel` can be one of - clazz or className - clickable - depth - desc - index - instance - package - parentIndex - res - scrollable - text
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
-          example: 'res@com.android.calendar:id/d0_label,instance@1'
+          example: res@com.android.calendar:id/d0_label,instance@1
           schema:
             type: string
         - name: bySelector
           in: query
-          description: the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met.
-            The format of the selector string is
-
-              `sel@[$]value,...`
-
-            Where `sel` can be one of
-             - checkable
-             - clazz
-             - clickable
-             - depth
-             - desc
-             - package
-             - res
-             - scrollable
-             - text
-
+          description: |-
+            the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met. The format of the selector string is
+            `sel@[$]value,...`
+            Where `sel` can be one of - checkable - clazz - clickable - depth - desc - package - res - scrollable - text
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
-          example: 'res@com.android.calendar:id/d0_label,depth@2'
+          example: res@com.android.calendar:id/d0_label,depth@2
           schema:
             type: string
-
       responses:
-        200:
+        '200':
           description: Object found
           content:
             application/json:
@@ -255,8 +226,8 @@ paths:
                 $ref: '#/components/schemas/ObjectRef'
               example:
                 oid: 1
-                className: 'android.widget.TextView'
-        404:
+                className: android.widget.TextView
+        '404':
           description: Object not found
           content:
             application/json:
@@ -268,7 +239,6 @@ paths:
                 errorMessage: Object not found
         default:
           $ref: '#/components/responses/error'
-
     post:
       summary: Finds an object
       description: Finds an object. The object found, if any, can be later used in other call like API.click.
@@ -280,7 +250,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Selector'
       responses:
-        200:
+        '200':
           description: Object found
           content:
             application/json:
@@ -288,8 +258,8 @@ paths:
                 $ref: '#/components/schemas/ObjectRef'
               example:
                 oid: 1
-                className: 'android.widget.Button'
-        404:
+                className: android.widget.Button
+        '404':
           description: Object not found
           content:
             application/json:
@@ -301,7 +271,6 @@ paths:
                 errorMessage: Object not found
         default:
           $ref: '#/components/responses/error'
-
   /uiDevice/findObjects:
     get:
       summary: Finds *all* objects that match the selector criteria.
@@ -309,28 +278,16 @@ paths:
       parameters:
         - name: bySelector
           in: query
-          description: the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met.
-            The format of the selector string is
-
-              `sel@[$]value,...`
-
-            Where `sel` can be one of
-             - checkable
-             - clazz
-             - clickable
-             - depth
-             - desc
-             - package
-             - res
-             - scrollable
-             - text
-
+          description: |-
+            the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met. The format of the selector string is
+            `sel@[$]value,...`
+            Where `sel` can be one of - checkable - clazz - clickable - depth - desc - package - res - scrollable - text
             `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
-          example: 'res@com.android.calendar:id/d0_label,depth@2'
+          example: res@com.android.calendar:id/d0_label,depth@2
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: Objects found
           content:
             application/json:
@@ -338,8 +295,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ObjectRef'
-              example: [{'oid': 1, 'className': 'android.widget.Button'}, {'oid': 2, 'className': 'android.widget.TextView'}]
-        404:
+              example:
+                - oid: 1
+                  className: android.widget.Button
+                - oid: 2
+                  className: android.widget.TextView
+        '404':
           description: Object not found
           content:
             application/json:
@@ -351,13 +312,12 @@ paths:
                 errorMessage: Object not found
         default:
           $ref: '#/components/responses/error'
-
   /uiDevice/currentPackageName:
     get:
       summary: Gets the current package name
       description: Gets the current package name
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -365,14 +325,12 @@ paths:
                 $ref: '#/components/schemas/CurrentPackageName'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/displayHeight:
     get:
       summary: Gets the display height
       description: Gets the display height
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -380,14 +338,12 @@ paths:
                 $ref: '#/components/schemas/DisplayHeight'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/displayRotation:
     get:
       summary: Gets the display rotation
       description: Gets the display rotation
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -395,14 +351,12 @@ paths:
                 $ref: '#/components/schemas/DisplayRotation'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/displaySizeDp:
     get:
       summary: Gets the display size in DP
       description: Gets the display size in DP
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -410,14 +364,12 @@ paths:
                 $ref: '#/components/schemas/DisplaySizeDp'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/displayWidth:
     get:
       summary: Gets the display width
       description: Gets the display width
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -425,14 +377,12 @@ paths:
                 $ref: '#/components/schemas/DisplayWidth'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/lastTraversedText:
     get:
       summary: Retrieves the text from the last UI traversal event received.
       description: Retrieves the text from the last UI traversal event received.
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -440,14 +390,12 @@ paths:
                 $ref: '#/components/schemas/LastTraversedText'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/productName:
     get:
       summary: Retrieves the product name of the device.
       description: Retrieves the product name of the device.
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -455,63 +403,51 @@ paths:
                 $ref: '#/components/schemas/ProductName'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/pressBack:
     get:
       summary: Simulates a short press on the BACK button.
       description: Simulates a short press on the BACK button.
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/pressDelete:
     get:
       summary: Simulates a short press on the DELETE key.
       description: Simulates a short press on the DELETE key.
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/pressEnter:
     get:
       summary: Simulates a short press on the ENTER key.
       description: Simulates a short press on the ENTER key.
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/pressHome:
     get:
       summary: Simulates a short press on the HOME button.
       description: Simulates a short press on the HOME button.
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/pressRecentApps:
     get:
       summary: Simulates a short press on the Recent Apps button.
       description: Simulates a short press on the Recent Apps button.
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/swipe:
     get:
       summary: Performs a swipe.
@@ -553,7 +489,7 @@ paths:
             type: integer
             minimum: 0
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
@@ -567,11 +503,10 @@ paths:
             schema:
               $ref: '#/components/schemas/SwipeBody'
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
   /uiDevice/waitForIdle:
     get:
       summary: Waits for the current application to idle.
@@ -585,16 +520,14 @@ paths:
             format: int64
             default: 10000
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/waitForWindowUpdate:
     get:
       summary: Waits for a window content update event to occur.
-      description:  If a package name for the window is specified, but the current window does not have the same package name, the function returns immediately.
+      description: If a package name for the window is specified, but the current window does not have the same package name, the function returns immediately.
       parameters:
         - name: packageName
           description: the specified window package name (can be null or not present). If null, a window update from any front-end window will end the wait
@@ -610,12 +543,10 @@ paths:
             type: integer
             format: int64
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/pressKeyCode:
     get:
       summary: Simulates a short press using a key code.
@@ -634,21 +565,17 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiDevice/screenshot:
     get:
       summary: Gets the device screenshot
-      description: >
-        Gets the device screenshot and can be influenced by the parameters.
-        For example the `scale` of the screenshot or its `quality` can be specified.
-        **NOTE**: [`UiDevice.takeScreenshot()`](https://developer.android.com/reference/android/support/test/uiautomator/UiDevice.html#takeScreenshot(java.io.File,%20float,%20int)) usually ignores these parameters so expect no change.
+      description: |
+        Gets the device screenshot and can be influenced by the parameters. For example the `scale` of the screenshot or its `quality` can be specified. **NOTE**: [`UiDevice.takeScreenshot()`](https://developer.android.com/reference/android/support/test/uiautomator/UiDevice.html#takeScreenshot(java.io.File,%20float,%20int)) usually ignores these parameters so expect no change.
       responses:
-        200:
+        '200':
           description: OK
           content:
             image/png:
@@ -658,15 +585,15 @@ paths:
               examples:
                 exernal-image-example:
                   summary: External example image
-                  externalValue: "https://raw.githubusercontent.com/wiki/dtmilano/AndroidViewClient/images/emulator-launcher-shortcuts.png"
-        400:
+                  externalValue: https://raw.githubusercontent.com/wiki/dtmilano/AndroidViewClient/images/emulator-launcher-shortcuts.png
+        '400':
           description: Cannot obtain screenshot
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StatusResponse"
+                $ref: '#/components/schemas/StatusResponse'
       parameters:
-        - name: "scale"
+        - name: scale
           in: query
           required: false
           description: The scale of the screenshot (i.e. 0.5)
@@ -675,9 +602,9 @@ paths:
             format: float
             minimum: 0
             exclusiveMinimum: true
-            maximum: 1.0
+            maximum: 1
           example: 0.5
-        - name: "quality"
+        - name: quality
           in: query
           required: false
           description: The quality of the screenshot (i.e. 100)
@@ -686,7 +613,6 @@ paths:
             minimum: 1
             maximum: 100
           example: 90
-
   /uiObject2/{oid}/click:
     get:
       summary: Clicks on the specified object.
@@ -699,12 +625,10 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiObject2/{oid}/dump:
     get:
       summary: Dumps the specified object.
@@ -717,7 +641,7 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -725,8 +649,6 @@ paths:
                 $ref: '#/components/schemas/Selector'
         default:
           $ref: '#/components/responses/error'
-
-
   /uiObject2/{oid}/getText:
     get:
       summary: Gets the text content.
@@ -739,7 +661,7 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
@@ -747,7 +669,6 @@ paths:
                 $ref: '#/components/schemas/Text'
         default:
           $ref: '#/components/responses/error'
-
   /uiObject2/{oid}/longClick:
     get:
       summary: Long-clicks on the specified object.
@@ -760,11 +681,10 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-
   /uiObject2/{oid}/setText:
     post:
       summary: Sets the text content if this object is an editable field.
@@ -787,7 +707,7 @@ paths:
                 text:
                   type: string
       responses:
-        200:
+        '200':
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
@@ -803,7 +723,7 @@ components:
           enum:
             - OK
             - ERROR
-            - UNKNOWKN
+            - UNKNOWN
         statusCode:
           type: integer
         errorMessage:
@@ -812,7 +732,6 @@ components:
         status: ERROR
         statusCode: 100
         errorMessage: Operation could not be completed
-
     CulebraInfo:
       type: object
       properties:
@@ -823,7 +742,6 @@ components:
       required:
         - versionName
         - versionCode
-
     CurrentPackageName:
       type: object
       properties:
@@ -831,8 +749,7 @@ components:
           type: string
           description: the current package name
       example:
-        currentPackageName: 'com.android.calendar'
-
+        currentPackageName: com.android.calendar
     DisplayHeight:
       type: object
       properties:
@@ -841,17 +758,14 @@ components:
           description: the current display height
       example:
         displayHeight: 1776
-
     DisplayRotationEnum:
       type: integer
       description: the current display rotation
-      # the generation of this enum is incorrect: i.e.: 0("0")
       enum:
         - 0
         - 180
         - 270
         - 90
-
     DisplayRotation:
       type: object
       properties:
@@ -863,13 +777,8 @@ components:
             - 180
             - 270
             - 90
-        # there no way of doing this
-        #  schema:
-        #    $ref: '#/components/schemas/DisplayRotation'
-        # and even though, the generated enum is wrong
       example:
         displayRotation: 0
-
     DisplaySizeDp:
       type: object
       properties:
@@ -882,7 +791,6 @@ components:
       example:
         displaySizeDpX: 2400
         displaySizeDpY: 1080
-
     DisplayWidth:
       type: object
       properties:
@@ -891,7 +799,6 @@ components:
           description: the current display width
       example:
         displayHeight: 1080
-
     Help:
       type: object
       required:
@@ -901,19 +808,18 @@ components:
           type: string
       example:
         text: CulebraTester Help
-
     DisplayRealSize:
       type: object
       required:
         - device
         - x
-        - y
+        - 'y'
       properties:
         device:
           type: string
         x:
           type: integer
-        y:
+        'y':
           type: integer
         artWidth:
           type: integer
@@ -926,11 +832,10 @@ components:
         screenshotY:
           type: integer
       example:
-          device: emulator
-          x: 960
-          y: 1080
-          screenshotWidth: 960
-
+        device: emulator
+        x: 960
+        'y': 1080
+        screenshotWidth: 960
     LastTraversedText:
       type: object
       properties:
@@ -938,8 +843,7 @@ components:
           type: string
           description: text of the last traversal event, else return an empty string
       example:
-        lastTraversedText: ""
-
+        lastTraversedText: ''
     WindowHierarchyChild:
       type: object
       properties:
@@ -991,7 +895,6 @@ components:
             $ref: '#/components/schemas/WindowHierarchyChild'
       example:
         $ref: '#/components/examples/windowHierarchyChild'
-
     WindowHierarchy:
       type: object
       properties:
@@ -1006,12 +909,11 @@ components:
           items:
             $ref: '#/components/schemas/WindowHierarchyChild'
       example:
-        id: "hierarchy"
-        text: "Window Hierarchy"
-        timestamp: "2020-01-15T06:11:10Z"
+        id: hierarchy
+        text: Window Hierarchy
+        timestamp: '2020-01-15T06:11:10Z'
         children:
           - $ref: '#/components/examples/windowHierarchyChild'
-
     Selector:
       type: object
       properties:
@@ -1039,7 +941,6 @@ components:
           type: integer
       example:
         $ref: '#/components/examples/selector'
-
     ObjectRef:
       type: object
       properties:
@@ -1049,15 +950,13 @@ components:
           type: string
       required:
         - oid
-
     Point:
       type: object
       properties:
         x:
           type: integer
-        y:
+        'y':
           type: integer
-
     ProductName:
       type: object
       properties:
@@ -1065,8 +964,7 @@ components:
           type: string
           description: product name of the device
       example:
-        productName: "sailfish"
-
+        productName: sailfish
     Text:
       type: object
       properties:
@@ -1074,8 +972,7 @@ components:
           type: string
           description: the text in the object
       example:
-        text: "lorem ipsum"
-
+        text: lorem ipsum
     SwipeBody:
       type: object
       properties:
@@ -1086,46 +983,45 @@ components:
         segmentSteps:
           type: integer
           minimum: 0
-
   examples:
     windowHierarchyChild:
       summary: A sample window hierarchy child
       value:
         id: 1
         parent: 0
-        text: "android.widget.FrameLayout__ id=1 parent=0"
-        package: "com.android.systemui"
+        text: android.widget.FrameLayout__ id=1 parent=0
+        package: com.android.systemui
         checkable: false
         clickable: false
         __index: 0
-        contentDescription: "Some description"
+        contentDescription: Some description
         focusable: false
-        resourceId: "id1"
+        resourceId: id1
         enabled: true
         password: false
         longClickable: false
-        __text: "Some text"
-        clazz: "android.widget.FrameLayout"
+        __text: Some text
+        clazz: android.widget.FrameLayout
         scrollable: false
         selected: false
-        bounds: [ 0, 1794, 1080, 1920 ]
+        bounds:
+          - 0
+          - 1794
+          - 1080
+          - 1920
         children: []
-
     errorStatusResponse:
       summary: Error status
       value:
         status: ERROR
         statusCode: 1001
         errorMessage: There was a problem
-
     selector:
       summary: Selector
       value:
-        desc: "Equal"
-        clazz: "android.widget.Button"
+        desc: Equal
+        clazz: android.widget.Button
         depth: 1
-
-
   responses:
     ok:
       description: OK
@@ -1135,18 +1031,13 @@ components:
             $ref: '#/components/schemas/StatusResponse'
           example:
             ststus: OK
-
     error:
       description: Operation was not successful
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/StatusResponse"
+            $ref: '#/components/schemas/StatusResponse'
           example:
             status: ERROR
             statusCode: 1001
             errorMessage: There was a problem
-  # does not work:
-  #       example:
-  #           $ref: '#/components/examples/errorStatusResponse'
-

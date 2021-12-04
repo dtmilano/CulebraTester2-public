@@ -33,7 +33,7 @@ class TargetContext {
             intent.component = ComponentName(pkg, cls)
             holder.targetContext.get()!!.startActivity(intent)
             holder.uiDevice.waitForIdle(5000)
-            return StatusResponse.OK
+            return StatusResponse(StatusResponse.Status.OK)
         }
     }
 }

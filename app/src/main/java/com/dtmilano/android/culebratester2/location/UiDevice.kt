@@ -15,8 +15,12 @@ import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.DisplayRotationEnum
 import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.Selector
+import io.swagger.server.models.StatusCode
 import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.SwipeBody
+import io.swagger.server.models.of
+import io.swagger.server.models.toBySelector
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -78,6 +82,7 @@ class UiDevice {
         /**
          * Returns a screenshot as a [File] response.
          */
+        @DelicateCoroutinesApi
         fun response(): File {
             //Log.d(TAG, "getting screenshot")
             val tempFile = createTempFile()
@@ -125,7 +130,7 @@ class UiDevice {
         fun response(): StatusResponse {
             //Log.d("UiDevice", "clicking on ($x,$y)")
             if (holder.uiDevice.click(x, y)) {
-                return StatusResponse.OK
+                return StatusResponse(StatusResponse.Status.OK)
             }
             return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot click")
         }
@@ -282,7 +287,7 @@ class UiDevice {
                 if (resourceId ?: uiSelector ?: bySelector == null) {
                     return StatusResponse(
                         StatusResponse.Status.ERROR,
-                        StatusResponse.StatusCode.ARGUMENT_MISSING.value,
+                        StatusCode.ARGUMENT_MISSING.value,
                         errorMessage = "A resource Id or selector must be specified"
                     )
                 }
@@ -316,7 +321,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusCode.OBJECT_NOT_FOUND.message()
                 )
             }
         }
@@ -355,7 +360,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusCode.OBJECT_NOT_FOUND.message()
                 )
             }
         }
@@ -388,7 +393,7 @@ class UiDevice {
                 if (bySelector == null) {
                     return StatusResponse(
                         StatusResponse.Status.ERROR,
-                        StatusResponse.StatusCode.ARGUMENT_MISSING.value,
+                        StatusCode.ARGUMENT_MISSING.value,
                         errorMessage = "A resource Id or selector must be specified"
                     )
                 }
@@ -403,7 +408,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusResponse.StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusCode.OBJECT_NOT_FOUND.message()
                 )
             }
         }
@@ -437,7 +442,7 @@ class UiDevice {
     companion object {
         fun pressKeyResponse(pressAny: () -> Boolean, name: String): StatusResponse {
             if (pressAny()) {
-                return StatusResponse.OK
+                return StatusResponse(StatusResponse.Status.OK)
             }
             return StatusResponse(
                 StatusResponse.Status.ERROR,
@@ -563,11 +568,11 @@ class UiDevice {
 
         fun response(): StatusResponse {
             if (holder.uiDevice.pressKeyCode(keyCode, metaState)) {
-                return StatusResponse.OK
+                return StatusResponse(StatusResponse.Status.OK)
             }
             return StatusResponse(
                 StatusResponse.Status.ERROR,
-                StatusResponse.StatusCode.INTERACTION_KEY.value,
+                StatusCode.INTERACTION_KEY.value,
                 errorMessage = "Cannot press KeyCode"
             )
         }
@@ -686,7 +691,7 @@ class UiDevice {
                 val segments = arrayOfNulls<android.graphics.Point>(list.size)
                 list.toArray(segments)
                 if (holder.uiDevice.swipe(segments, body.segmentSteps!!)) {
-                    return StatusResponse.OK
+                    return StatusResponse(StatusResponse.Status.OK)
                 }
                 return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot swipe")
             }
@@ -716,7 +721,7 @@ class UiDevice {
 
         fun response(): StatusResponse {
             holder.uiDevice.waitForIdle(timeout)
-            return StatusResponse.OK
+            return StatusResponse(StatusResponse.Status.OK)
         }
     }
 
@@ -746,12 +751,12 @@ class UiDevice {
         fun response(): StatusResponse {
             val t0 = System.currentTimeMillis()
             if (holder.uiDevice.waitForWindowUpdate(packageName, timeout)) {
-                return StatusResponse.OK
+                return StatusResponse(StatusResponse.Status.OK)
             }
             val t1 = System.currentTimeMillis() - t0
             return StatusResponse(
                 StatusResponse.Status.ERROR,
-                StatusResponse.StatusCode.TIMEOUT_WINDOW_UPDATE.value,
+                StatusCode.TIMEOUT_WINDOW_UPDATE.value,
                 if (packageName != null && t1 < timeout) "Current window does not have the same package name" else "Timeout waiting for window update"
             )
         }
