@@ -13,15 +13,31 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.server.testing.*
-import io.swagger.server.models.*
+import io.ktor.server.testing.TestApplicationCall
+import io.ktor.server.testing.contentType
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
+import io.ktor.server.testing.withTestApplication
+import io.swagger.server.models.CurrentPackageName
+import io.swagger.server.models.DisplayHeight
+import io.swagger.server.models.DisplayRealSize
+import io.swagger.server.models.DisplayRotation
+import io.swagger.server.models.DisplaySizeDp
+import io.swagger.server.models.DisplayWidth
+import io.swagger.server.models.Help
+import io.swagger.server.models.LastTraversedText
+import io.swagger.server.models.ObjectRef
+import io.swagger.server.models.ProductName
+import io.swagger.server.models.Selector
+import io.swagger.server.models.StatusCode
+import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.SwipeBody
+import io.swagger.server.models.Text
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
-import org.junit.runner.RunWith
 import org.junit.contrib.java.lang.system.ExpectedSystemExit
-import org.junit.contrib.java.lang.system.SystemErrRule
-import org.junit.contrib.java.lang.system.SystemOutRule
+import org.junit.runner.RunWith
 import org.mockito.ArgumentMatcher
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
@@ -34,10 +50,10 @@ import org.robolectric.annotation.Config
 import java.io.File
 import java.io.OutputStream
 import kotlin.test.Ignore
-import kotlin.test.assertTrue
-import kotlin.text.Regex.Companion.escape
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlin.text.Regex.Companion.escape
 
 
 /**
@@ -296,12 +312,46 @@ class KtorApplicationTest {
         val uio22 = mock<UiObject2> {}
         objectStore.put(uio21)
         objectStore.put(uio22)
+        assertEquals(2, objectStore.size())
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/objectStore/list").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 println(response.content)
                 val list = jsonResponse<Array<OidObj>>()
                 assertEquals(2, list.size)
+                list.forEach { assertTrue(it.oid > 0); assertTrue(it.obj.toString().isNotEmpty()) }
+            }
+        }
+    }
+
+    @Test
+    fun `test object store clear`() {
+        val uio21 = mock<UiObject2> {}
+        val uio22 = mock<UiObject2> {}
+        objectStore.put(uio21)
+        objectStore.put(uio22)
+        assertEquals(2, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/objectStore/clear").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                println(response.content)
+                assertEquals(0, objectStore.size())
+            }
+        }
+    }
+
+    @Test
+    fun `test object store remove`() {
+        val uio21 = mock<UiObject2> {}
+        val oid = objectStore.put(uio21)
+        val uio22 = mock<UiObject2> {}
+        objectStore.put(uio22)
+        assertEquals(2, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/objectStore/remove?oid=${oid}").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                println(response.content)
+                assertEquals(1, objectStore.size())
             }
         }
     }

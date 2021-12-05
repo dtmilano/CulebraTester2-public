@@ -126,7 +126,15 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<ObjectStore.Clear> {
+                call.respond(it.response())
+            }
+
             get<ObjectStore.List> {
+                call.respond(it.response())
+            }
+
+            get<ObjectStore.Remove> {
                 call.respond(it.response())
             }
 

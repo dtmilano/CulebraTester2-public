@@ -55,5 +55,7 @@ interface ApplicationComponent {
     fun inject(pressRecentApps: UiDevice.PressRecentApps)
     fun inject(get: UiDevice.Swipe.Get)
     fun inject(post: UiDevice.Swipe.Post)
+    fun inject(clear: com.dtmilano.android.culebratester2.location.ObjectStore.Clear)
+    fun inject(remove: com.dtmilano.android.culebratester2.location.ObjectStore.Remove)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

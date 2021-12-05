@@ -15,6 +15,8 @@
  *  * @param displayRotation the current display rotation*/
 data class DisplayRotation (    /* the current display rotation */    val displayRotation: DisplayRotationEnum? = null
 ) {
+    // Commented out.
+    // See DisplayRotationEnum
 //    /**
 //    * the current display rotation
 //    * Values: _0,_180,_270,_90
