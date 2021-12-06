@@ -245,6 +245,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject2.Clear> {
+                call.respond(it.response())
+            }
+
             get<UiObject2.Click> {
                 call.respond(it.response())
             }

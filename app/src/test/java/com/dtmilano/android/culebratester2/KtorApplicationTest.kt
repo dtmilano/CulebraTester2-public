@@ -45,6 +45,8 @@ import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
@@ -494,7 +496,7 @@ class KtorApplicationTest {
     }
 
     @Test
-    fun `test get text`() {
+    fun `test uiobject2 get text`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject2)
         withTestApplication({ module(testing = true) }) {
@@ -507,7 +509,7 @@ class KtorApplicationTest {
     }
 
     @Test
-    fun `test set text`() {
+    fun `test uiobject2 set text`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject2)
         withTestApplication({ module(testing = true) }) {
@@ -520,6 +522,7 @@ class KtorApplicationTest {
                 )
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+                verify(uiObject2, times(1)).text = any()
             }
         }
     }
@@ -833,6 +836,54 @@ class KtorApplicationTest {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/click?x=100").apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
                 println(response)
+                println(response.status())
+                println(response.content)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 clear`() {
+        val oid = objectStore.put(uiObject2)
+        assertEquals(1, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/${oid}/clear").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                verify(uiObject2, times(1)).clear()
+                println(response.content)
+                println(response.status())
+                println(response.content)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 click`() {
+        val oid = objectStore.put(uiObject2)
+        assertEquals(1, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/${oid}/click").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                verify(uiObject2, times(1)).click()
+                println(response.content)
+                println(response.status())
+                println(response.content)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 dump`() {
+        val oid = objectStore.put(uiObject2)
+        assertEquals(1, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/${oid}/dump").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val selector = jsonResponse<Selector>()
+                assertEquals(false, selector.clickable)
+                assertEquals(MOCK_CLASS_NAME, selector.clazz)
+                assertEquals("Hello Culebra!", selector.text)
+                println(response.content)
                 println(response.status())
                 println(response.content)
             }

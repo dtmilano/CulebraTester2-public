@@ -17,6 +17,31 @@ private const val TAG = "UiObject2"
 @KtorExperimentalLocationsAPI
 @Location("/uiObject2")
 class UiObject2 {
+    @Location("/{oid}/clear")
+    /*inner*/ class Clear(val oid: Int) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            DaggerApplicationComponent.factory().create().inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            uiObject2(oid, objectStore)?.let {
+                it.clear(); return@response StatusResponse(
+                StatusResponse.Status.OK
+            )
+            }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/click")
     /*inner*/ class Click(val oid: Int) {
         private var holder: Holder
