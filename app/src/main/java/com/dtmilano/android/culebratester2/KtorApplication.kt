@@ -265,7 +265,11 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
-            post<UiObject2.SetText> {
+            get<UiObject2.SetText.Get> {
+                call.respond(it.response())
+            }
+
+            post<UiObject2.SetText.Post> {
                 // We have to get the body as ktor doesn't do it
                 // see https://github.com/ktorio/ktor/issues/190
                 // also, it.body is null here

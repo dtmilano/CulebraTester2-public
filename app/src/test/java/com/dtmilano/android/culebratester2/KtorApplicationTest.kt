@@ -98,6 +98,7 @@ class KtorApplicationTest {
         const val WINDOW_HIERARCHY = """
             <hierarchy rotation="0">
               <node index="0" text="" resource-id="com.android.systemui:id/navigation_bar_frame" class="android.widget.FrameLayout" package="com.android.systemui" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" visible-to-user="true" bounds="[0,1794][1080,1920]">
+                <node index="0" text="" resource-id="com.google.android.deskclock:id/tabs" class="android.widget.HorizontalScrollView" package="com.google.android.deskclock" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="true" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,66][969,264]"/>
               </node>
             </hierarchy>
         """
@@ -394,7 +395,7 @@ class KtorApplicationTest {
             assertEquals(0, objectStore.size())
             handleRequest(
                 HttpMethod.Get,
-                "/v2/uiDevice/findObject?uiSelector=clazz@$MATCHES"
+                "/v2/uiDevice/findObject?uiSelector=clazz@${MATCHES}"
             ).apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
@@ -509,7 +510,40 @@ class KtorApplicationTest {
     }
 
     @Test
-    fun `test uiobject2 set text`() {
+    fun `test uiobject2 set text get`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/setText?text=hello+world").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                verify(uiObject2, times(1)).text = any()
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 set text get missing text`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/setText").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 set text get with invalid oid`() {
+        assertEquals(0, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/1/setText?text=hello+world").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 set text post`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject2)
         withTestApplication({ module(testing = true) }) {
@@ -517,12 +551,29 @@ class KtorApplicationTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
                     Gson().toJson(
-                        Text(text = "Some text")
+                        Text(text = "Some text 👈🏻")
                     )
                 )
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 verify(uiObject2, times(1)).text = any()
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 set text post with invalid oid`() {
+        assertEquals(0, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiObject2/1/setText") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Text(text = "Some text")
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
             }
         }
     }
@@ -538,7 +589,7 @@ class KtorApplicationTest {
     }
 
     @Test
-    fun `test swipe`() {
+    fun `test swipe get`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(
                 HttpMethod.Get,
@@ -672,9 +723,11 @@ class KtorApplicationTest {
     fun `test dump window hierarchy json`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy?format=JSON").apply {
-                println("✈️")
-                println(response.content)
                 assertEquals(HttpStatusCode.OK, response.status())
+                val json = Gson().fromJson(response.content, Map::class.java)
+                assertEquals("hierarchy", json["id"])
+                assertEquals("Window Hierarchy", json["text"])
+                assertEquals(1, (json["children"] as ArrayList<*>).size)
             }
         }
     }
@@ -683,14 +736,10 @@ class KtorApplicationTest {
     fun `test dump window hierarchy xml`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/dumpWindowHierarchy?format=XML").apply {
-                println(response.content)
-                assertEquals(
-                    "<hierarchy rotation=\"0\">\n" +
-                            "  <node index=\"0\" text=\"\" resource-id=\"com.android.systemui:id/navigation_bar_frame\" class=\"android.widget.FrameLayout\" package=\"com.android.systemui\" content-desc=\"\" checkable=\"false\" checked=\"false\" clickable=\"false\" enabled=\"true\" focusable=\"false\" focused=\"false\" scrollable=\"false\" long-clickable=\"false\" password=\"false\" selected=\"false\" visible-to-user=\"true\" bounds=\"[0,1794][1080,1920]\">\n" +
-                            "  </node>\n" +
-                            "</hierarchy>", response.content
-                )
                 assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals(
+                    WINDOW_HIERARCHY.trimIndent(), response.content
+                )
             }
         }
     }
@@ -835,7 +884,6 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/click?x=100").apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
-                println(response)
                 println(response.status())
                 println(response.content)
             }
@@ -850,9 +898,18 @@ class KtorApplicationTest {
             handleRequest(HttpMethod.Get, "/v2/uiObject2/${oid}/clear").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 verify(uiObject2, times(1)).clear()
-                println(response.content)
                 println(response.status())
                 println(response.content)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 clear with invalid oid`() {
+        assertEquals(0, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/1/clear").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
             }
         }
     }

@@ -19,7 +19,7 @@ import javax.xml.parsers.SAXParser
 import javax.xml.parsers.SAXParserFactory
 
 
-private const val DEBUG = true
+private const val DEBUG = false
 private const val TAG = "WindowHierarchyDump"
 
 /**
@@ -94,6 +94,7 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
     override fun endDocument() {
         if (DEBUG) {
             Log.d(TAG, "endDocument")
+            println("endDocument nodeCount=$mNodeCount arrayCount=$mArrayCount")
         }
         super.endDocument()
 
@@ -119,6 +120,7 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
     override fun startDocument() {
         if (DEBUG) {
             Log.d(TAG, "startDocument")
+            println("startDocument")
         }
         super.startDocument()
         mWriter = StringWriter()
@@ -130,19 +132,22 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
     @SuppressLint("LongLogTag")
     @Throws(SAXException::class)
     override fun endElement(uri: String, localName: String, qName: String) {
+        val name = if (localName != "") localName else qName
         if (DEBUG) {
             Log.d(TAG, "endElement: $localName $qName $mNodeCount $mArrayCount")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val s = mWriter.toString()
                 Log.d(TAG, "endElement: ${ellipsize(s)}")
             }
+            println("endElement: name=$name mNodeCount=$mNodeCount mArrayCount=$mArrayCount")
         }
-        when (localName) {
+        when (name) {
             "hierarchy" -> try {
                 mJsonWriter!!.endArray()
                 mJsonWriter!!.endObject()
             } catch (e: IOException) {
                 e.printStackTrace()
+                throw SAXException(e)
             }
 
             "node" -> try {
@@ -184,6 +189,8 @@ class WindowHierarchyDumpToJsonHandler : DefaultHandler() {
                 val s = mWriter.toString()
                 Log.d(TAG, "startElement: ${ellipsize(s)}")
             }
+            println("startElement: resource-id=${attributes.getValue("resource-id")}")
+            println("startElement: name=$name mNodeCount=$mNodeCount mArrayCount=$mArrayCount")
         }
         when (name) {
             "hierarchy" -> try {

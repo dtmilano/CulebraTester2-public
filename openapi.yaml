@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.16
+  version: 2.0.17
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -613,6 +613,22 @@ paths:
             minimum: 1
             maximum: 100
           example: 90
+  /uiObject2/{oid}/clear:
+    get:
+      summary: Clears the text content if this object is an editable field.
+      description: The target object should have been found using `findObject` with a `selector`.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /uiObject2/{oid}/click:
     get:
       summary: Clicks on the specified object.
@@ -686,6 +702,27 @@ paths:
         default:
           $ref: '#/components/responses/error'
   /uiObject2/{oid}/setText:
+    get:
+      summary: Sets the text content if this object is an editable field.
+      description: The target object should have been found using `findObject` with a `selector`.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+        - name: text
+          in: query
+          required: true
+          description: Text to enter in the field
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
     post:
       summary: Sets the text content if this object is an editable field.
       description: The target object should have been found using `findObject` with a `selector`.
@@ -702,10 +739,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                text:
-                  type: string
+              $ref: '#/components/schemas/Text'
       responses:
         '200':
           $ref: '#/components/responses/ok'

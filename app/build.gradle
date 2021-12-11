@@ -15,8 +15,8 @@ android {
         applicationId "com.dtmilano.android.culebratester2"
         minSdk 26
         targetSdk 30
-        versionCode 20016
-        versionName "2.0.16-alpha"
+        versionCode 20017
+        versionName "2.0.17-alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -58,7 +58,11 @@ class UiObject2 {
         }
 
         fun response(): StatusResponse {
-            uiObject2(oid, objectStore)?.let { it.click(); return@response StatusResponse(StatusResponse.Status.OK) }
+            uiObject2(oid, objectStore)?.let {
+                it.click(); return@response StatusResponse(
+                StatusResponse.Status.OK
+            )
+            }
             throw notFound(oid)
         }
     }
@@ -123,32 +127,63 @@ class UiObject2 {
         }
 
         fun response(): StatusResponse {
-            uiObject2(oid, objectStore)?.let { it.longClick(); return@response StatusResponse(StatusResponse.Status.OK) }
+            uiObject2(oid, objectStore)?.let {
+                it.longClick(); return@response StatusResponse(
+                StatusResponse.Status.OK
+            )
+            }
             throw notFound(oid)
         }
     }
 
     @Location("/{oid}/setText")
     /*inner*/ class SetText(val oid: Int) {
-        private var holder: Holder
+        class Get(val text: String, val setText: SetText) {
+            private var holder: Holder
 
-        @Inject
-        lateinit var holderHolder: HolderHolder
+            @Inject
+            lateinit var holderHolder: HolderHolder
 
-        @Inject
-        lateinit var objectStore: ObjectStore
+            @Inject
+            lateinit var objectStore: ObjectStore
 
-        init {
-            DaggerApplicationComponent.factory().create().inject(this)
-            holder = holderHolder.instance
+            init {
+                DaggerApplicationComponent.factory().create().inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(): StatusResponse {
+                uiObject2(setText.oid, objectStore)?.let {
+                    it.text = text
+                    return@response StatusResponse(StatusResponse.Status.OK)
+                }
+                throw notFound(setText.oid)
+            }
         }
 
-        fun response(text: Text): StatusResponse {
-            uiObject2(oid, objectStore)?.let {
-                it.text = text.text
-                return@response StatusResponse(StatusResponse.Status.OK)
+        // WARNING: ktor is not passing this argument so the '?' and null are needed
+        // see https://github.com/ktorio/ktor/issues/190
+        class Post(val text: Text? = null, val setText: SetText) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: ObjectStore
+
+            init {
+                DaggerApplicationComponent.factory().create().inject(this)
+                holder = holderHolder.instance
             }
-            throw notFound(oid)
+
+            fun response(text: Text): StatusResponse {
+                uiObject2(setText.oid, objectStore)?.let {
+                    it.text = text.text
+                    return@response StatusResponse(StatusResponse.Status.OK)
+                }
+                throw notFound(setText.oid)
+            }
         }
     }
 
