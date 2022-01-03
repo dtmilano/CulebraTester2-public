@@ -7,11 +7,12 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="skip">Skip</string>
     <string name="title_activity_onboarding">Onboarding</string>
-    <string name="onboarding_text">Connect to your device to blah, blah, blah...</string>
+    <string name="onboarding_text">Connect to your device to blah, blah, blah…</string>
     <string name="todo">TODO</string>
-    <string name="msg_instrumentation_not_installed">Instrumentation not installed</string>
+    <string name="msg_instrumentation_not_installed">Instrumentation not installed.\nInstall it before proceeding.</string>
     <string name="action_install">Install</string>
-    <string name="main_message_default" />
-    <string name="msg_instrumentation_installed">Instrumentation installed</string>
+    <string name="main_message_default">Message</string>
+    <string name="msg_instrumentation_installed">Instrumentation installed.\nYou can now start the server by running:\n./culebratester2 start-server</string>
     <string name="fab_content_description">TODO</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

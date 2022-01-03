@@ -64,7 +64,7 @@ class WelcomeActivity : AppCompatActivity() {
         welcome.fullscreenContent.setOnClickListener { toggle() }
 
         // Finish when Skip is clicked
-        welcome.skipButton.setOnClickListener { finish(); MainActivity.start(this) }
+        welcome.skipButton.setOnClickListener { finish(); MainActivityOld.start(this) }
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away

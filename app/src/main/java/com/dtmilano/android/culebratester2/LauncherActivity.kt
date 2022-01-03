@@ -12,7 +12,7 @@ class LauncherActivity : AppCompatActivity() {
         if (shouldShowOnboarding(this)) {
             OnboardingActivity.start(this)
         } else {
-            MainActivity.start(this)
+            MainActivityOld.start(this)
         }
     }
 

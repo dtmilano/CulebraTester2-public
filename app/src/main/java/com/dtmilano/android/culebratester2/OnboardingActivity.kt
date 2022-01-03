@@ -87,7 +87,7 @@ class OnboardingActivity : AppCompatActivity() {
         //findViewById<Button>(R.id.dummy_button).setOnTouchListener(delayHideTouchListener)
 
         // Finish when Skip is clicked
-        onboarding.skipButton.setOnClickListener { finish(); MainActivity.start(this) }
+        onboarding.skipButton.setOnClickListener { finish(); MainActivityOld.start(this) }
 
         LauncherActivity.onboardingShowed(this)
     }
