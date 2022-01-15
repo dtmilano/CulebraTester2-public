@@ -2,6 +2,7 @@ package com.dtmilano.android.culebratester2.location
 
 import android.util.Log
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.SearchCondition
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
@@ -695,6 +696,44 @@ class UiDevice {
                 }
                 return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot swipe")
             }
+        }
+    }
+
+    /**
+     *
+     */
+    @Location("/wait")
+    /* inner */ class Wait(private val searchConditionRef: Int, private val timeout: Long = 10000) {
+
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): ObjectRef {
+            val searchCondition: SearchCondition<*> =
+                objectStore.get(searchConditionRef) as SearchCondition<*>
+            val obj = holder.uiDevice.wait(searchCondition, timeout)
+            println("🔮obj: $obj")
+
+            obj?.let {
+                val oid = objectStore.put(it)
+                return ObjectRef(oid, it::class.simpleName)
+            }
+
+            throw HttpException(
+                HttpStatusCode.NotFound,
+                StatusCode.OBJECT_NOT_FOUND.message()
+            )
         }
     }
 

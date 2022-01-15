@@ -1,5 +1,6 @@
 package com.dtmilano.android.culebratester2.location
 
+import androidx.test.uiautomator.StaleObjectException
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.ObjectStore
 import io.ktor.locations.KtorExperimentalLocationsAPI
@@ -37,7 +38,11 @@ class ObjectStore {
         fun response(): Any {
             val a = ArrayList<Any>()
             objectStore.list().forEach { (k, v) ->
-                a.add(OidObj(k, v.toString()))
+                try {
+                    a.add(OidObj(k, v.toString()))
+                } catch (e: StaleObjectException) {
+                    objectStore.remove(k)
+                }
             }
             return a
         }

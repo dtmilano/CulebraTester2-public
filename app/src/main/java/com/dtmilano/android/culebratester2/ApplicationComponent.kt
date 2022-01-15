@@ -1,9 +1,6 @@
 package com.dtmilano.android.culebratester2
 
-import com.dtmilano.android.culebratester2.location.Device
-import com.dtmilano.android.culebratester2.location.TargetContext
-import com.dtmilano.android.culebratester2.location.UiDevice
-import com.dtmilano.android.culebratester2.location.UiObject2
+import com.dtmilano.android.culebratester2.location.*
 import dagger.Component
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import javax.inject.Singleton
@@ -59,5 +56,7 @@ interface ApplicationComponent {
     fun inject(clear: com.dtmilano.android.culebratester2.location.ObjectStore.Clear)
     fun inject(remove: com.dtmilano.android.culebratester2.location.ObjectStore.Remove)
     fun inject(clear: UiObject2.Clear)
+    fun inject(findObject: Until.FindObject)
+    fun inject(wait: UiDevice.Wait)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

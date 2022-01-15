@@ -237,6 +237,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response(body))
             }
 
+            get<UiDevice.Wait> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.WaitForIdle> {
                 call.respond(it.response())
             }
@@ -276,6 +280,10 @@ fun Application.module(testing: Boolean = false) {
                 // println("body ${it.body}");
                 val text = call.receive<Text>()
                 call.respond(it.response(text))
+            }
+
+            get<Until.FindObject> {
+                call.respond(it.response())
             }
         }
 

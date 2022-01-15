@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.17
+  version: 2.0.19
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -507,6 +507,50 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
+  /uiDevice/wait:
+    get:
+      summary: Waits for given the condition to be met.
+      description: The final result returned by the condition, or null if the condition was not met before the timeout.
+      parameters:
+        - name: searchConditionRef
+          description: The search condition
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: timeout
+          description: The timeout in ms
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 10000
+      responses:
+        '200':
+          description: Object found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+              example:
+                oid: 1
+                className: android.widget.Button
+        '404':
+          description: Object not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+              example:
+                status: ERROR
+                errorStatusResponse: 1001
+                errorMessage: Object not found
+        default:
+          $ref: '#/components/responses/error'
+
   /uiDevice/waitForIdle:
     get:
       summary: Waits for the current application to idle.
@@ -745,6 +789,43 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
+  /until/findObject:
+    get:
+      summary: Returns a SearchCondition that is satisfied when at least one element matching the selector can be found.
+      description: The condition will return the first matching element.
+      parameters:
+        - name: bySelector
+          in: query
+          description: |-
+            the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met. The format of the selector string is
+            `sel@[$]value,...`
+            Where `sel` can be one of - checkable - clazz - clickable - depth - desc - package - res - scrollable - text
+            `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
+          example: res@com.android.calendar:id/d0_label,depth@2
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SearchCondition created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+              example:
+                oid: 1
+                className: "androidx.test.uiautomator.Until$3@41c9fcb"
+        '404':
+          description: Object not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+              example:
+                status: ERROR
+                errorStatusResponse: 1001
+                errorMessage: Object not found
+        default:
+          $ref: '#/components/responses/error'
 components:
   schemas:
     StatusResponse:
@@ -776,6 +857,9 @@ components:
       required:
         - versionName
         - versionCode
+      example:
+        versionName: "Version 1.0"
+        versionCode: 10
     CurrentPackageName:
       type: object
       properties:
@@ -947,7 +1031,29 @@ components:
         text: Window Hierarchy
         timestamp: '2020-01-15T06:11:10Z'
         children:
-          - $ref: '#/components/examples/windowHierarchyChild'
+          - id: 1
+            parent: 0
+            text: android.widget.FrameLayout__ id=1 parent=0
+            package: com.android.systemui
+            checkable: false
+            clickable: false
+            __index: 0
+            contentDescription: Some description
+            focusable: false
+            resourceId: id1
+            enabled: true
+            password: false
+            longClickable: false
+            __text: Some text
+            clazz: android.widget.FrameLayout
+            scrollable: false
+            selected: false
+            bounds:
+              - 0
+              - 1794
+              - 1080
+              - 1920
+            children: [ ]
     Selector:
       type: object
       properties:
@@ -974,7 +1080,9 @@ components:
         instance:
           type: integer
       example:
-        $ref: '#/components/examples/selector'
+        desc: Cancel
+        clazz: android.widget.Button
+        depth: 1
     ObjectRef:
       type: object
       properties:
@@ -1053,7 +1161,7 @@ components:
     selector:
       summary: Selector
       value:
-        desc: Equal
+        desc: Cancel
         clazz: android.widget.Button
         depth: 1
   responses:
