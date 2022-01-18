@@ -257,6 +257,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject2.ClickAndWait> {
+                call.respond(it.response())
+            }
+
             get<UiObject2.Dump> {
                 call.respond(it.response())
             }
@@ -283,6 +287,10 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<Until.FindObject> {
+                call.respond(it.response())
+            }
+
+            get<Until.NewWindow> {
                 call.respond(it.response())
             }
         }

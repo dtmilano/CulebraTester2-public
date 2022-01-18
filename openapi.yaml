@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.19
+  version: 2.0.20
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -550,7 +550,6 @@ paths:
                 errorMessage: Object not found
         default:
           $ref: '#/components/responses/error'
-
   /uiDevice/waitForIdle:
     get:
       summary: Waits for the current application to idle.
@@ -689,6 +688,37 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
+  /uiObject2/{oid}/clickAndWait:
+    get:
+      summary: Clicks on the specified object.
+      description: The target object should have been found using `findObject` with a `selector`.
+      parameters:
+        - name: oid
+          in: path
+          required: true
+          description: The object ID
+          schema:
+            type: integer
+        - name: eventConditionRef
+          description: The event condition
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: timeout
+          description: in milliseconds
+          in: query
+          schema:
+            type: integer
+            format: int64
+            default: 10000
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /uiObject2/{oid}/dump:
     get:
       summary: Dumps the specified object.
@@ -804,6 +834,32 @@ paths:
           example: res@com.android.calendar:id/d0_label,depth@2
           schema:
             type: string
+      responses:
+        '200':
+          description: SearchCondition created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+              example:
+                oid: 1
+                className: "androidx.test.uiautomator.Until$3@41c9fff"
+        '404':
+          description: Object not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+              example:
+                status: ERROR
+                errorStatusResponse: 1001
+                errorMessage: Object not found
+        default:
+          $ref: '#/components/responses/error'
+  /until/newWindow:
+    get:
+      summary: Returns a condition that depends on a new window having appeared.
+      description: Returns a condition that depends on a new window having appeared.
       responses:
         '200':
           description: SearchCondition created

@@ -1,5 +1,6 @@
 package com.dtmilano.android.culebratester2.location
 
+import androidx.test.uiautomator.EventCondition
 import com.dtmilano.android.culebratester2.DaggerApplicationComponent
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
@@ -62,6 +63,51 @@ class UiObject2 {
                 it.click(); return@response StatusResponse(
                 StatusResponse.Status.OK
             )
+            }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/clickAndWait")
+    /*inner*/ class ClickAndWait(
+        val oid: Int,
+        private val eventConditionRef: Int,
+        private val timeout: Long = 10000
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            DaggerApplicationComponent.factory().create().inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            uiObject2(oid, objectStore)?.let {
+                val eventCondition: EventCondition<*> =
+                    objectStore.get(eventConditionRef) as EventCondition<*>
+                val result = it.clickAndWait(eventCondition, timeout)
+                if (result is Boolean) {
+                    if (result) {
+                        return@response StatusResponse(
+                            StatusResponse.Status.OK
+                        )
+                    } else {
+                        return@response StatusResponse(
+                            StatusResponse.Status.ERROR
+                        )
+                    }
+                }
+
+                // We don't know how to treat an EventCondition<R> when R != Boolean...
+                return@response StatusResponse(
+                    StatusResponse.Status.OK
+                )
             }
             throw notFound(oid)
         }

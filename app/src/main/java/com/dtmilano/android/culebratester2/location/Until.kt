@@ -38,4 +38,26 @@ class Until {
         }
     }
 
+    @Location("/newWindow")
+    /*inner*/ class NewWindow {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            DaggerApplicationComponent.factory().create().inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): ObjectRef {
+            val eventCondition = Until.newWindow()
+            val oid = objectStore.put(eventCondition)
+            return ObjectRef(oid, eventCondition::class.simpleName)
+        }
+    }
+
 }

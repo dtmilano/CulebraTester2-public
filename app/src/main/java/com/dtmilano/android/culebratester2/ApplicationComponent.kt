@@ -58,5 +58,7 @@ interface ApplicationComponent {
     fun inject(clear: UiObject2.Clear)
     fun inject(findObject: Until.FindObject)
     fun inject(wait: UiDevice.Wait)
+    fun inject(newWindow: Until.NewWindow)
+    fun inject(clickAndWait: UiObject2.ClickAndWait)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }
