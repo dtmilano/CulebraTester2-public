@@ -31,21 +31,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/io.netty.versions.properties'
-        exclude 'META-INF/INDEX.LIST'
-        exclude 'META-INF/ktor-http.kotlin_module'
-        exclude 'META-INF/ktor-utils.kotlin_module'
-        exclude 'META-INF/kotlinx-coroutines-core.kotlin_module'
-        exclude 'META-INF/ktor-io.kotlin_module'
-        exclude 'META-INF/ktor-http-cio.kotlin_module'
-        exclude 'META-INF/ktor-client-core.kotlin_module'
         resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += ['/META-INF/{AL2.0,LGPL2.1}', 'META-INF/DEPENDENCIES', 'META-INF/io.netty.versions.properties', 'META-INF/INDEX.LIST', 'META-INF/ktor-http.kotlin_module', 'META-INF/ktor-utils.kotlin_module', 'META-INF/kotlinx-coroutines-core.kotlin_module', 'META-INF/ktor-io.kotlin_module', 'META-INF/ktor-http-cio.kotlin_module', 'META-INF/ktor-client-core.kotlin_module']
         }
     }
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
