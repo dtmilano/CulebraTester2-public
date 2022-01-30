@@ -9,18 +9,10 @@ import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.convertWindowHierarchyDumpToJson
 import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
 import com.dtmilano.android.culebratester2.utils.uiSelectorBundleFromString
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.swagger.experimental.HttpException
-import io.swagger.server.models.DisplayRotationEnum
-import io.swagger.server.models.ObjectRef
-import io.swagger.server.models.Selector
-import io.swagger.server.models.StatusCode
-import io.swagger.server.models.StatusResponse
-import io.swagger.server.models.SwipeBody
-import io.swagger.server.models.of
-import io.swagger.server.models.toBySelector
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.swagger.experimental.*
+import io.swagger.server.models.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -38,6 +30,52 @@ private const val REMOVE_TEMP_FILE_DELAY = 2000L
 @Location("/uiDevice")
 class UiDevice {
 
+    @Location("/clearLastTraversedText")
+    /*inner*/ class ClearLastTraversedText {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            holder.uiDevice.clearLastTraversedText()
+            return StatusResponse(StatusResponse.Status.OK)
+        }
+    }
+
+    /**
+     * Performs a swipe from one coordinate to another coordinate. You can control the smoothness and speed of the swipe by specifying the number of steps. Each step execution is throttled to 5 milliseconds per step, so for a 100 steps, the swipe will take around 0.5 seconds to complete.
+     */
+    @Location("/drag")
+    /*inner*/ class Drag(
+        private val startX: Int,
+        private val startY: Int,
+        private val endX: Int,
+        private val endY: Int,
+        private val steps: Int
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            if (holder.uiDevice.drag(startX, startY, endX, endY, steps)) {
+                return StatusResponse(StatusResponse.Status.OK)
+            }
+            return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot drag")
+        }
+    }
 
     @Location("/dumpWindowHierarchy")
     /*inner*/ class DumpWindowHierarchy(private val format: String = "JSON") {
@@ -144,11 +182,12 @@ class UiDevice {
     @Location("/currentPackageName")
     /*inner*/ class CurrentPackageName {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -167,11 +206,12 @@ class UiDevice {
     @Location("/displayHeight")
     /*inner*/ class DisplayHeight {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -191,11 +231,12 @@ class UiDevice {
     @Location("/displayRotation")
     /*inner*/ class DisplayRotation {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -215,11 +256,12 @@ class UiDevice {
     @Location("/displaySizeDp")
     /*inner*/ class DisplaySizeDp {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -240,11 +282,12 @@ class UiDevice {
     @Location("/displayWidth")
     /*inner*/ class DisplayWidth {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -272,6 +315,7 @@ class UiDevice {
             private val bySelector: String? = null
         ) {
             private var holder: Holder
+
             @Inject
             lateinit var holderHolder: HolderHolder
 
@@ -378,6 +422,7 @@ class UiDevice {
             private val bySelector: String? = null
         ) {
             private var holder: Holder
+
             @Inject
             lateinit var holderHolder: HolderHolder
 
@@ -417,17 +462,43 @@ class UiDevice {
     }
 
     /**
+     * Disables the sensors and freezes the device rotation at its current rotation state.
+     */
+    @Location("/freezeRotation")
+    /*inner*/ class FreezeRotation {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): StatusResponse {
+            holder.uiDevice.freezeRotation()
+            return StatusResponse(StatusResponse.Status.OK)
+        }
+    }
+
+    /**
      * Retrieves the text from the last UI traversal event received.
      * Retrieves the text from the last UI traversal event received.
      */
     @Location("/lastTraversedText")
     /*inner*/ class LastTraversedText {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -459,11 +530,12 @@ class UiDevice {
     @Location("/pressBack")
     /*inner*/ class PressBack {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -483,11 +555,12 @@ class UiDevice {
     @Location("/pressDelete")
     /*inner*/ class PressDelete {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -507,11 +580,12 @@ class UiDevice {
     @Location("/pressEnter")
     /*inner*/ class PressEnter {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -530,11 +604,12 @@ class UiDevice {
     @Location("/pressHome")
     /*inner*/ class PressHome {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -555,11 +630,12 @@ class UiDevice {
     @Location("/pressKeyCode")
     /*inner*/ class PressKeyCode(private val keyCode: Int, private val metaState: Int = 0) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -586,11 +662,12 @@ class UiDevice {
     @Location("/pressRecentApps")
     /*inner*/ class PressRecentApps {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -609,11 +686,12 @@ class UiDevice {
     @Location("/productName")
     /*inner*/ class ProductName {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)
@@ -622,6 +700,42 @@ class UiDevice {
 
         fun response(): io.swagger.server.models.ProductName {
             return io.swagger.server.models.ProductName(holder.uiDevice.productName)
+        }
+    }
+
+    /**
+     *
+     */
+    @Location("/hasObject")
+    /*inner*/ class HasObject(private val bySelector: String) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): StatusResponse {
+            val bsb = bySelectorBundleFromString(bySelector)
+            println("👽")
+            println("selector=${bsb.selector}")
+            println("bySelector=${bySelector}")
+            println("hasObject=${holder.uiDevice.hasObject(bsb.selector)}")
+            println("uiDevice=${holder.uiDevice}")
+            if (holder.uiDevice.hasObject(bsb.selector)) {
+                return StatusResponse(StatusResponse.Status.OK)
+            }
+            throw HttpException(
+                HttpStatusCode.NotFound,
+                StatusCode.OBJECT_NOT_FOUND.message()
+            )
         }
     }
 
@@ -673,11 +787,12 @@ class UiDevice {
         // see https://github.com/ktorio/ktor/issues/190
         /*inner*/ class Post(val body: SwipeBody? = null) {
             private var holder: Holder
+
             @Inject
             lateinit var holderHolder: HolderHolder
 
             @Inject
-            lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
             init {
                 CulebraTesterApplication().appComponent.inject(this)
@@ -776,11 +891,12 @@ class UiDevice {
         val packageName: String? = null
     ) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore:com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
             CulebraTesterApplication().appComponent.inject(this)

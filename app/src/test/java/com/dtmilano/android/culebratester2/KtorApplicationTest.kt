@@ -3,9 +3,7 @@ package com.dtmilano.android.culebratester2
 import android.graphics.Point
 import android.view.Display
 import android.view.WindowManager
-import androidx.test.uiautomator.BySelector
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.*
 import com.dtmilano.android.culebratester2.location.OidObj
 import com.google.gson.Gson
 import io.ktor.http.ContentType
@@ -113,7 +111,7 @@ class KtorApplicationTest {
         const val MATCHES = "MATCHES"
         const val DOES_NOT_MATCH = "DOES_NOT_MATCH"
 
-        class BySelectorMatcher : ArgumentMatcher<BySelector> {
+        class BySelectorMatcherRes : ArgumentMatcher<BySelector> {
             override fun matches(selector: BySelector?): Boolean {
                 // There's no way of comparing other than via String
                 val res = "BySelector [RES='\\Q${DOES_NOT_MATCH}\\E']"
@@ -121,6 +119,33 @@ class KtorApplicationTest {
                     return false
                 }
                 return true
+            }
+        }
+
+        class UiSelectorMatcherRes : ArgumentMatcher<UiSelector> {
+            override fun matches(selector: UiSelector?): Boolean {
+                // There's no way of comparing other than via String
+                val res = "UiSelector [RES='\\Q${DOES_NOT_MATCH}\\E']"
+                if (selector.toString().matches(Regex(escape(res)))) {
+                    return false
+                }
+                return true
+            }
+        }
+
+        class BySelectorMatcherClassMatches : ArgumentMatcher<BySelector> {
+            override fun matches(bySelector: BySelector?): Boolean {
+                // There's no way of comparing other than via String
+                val res = "BySelector [CLASS='\\Q${MATCHES}\\E']"
+                return bySelector.toString().matches(Regex(escape(res)))
+            }
+        }
+
+        class BySelectorMatcherClassDoesNotMatch : ArgumentMatcher<BySelector> {
+            override fun matches(bySelector: BySelector?): Boolean {
+                // There's no way of comparing other than via String
+                val res = "BySelector [CLASS='\\Q${DOES_NOT_MATCH}\\E']"
+                return bySelector.toString().matches(Regex(escape(res)))
             }
         }
 
@@ -134,11 +159,15 @@ class KtorApplicationTest {
 
         private const val MOCK_CLASS_NAME = "MockClassName"
 
-        val uiObject2 = mock<UiObject2> {
+        val uiObject = mock<UiObject> {
             on { className } doReturn MOCK_CLASS_NAME
             on { text } doReturn "Hello Culebra!"
         }
 
+        val uiObject2 = mock<UiObject2> {
+            on { className } doReturn MOCK_CLASS_NAME
+            on { text } doReturn "Hello Culebra!"
+        }
         val uiDevice = mock<UiDevice> {
             val x = realSize["x"] ?: error("x not defined")
             val y = realSize["y"] ?: error("y not defined")
@@ -150,7 +179,10 @@ class KtorApplicationTest {
             on { displayHeight } doReturn y
             on { displaySizeDp } doReturn p
             on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
-            on { findObject(argThat(BySelectorMatcher())) } doReturn uiObject2
+            on { findObject(argThat(BySelectorMatcherRes())) } doReturn uiObject2
+            on { findObject(argThat(UiSelectorMatcherRes())) } doReturn uiObject
+            on { hasObject(argThat(BySelectorMatcherClassDoesNotMatch())) } doReturn false
+            on { hasObject(argThat(BySelectorMatcherClassMatches())) } doReturn true
             on { pressBack() } doReturn true
             on { pressEnter() } doReturn true
             on { pressDelete() } doReturn true
@@ -360,6 +392,17 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test clear last traversed text`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/clearLastTraversedText").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
     fun `test find object no selectors`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/findObject").apply {
@@ -388,14 +431,13 @@ class KtorApplicationTest {
         }
     }
 
-    @Ignore("TODO: expected:<200 OK> but was:<404 Not Found>")
     @Test
     fun `test find object uiSelector selector`() {
         withTestApplication({ module(testing = true) }) {
             assertEquals(0, objectStore.size())
             handleRequest(
                 HttpMethod.Get,
-                "/v2/uiDevice/findObject?uiSelector=clazz@${MATCHES}"
+                "/v2/uiDevice/findObject?uiSelector=res@${MATCHES}"
             ).apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
@@ -414,6 +456,46 @@ class KtorApplicationTest {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
             assertEquals(1, objectStore.size())
+        }
+    }
+
+    @Test
+    fun `test freeze rotation`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/freezeRotation"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test has object`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/hasObject?bySelector=clazz@${MATCHES}"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test has object not found`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/hasObject?bySelector=clazz@${DOES_NOT_MATCH}"
+            ).apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(
+                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    response.content
+                )
+            }
         }
     }
 
@@ -584,6 +666,18 @@ class KtorApplicationTest {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/screenshot").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(response.headers["Content-Type"], "image/png")
+            }
+        }
+    }
+
+    @Test
+    fun `test drag get`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/drag?startX=0&startY=0&endX=100&endY=100&steps=10"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
             }
         }
     }

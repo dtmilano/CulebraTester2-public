@@ -142,6 +142,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiDevice.ClearLastTraversedText> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.Click> {
                 call.respond(it.response())
             }
@@ -151,6 +155,10 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<UiDevice.DisplayWidth> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.Drag> {
                 call.respond(it.response())
             }
 
@@ -181,6 +189,10 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<UiDevice.FindObjects.Get> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.FreezeRotation> {
                 call.respond(it.response())
             }
 
@@ -217,6 +229,10 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<UiDevice.ProductName> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.HasObject> {
                 call.respond(it.response())
             }
 

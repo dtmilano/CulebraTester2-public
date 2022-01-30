@@ -60,5 +60,9 @@ interface ApplicationComponent {
     fun inject(wait: UiDevice.Wait)
     fun inject(newWindow: Until.NewWindow)
     fun inject(clickAndWait: UiObject2.ClickAndWait)
+    fun inject(clearLastTraversedText: UiDevice.ClearLastTraversedText)
+    fun inject(drag: UiDevice.Drag)
+    fun inject(freezeRotation: UiDevice.FreezeRotation)
+    fun inject(hasObject: UiDevice.HasObject)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

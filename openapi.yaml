@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.20
+  version: 2.0.21
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -40,8 +40,8 @@ paths:
           type: string
   /culebra/info:
     get:
-      summary: Gets information about this app
-      description: Gets information about this app
+      summary: Gets information about this app.
+      description: Gets information about this app.
       responses:
         '200':
           description: OK
@@ -53,8 +53,8 @@ paths:
           $ref: '#/components/responses/error'
   /device/displayRealSize:
     get:
-      summary: Gets display real size
-      description: Gets the display real size
+      summary: Gets display real size.
+      description: Gets the display real size.
       responses:
         '200':
           description: Display real size
@@ -66,8 +66,8 @@ paths:
           $ref: '#/components/responses/error'
   /targetContext/startActivity:
     get:
-      summary: Starts an Activity
-      description: Starts an Activity
+      summary: Starts an Activity.
+      description: Starts an Activity.
       parameters:
         - name: pkg
           in: query
@@ -88,8 +88,8 @@ paths:
           $ref: '#/components/responses/error'
   /objectStore/clear:
     get:
-      summary: Clears all the objects in store
-      description: Clears all the objects in store
+      summary: Clears all the objects in store.
+      description: Clears all the objects in store.
       responses:
         '200':
           $ref: '#/components/responses/ok'
@@ -97,8 +97,8 @@ paths:
           $ref: '#/components/responses/error'
   /objectStore/list:
     get:
-      summary: Lists the objects in store
-      description: Lists the objects in store
+      summary: Lists the objects in store.
+      description: Lists the objects in store.
       responses:
         '200':
           description: OK
@@ -117,8 +117,8 @@ paths:
           $ref: '#/components/responses/error'
   /objectStore/remove:
     get:
-      summary: Removes an object
-      description: Removes an object that has been stored in ObjectStore
+      summary: Removes an object.
+      description: Removes an object that has been stored in ObjectStore.
       parameters:
         - name: oid
           in: query
@@ -131,33 +131,20 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
-  /uiDevice/dumpWindowHierarchy:
+
+  /uiDevice/clearLastTraversedText:
     get:
-      summary: Dumps the window hierarchy
-      description: Dumps the window hierarchy
-      parameters:
-        - name: format
-          in: query
-          required: false
-          description: the output format
-          schema:
-            type: string
+      summary: Clears the text from the last UI traversal event.
+      description: Clears the text from the last UI traversal event.
       responses:
         '200':
-          description: Window hierarchy
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WindowHierarchy'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/WindowHierarchy'
+          $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
   /uiDevice/click:
     get:
-      summary: Clicks at the specified location
-      description: Clicks at the specified location
+      summary: Clicks at the specified location.
+      description: Clicks at the specified location.
       parameters:
         - name: x
           in: query
@@ -186,9 +173,77 @@ paths:
               example: OK
         default:
           $ref: '#/components/responses/error'
+  /uiDevice/drag:
+    get:
+      summary: Performs a swipe from one coordinate to another coordinate.
+      description: Performs a swipe from one coordinate to another coordinate. You can control the smoothness and speed of the swipe by specifying the number of steps. Each step execution is throttled to 5 milliseconds per step, so for a 100 steps, the swipe will take around 0.5 seconds to complete.
+      parameters:
+        - name: startX
+          description: from x
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: startY
+          description: from y
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: endX
+          description: to x
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: endY
+          description: end y
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: steps
+          description: is the number of move steps sent to the system
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+  /uiDevice/dumpWindowHierarchy:
+    get:
+      summary: Dumps the window hierarchy.
+      description: Dumps the window hierarchy.
+      parameters:
+        - name: format
+          in: query
+          required: false
+          description: the output format
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Window hierarchy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WindowHierarchy'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/WindowHierarchy'
+        default:
+          $ref: '#/components/responses/error'
   /uiDevice/findObject:
     get:
-      summary: Finds an object
+      summary: Finds an object.
       description: Finds an object. The object found, if any, can be later used in other call like API.click.
       parameters:
         - name: resourceId
@@ -240,7 +295,7 @@ paths:
         default:
           $ref: '#/components/responses/error'
     post:
-      summary: Finds an object
+      summary: Finds an object.
       description: Finds an object. The object found, if any, can be later used in other call like API.click.
       requestBody:
         description: Selector
@@ -312,10 +367,19 @@ paths:
                 errorMessage: Object not found
         default:
           $ref: '#/components/responses/error'
+  /uiDevice/freezeRotation:
+    get:
+      summary: Disables the sensors and freezes the device rotation at its current rotation state.
+      description: Disables the sensors and freezes the device rotation at its current rotation state.
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /uiDevice/currentPackageName:
     get:
-      summary: Gets the current package name
-      description: Gets the current package name
+      summary: Gets the current package name.
+      description: Gets the current package name.
       responses:
         '200':
           description: OK
@@ -327,8 +391,8 @@ paths:
           $ref: '#/components/responses/error'
   /uiDevice/displayHeight:
     get:
-      summary: Gets the display height
-      description: Gets the display height
+      summary: Gets the display height.
+      description: Gets the display height.
       responses:
         '200':
           description: OK
@@ -340,8 +404,8 @@ paths:
           $ref: '#/components/responses/error'
   /uiDevice/displayRotation:
     get:
-      summary: Gets the display rotation
-      description: Gets the display rotation
+      summary: Gets the display rotation.
+      description: Gets the display rotation.
       responses:
         '200':
           description: OK
@@ -353,8 +417,8 @@ paths:
           $ref: '#/components/responses/error'
   /uiDevice/displaySizeDp:
     get:
-      summary: Gets the display size in DP
-      description: Gets the display size in DP
+      summary: Gets the display size in DP.
+      description: Gets the display size in DP.
       responses:
         '200':
           description: OK
@@ -366,8 +430,8 @@ paths:
           $ref: '#/components/responses/error'
   /uiDevice/displayWidth:
     get:
-      summary: Gets the display width
-      description: Gets the display width
+      summary: Gets the display width.
+      description: Gets the display width.
       responses:
         '200':
           description: OK
@@ -448,6 +512,27 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
+  /uiDevice/hasObject:
+    get:
+      summary: Returns whether there is a match for the given selector criteria.
+      description: Returns whether there is a match for the given selector criteria.
+      parameters:
+        - name: bySelector
+          in: query
+          description: |-
+            the selector sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selector parameter and all other criteria for this selector are met. The format of the selector string is
+            `sel@[$]value,...`
+            Where `sel` can be one of - checkable - clazz - clickable - depth - desc - package - res - scrollable - text
+            `@` replaces the `=` sign that is used to separate parameters and values in the URL. If the first character of value is `$` then a `Pattern` is created.
+          example: res@com.android.calendar:id/d0_label,depth@2
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /uiDevice/swipe:
     get:
       summary: Performs a swipe.
@@ -495,7 +580,7 @@ paths:
           $ref: '#/components/responses/error'
     post:
       summary: Performs a swipe between points in the Point array.
-      description: Each step execution is throttled to 5ms per step. So for a 100 steps, the swipe will take about 1/2 second to complete
+      description: Each step execution is throttled to 5ms per step. So for a 100 steps, the swipe will take about 1/2 second to complete.
       requestBody:
         required: true
         content:
@@ -573,7 +658,7 @@ paths:
       description: If a package name for the window is specified, but the current window does not have the same package name, the function returns immediately.
       parameters:
         - name: packageName
-          description: the specified window package name (can be null or not present). If null, a window update from any front-end window will end the wait
+          description: the specified window package name (can be null or not present). If null, a window update from any front-end window will end the wait.
           in: query
           required: false
           schema:
@@ -614,7 +699,7 @@ paths:
           $ref: '#/components/responses/error'
   /uiDevice/screenshot:
     get:
-      summary: Gets the device screenshot
+      summary: Gets the device screenshot.
       description: |
         Gets the device screenshot and can be influenced by the parameters. For example the `scale` of the screenshot or its `quality` can be specified. **NOTE**: [`UiDevice.takeScreenshot()`](https://developer.android.com/reference/android/support/test/uiautomator/UiDevice.html#takeScreenshot(java.io.File,%20float,%20int)) usually ignores these parameters so expect no change.
       responses:

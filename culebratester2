@@ -32,6 +32,7 @@ _help() {
     printf ' install               installs on device\n'
     printf ' run-instrumentation   runs the instrumentation and starts the server\n'
     printf ' start-server          starts the server on the device\n'
+    printf ' uninstall             uninstalls pkgs on device\n'
     printf '\n'
     printf ' optional arguments:\n'
     printf ' -h, --help            show this help message and exit\n'
@@ -86,6 +87,11 @@ run_instrumentation() {
                 "$PKG.test/androidx.test.runner.AndroidJUnitRunner"
 }
 
+uninstall_pkgs() {
+    adb $D uninstall "$PKG.test" && adb $D uninstall "$PKG"
+}
+
+
 if [[ "$0" =~ ^/dev/fd ]]
 then
     progname='culebratester2'
@@ -129,6 +135,10 @@ then
 
         install|i)
             ./gradlew installDebug installDebugAndroidTest
+            ;;
+
+        uninstall|u)
+            uninstall_pkgs
             ;;
 
         *)
