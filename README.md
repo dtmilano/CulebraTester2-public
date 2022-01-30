@@ -34,6 +34,9 @@ Continue reading and see how you can run this early preview.
 1. Take a look at [CulebraTester2 API](https://mrin9.github.io/OpenAPI-Viewer/#/load/https%3A%2F%2Fraw.githubusercontent.com%2Fdtmilano%2FCulebraTester2-public%2Fmaster%2Fopenapi.yaml) or its spec [`openapi.yaml`](https://github.com/dtmilano/CulebraTester2-public/blob/master/openapi.yaml) for more info
 1. When done testing, http://localhost:9987/quit will terminate the server
 
+# Want to learn more?
+Detailed information can be found in the [CulebraTester2 wiki](https://github.com/dtmilano/CulebraTester2-public/wiki) wiki
+
 # AndroidViewClient
 **CulebraTester2** is a new backend for [AndroidViewClient/culebra](https://github.com/dtmilano/AndroidViewClient).
 
