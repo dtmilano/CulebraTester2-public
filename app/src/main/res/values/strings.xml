@@ -12,7 +12,10 @@
     <string name="msg_instrumentation_not_installed">Instrumentation not installed.\nInstall it before proceeding.</string>
     <string name="action_install">Install</string>
     <string name="main_message_default">Message</string>
-    <string name="msg_instrumentation_installed">Instrumentation installed.\nYou can now start the server by running:\n./culebratester2 start-server</string>
+    <string name="msg_instrumentation_installed">Instrumentation installed</string>
+    <string name="msg_start_server">You can now start the server by running:</string>
+    <string name="msg_start_server_command">./culebratester2 start-server</string>
     <string name="fab_content_description">TODO</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">CulebraTester2</string>
+    <string name="msg_activity_will_exit">As soon as the Service is started this Activity will exit automatically (don\'t panic)</string>
 </resources>
