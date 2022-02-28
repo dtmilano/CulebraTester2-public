@@ -126,6 +126,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<Device.WaitForNewToast> {
+                call.respond(it.response())
+            }
+
             get<ObjectStore.Clear> {
                 call.respond(it.response())
             }
@@ -309,6 +313,7 @@ fun Application.module(testing: Boolean = false) {
             get<Until.NewWindow> {
                 call.respond(it.response())
             }
+
         }
 
         // Handles all the other non-matched routes returning a 404 not found.

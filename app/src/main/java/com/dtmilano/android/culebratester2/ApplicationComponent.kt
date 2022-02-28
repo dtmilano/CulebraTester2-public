@@ -64,5 +64,6 @@ interface ApplicationComponent {
     fun inject(drag: UiDevice.Drag)
     fun inject(freezeRotation: UiDevice.FreezeRotation)
     fun inject(hasObject: UiDevice.HasObject)
+    fun inject(waitForNewToast: Device.WaitForNewToast)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

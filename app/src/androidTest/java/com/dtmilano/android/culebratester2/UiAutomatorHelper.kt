@@ -38,6 +38,7 @@ class UiAutomatorHelper {
         holder.cacheDir = instrumentation.targetContext.cacheDir
         holder.windowManager =
             instrumentation.targetContext.getSystemService(WINDOW_SERVICE) as WindowManager
+        holder.uiAutomation = instrumentation.uiAutomation
     }
 
     @Test

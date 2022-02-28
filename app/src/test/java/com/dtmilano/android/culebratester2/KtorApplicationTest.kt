@@ -1,5 +1,6 @@
 package com.dtmilano.android.culebratester2
 
+import android.app.UiAutomation
 import android.graphics.Point
 import android.view.Display
 import android.view.WindowManager
@@ -196,6 +197,10 @@ class KtorApplicationTest {
             on { takeScreenshot(any(), any(), any()) } doReturn false
         }
 
+        val uiAutomation = mock<UiAutomation> {
+
+        }
+
         @BeforeClass
         @JvmStatic
         fun setupClass() {
@@ -207,6 +212,7 @@ class KtorApplicationTest {
     @Before
     fun setup() {
         holder.uiDevice = uiDevice
+        holder.uiAutomation = uiAutomation
         objectStore.clear()
     }
 

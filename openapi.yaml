@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.21
+  version: 2.0.22
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -62,6 +62,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DisplayRealSize'
+        default:
+          $ref: '#/components/responses/error'
+  /device/waitForNewToast:
+    get:
+      summary: Waits for a new Toast.
+      description: Waits for a new Toast until timeout.
+      parameters:
+        - name: timeout
+          description: The timeout in ms
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 10000
+      responses:
+        '200':
+          description: New Toast found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Text'
         default:
           $ref: '#/components/responses/error'
   /targetContext/startActivity:

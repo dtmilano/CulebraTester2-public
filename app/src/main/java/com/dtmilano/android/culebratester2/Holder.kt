@@ -1,5 +1,6 @@
 package com.dtmilano.android.culebratester2
 
+import android.app.UiAutomation
 import android.content.Context
 import android.view.WindowManager
 import androidx.test.uiautomator.UiDevice
@@ -16,6 +17,7 @@ object Holder {
     lateinit var windowManager: WindowManager
     lateinit var cacheDir: File
     lateinit var uiDevice: UiDevice
+    lateinit var uiAutomation: UiAutomation
 }
 
 // Didn't work, dagger was injecting different references even though this is annotated with
