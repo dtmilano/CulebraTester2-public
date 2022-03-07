@@ -104,8 +104,8 @@ smul=$(tput smul)
 rmul=$(tput rmul)
 red=$(tput setaf 1)
 sgr0=$(tput sgr0)
-printf -v usage 'usage: %s [-h|--help] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall}\n' "$progname" \
-        "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
+printf -v usage 'usage: %s [-h|--help] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall | %su%sninstall }\n' "$progname" \
+        "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
 
 if [[ $# -ge 1 ]]
 then
