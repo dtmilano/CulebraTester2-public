@@ -11,7 +11,8 @@
 
 set -u
 
-PKG='com.dtmilano.android.culebratester2'
+ORIGINAL_PKG='com.dtmilano.android.culebratester2'
+PKG=${CULEBRATESTER2_PKG:-$ORIGINAL_PKG}
 PKGRE=$(sed 's@\.@\\.@g' <<<"$PKG")
 
 usage() {
@@ -83,7 +84,7 @@ forward_port() {
 }
 
 run_instrumentation() {
-    adb $D shell am instrument -w -r -e debug false -e class "$PKG.UiAutomatorHelper" \
+    adb $D shell am instrument -w -r -e debug false -e class "$ORIGINAL_PKG.UiAutomatorHelper" \
                 "$PKG.test/androidx.test.runner.AndroidJUnitRunner"
 }
 
