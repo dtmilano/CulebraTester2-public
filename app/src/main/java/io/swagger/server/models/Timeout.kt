@@ -10,10 +10,9 @@
 * Do not edit the class manually.
 */package io.swagger.server.models
 
-import io.swagger.server.models.Point
 
 /**
- *  * @param segments  * @param segmentSteps */
-data class SwipeBody (    val segments: kotlin.Array<Point>? = null,    val segmentSteps: kotlin.Int? = null
+ *  * @param timeout */
+data class Timeout (    val timeout: kotlin.Long? = null
 ) {
 }

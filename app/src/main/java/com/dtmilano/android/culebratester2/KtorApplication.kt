@@ -122,6 +122,14 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<Configurator.GetWaitForIdleTimeout> {
+                call.respond(it.response())
+            }
+
+            get<Configurator.SetWaitForIdleTimeout> {
+                call.respond(it.response())
+            }
+
             get<Device.DisplayRealSize> {
                 call.respond(it.response())
             }

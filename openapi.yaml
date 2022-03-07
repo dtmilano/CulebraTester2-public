@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.22
+  version: 2.0.23
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -49,6 +49,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CulebraInfo'
+        default:
+          $ref: '#/components/responses/error'
+  /configurator/getWaitForIdleTimeout:
+    get:
+      summary: Gets the current timeout used for waiting for the user interface to go into an idle state.
+      description: |-
+        Gets the current timeout used for waiting for the user
+        interface to go into an idle state. By default, all core
+        uiautomator objects except `UiDevice` will perform this
+        wait before starting to search for the widget specified
+        by the object's `UiSelector`. Once the idle state is
+        detected or the timeout elapses (whichever occurs firs),
+        the object will start to wait for the selector to find
+        match. See `setWaitForSelectorTimeout(long)`
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timeout'
+        default:
+          $ref: '#/components/responses/error'
+  /configurator/setWaitForIdleTimeout:
+    get:
+      summary: Sets the timeout for waiting for the user interface to go into an idle state before starting a uiautomator action.
+      description: |-
+        Sets the timeout for waiting for the user interface to go into an idle state before starting a uiautomator action. By default, all core uiautomator objects except `UiDevice` will perform this wait before starting to search for the widget specified by the object's `UiSelector`. Once the idle state is detected or the timeout elapses (whichever occurs first), the object will start to wait for the selector to find a match. See `setWaitForSelectorTimeout(long)`
+      parameters:
+        - name: timeout
+          description: Timeout value in milliseconds
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 10000
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
   /device/displayRealSize:
@@ -1125,6 +1165,15 @@ components:
           description: text of the last traversal event, else return an empty string
       example:
         lastTraversedText: ''
+    Timeout:
+      type: object
+      properties:
+        timeout:
+          type: integer
+          format: int64
+          example: 10000
+      example:
+        timeout: 10000
     WindowHierarchyChild:
       type: object
       properties:
