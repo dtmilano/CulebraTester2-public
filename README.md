@@ -48,9 +48,11 @@ It can be used like other backends, in this case you have to specify the command
 
 for example
 
-```
+```sh
 $ dump -ah emulator-5554 | jq
 ⚠️ CulebraTester2 server should have been started and port redirected.
+```
+```json
 {
   "id": "hierarchy",
   "text": "Window Hierarchy",
