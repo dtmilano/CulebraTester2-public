@@ -1,0 +1,3 @@
+#! /bin/bash
+
+printf '😼 Nothing to do. Now Github Actions should build APKs...\n'
