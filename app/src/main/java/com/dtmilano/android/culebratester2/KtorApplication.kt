@@ -248,6 +248,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiDevice.Pixel> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.Screenshot> {
                 call.respondImage(it.response())
             }

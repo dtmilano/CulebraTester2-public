@@ -12,7 +12,7 @@
 
 
 /**
- *  * @param displayWidth the current display width*/
-data class DisplayWidth (    /* the current display width */    val displayWidth: kotlin.Int? = null
+ *  * @param r  * @param g  * @param b  * @param a */
+data class Pixel (        val r: kotlin.Int,        val g: kotlin.Int,        val b: kotlin.Int,        val a: kotlin.Int
 ) {
 }

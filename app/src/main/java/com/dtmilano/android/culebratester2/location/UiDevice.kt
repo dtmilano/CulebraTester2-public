@@ -1,5 +1,7 @@
 package com.dtmilano.android.culebratester2.location
 
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.util.Log
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.SearchCondition
@@ -100,6 +102,58 @@ class UiDevice {
                     "Unsupported format $format"
                 )
             }
+        }
+    }
+
+    @Location("/pixel")
+    /*inner*/ class Pixel(private val x: Int, private val y: Int) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        /**
+         * Returns a pixel value.
+         */
+        fun response(): io.swagger.server.models.Pixel {
+            if (x > holder.uiDevice.displayWidth) {
+                throw IllegalArgumentException("x is greater than width")
+            }
+            if (y > holder.uiDevice.displayHeight) {
+                throw IllegalArgumentException("y is greater than height")
+            }
+            val tempFile = createTempFile()
+            if (holder.uiDevice.takeScreenshot(tempFile)) {
+                val bitmap = BitmapFactory.decodeFile(tempFile.absolutePath)
+                removeTempFile(tempFile)
+                // requires API >= Q
+                //val color = bitmap.getColor(x, y)
+                val colorInt = bitmap.getPixel(x, y)
+                return io.swagger.server.models.Pixel(Color.red(colorInt), Color.green(colorInt), Color.blue(colorInt), Color.alpha(colorInt))
+            }
+            throw RuntimeException("Cannot get pixel")
+        }
+
+        /**
+         * Removes a temporary file.
+         */
+        private fun removeTempFile(tempFile: File) {
+            if (!tempFile.delete()) {
+                Log.w(TAG, "Temporary file ${tempFile.absolutePath} couldn't be deleted.")
+            }
+        }
+
+        /**
+         * Creates a temporary file to hold the screenshot.
+         */
+        private fun createTempFile(): File {
+            val tempDir = holder.cacheDir
+            return File.createTempFile("screenshot", "png", tempDir)
         }
     }
 

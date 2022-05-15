@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.23
+  version: 2.0.24
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -803,6 +803,46 @@ paths:
             minimum: 1
             maximum: 100
           example: 90
+  /uiDevice/pixel:
+    get:
+      summary: Gets a pixel from device screen.
+      description: |
+        Gets a pixel on the device screen screenshot.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pixel'
+              example:
+                r: 132
+                g: 140
+                b: 123
+                a: 255
+        '400':
+          description: Cannot obtain pixel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+      parameters:
+        - name: x
+          in: query
+          required: true
+          description: The x coordinate
+          schema:
+            type: integer
+            minimum: 0
+          example: 300
+        - name: y
+          in: query
+          required: true
+          description: The y coordinate
+          schema:
+            type: integer
+            minimum: 0
+          example: 1020
   /uiObject2/{oid}/clear:
     get:
       summary: Clears the text content if this object is an editable field.
@@ -1165,6 +1205,30 @@ components:
           description: text of the last traversal event, else return an empty string
       example:
         lastTraversedText: ''
+    Pixel:
+      type: object
+      required:
+        - r
+        - g
+        - b
+        - a
+      properties:
+        r:
+          type: integer
+          format: int8
+          example: 147
+        g:
+          type: integer
+          format: int8
+          example: 208
+        b:
+          type: integer
+          format: int8
+          example: 123
+        a:
+          type: integer
+          format: int8
+          example: 255
     Timeout:
       type: object
       properties:
