@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.24
+  version: 2.0.25
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -233,6 +233,20 @@ paths:
               schema:
                 type: string
               example: OK
+        default:
+          $ref: '#/components/responses/error'
+    post:
+      summary: Clicks at the specified locations.
+      description: Clicks at the specified locations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClickBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
   /uiDevice/drag:
@@ -1090,6 +1104,13 @@ components:
         status: ERROR
         statusCode: 100
         errorMessage: Operation could not be completed
+    ClickBody:
+      type: object
+      properties:
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/Point'
     CulebraInfo:
       type: object
       properties:

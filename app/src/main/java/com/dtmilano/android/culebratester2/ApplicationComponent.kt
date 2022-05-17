@@ -24,7 +24,7 @@ interface ApplicationComponent {
     fun inject(startActivity: TargetContext.StartActivity)
     fun inject(dumpWindowHierarchy: UiDevice.DumpWindowHierarchy)
     fun inject(screenshot: UiDevice.Screenshot)
-    fun inject(click: UiDevice.Click)
+    fun inject(get: UiDevice.Click.Get)
     fun inject(currentPackageName: UiDevice.CurrentPackageName)
     fun inject(displayHeight: UiDevice.DisplayHeight)
     fun inject(displayRotation: UiDevice.DisplayRotation)
@@ -66,5 +66,6 @@ interface ApplicationComponent {
     fun inject(hasObject: UiDevice.HasObject)
     fun inject(waitForNewToast: Device.WaitForNewToast)
     fun inject(pixel: UiDevice.Pixel)
+    fun inject(post: UiDevice.Click.Post)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

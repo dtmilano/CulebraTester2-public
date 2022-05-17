@@ -105,6 +105,9 @@ class UiDevice {
         }
     }
 
+    /**
+     * Gets the value of a pixel on the device screen.
+     */
     @Location("/pixel")
     /*inner*/ class Pixel(private val x: Int, private val y: Int) {
         private var holder: Holder
@@ -122,10 +125,10 @@ class UiDevice {
          */
         fun response(): io.swagger.server.models.Pixel {
             if (x > holder.uiDevice.displayWidth) {
-                throw IllegalArgumentException("x is greater than width")
+                throw IllegalArgumentException("x=${x} is greater than width=${holder.uiDevice.displayWidth}")
             }
             if (y > holder.uiDevice.displayHeight) {
-                throw IllegalArgumentException("y is greater than height")
+                throw IllegalArgumentException("y=${y} is greater than height=${holder.uiDevice.displayHeight}")
             }
             val tempFile = createTempFile()
             if (holder.uiDevice.takeScreenshot(tempFile)) {
@@ -134,7 +137,7 @@ class UiDevice {
                 // requires API >= Q
                 //val color = bitmap.getColor(x, y)
                 val colorInt = bitmap.getPixel(x, y)
-                return io.swagger.server.models.Pixel(Color.red(colorInt), Color.green(colorInt), Color.blue(colorInt), Color.alpha(colorInt))
+                return Pixel(Color.red(colorInt), Color.green(colorInt), Color.blue(colorInt), Color.alpha(colorInt))
             }
             throw RuntimeException("Cannot get pixel")
         }
@@ -206,26 +209,59 @@ class UiDevice {
     }
 
     @Location("/click")
-    /*inner*/ class Click(private val x: Int, private val y: Int) {
-        private var holder: Holder
+    /*inner*/ class Click {
+        class Get(private val x: Int, private val y: Int) {
+            private var holder: Holder
 
-        @Inject
-        lateinit var holderHolder: HolderHolder
+            @Inject
+            lateinit var holderHolder: HolderHolder
 
-        @Inject
-        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+            @Inject
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
-        init {
-            CulebraTesterApplication().appComponent.inject(this)
-            holder = holderHolder.instance
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(): StatusResponse {
+                //Log.d("UiDevice", "clicking on ($x,$y)")
+                if (holder.uiDevice.click(x, y)) {
+                    return StatusResponse(StatusResponse.Status.OK)
+                }
+                return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot click")
+            }
         }
 
-        fun response(): StatusResponse {
-            //Log.d("UiDevice", "clicking on ($x,$y)")
-            if (holder.uiDevice.click(x, y)) {
-                return StatusResponse(StatusResponse.Status.OK)
+        /**
+         * Performs multiple clicks on points.
+         */
+        // WARNING: ktor is not passing this argument so the '?' and null are needed
+        // see https://github.com/ktorio/ktor/issues/190
+        /*inner*/ class Post(val body: ClickBody? = null) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
             }
-            return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot click")
+
+            fun response(body: ClickBody): Any {
+                var result = true
+                body.points?.forEach {
+                    Log.i(TAG, "clicking on (${it}), result=${result}")
+                    result = result && holder.uiDevice.click(it.x!!, it.y!!)
+                }
+
+                if (result) {
+                    return StatusResponse(StatusResponse.Status.OK)
+                }
+
+                return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot click")
+            }
         }
     }
 
