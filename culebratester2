@@ -21,7 +21,8 @@ usage() {
 }
 
 fatal() {
-    printf '⛔️ %sERROR: %s%s\n' "$red" "$@" "$sgr0" >&2
+    args="$*"
+    printf '⛔️ %sERROR: %s%s\n' "$red" "$args" "$sgr0" >&2
     exit 1
 }
 
@@ -30,13 +31,15 @@ _help() {
     printf '\n'
     printf 'positional arguments:\n'
     printf ' forward-port          uses adb to forward port %d\n' "$port"
+    printf '     [--local-port PORT] [--remote-port PORT]\n'
     printf ' install               installs on device\n'
     printf ' run-instrumentation   runs the instrumentation and starts the server\n'
     printf ' start-server          starts the server on the device\n'
     printf ' uninstall             uninstalls pkgs on device\n'
     printf '\n'
-    printf ' optional arguments:\n'
+    printf 'optional arguments:\n'
     printf ' -h, --help            show this help message and exit\n'
+    printf ' -n, --dryrun          does not execute the commands\n'
     exit 0
 }
 
@@ -76,20 +79,51 @@ check_installed() {
 }
 
 forward_port() {
-    adb $D forward tcp:$port tcp:$port
-    if [[ $? -ne 0 ]]
+    local local_port=$port
+    local remote_port=$port
+
+    while [[ $# -ge 1 ]]
+    do
+        case "$1" in
+            '--local-port')
+                shift
+                if [[ $# -lt 1 ]]
+                then
+                    fatal 'Missing PORT in forward-port'
+                fi
+                local_port=$1
+                ;;
+
+            '--remote-port')
+                shift
+                if [[ $# -lt 1 ]]
+                then
+                    fatal 'Missing PORT in forward-port'
+                fi
+                remote_port=$1
+                ;;
+
+            *)
+                fatal "Invalid option to forward-port: $1"
+                ;;
+        esac
+        shift
+    done
+
+    # adb forward [--no-rebind] LOCAL REMOTE
+    if ! $dryrun adb $D forward tcp:$local_port tcp:$remote_port
     then
-        fatal "Could not forward port $port"
+        fatal "Could not forward port local:$local_port remote:$remote_port"
     fi
 }
 
 run_instrumentation() {
-    adb $D shell am instrument -w -r -e debug false -e class "$ORIGINAL_PKG.UiAutomatorHelper" \
+    $dryrun adb $D shell am instrument -w -r -e debug false -e class "$ORIGINAL_PKG.UiAutomatorHelper" \
                 "$PKG.test/androidx.test.runner.AndroidJUnitRunner"
 }
 
 uninstall_pkgs() {
-    adb $D uninstall "$PKG.test" && adb $D uninstall "$PKG"
+    $dryrun adb $D uninstall "$PKG.test" && adb $D uninstall "$PKG"
 }
 
 
@@ -104,7 +138,8 @@ smul=$(tput smul)
 rmul=$(tput rmul)
 red=$(tput setaf 1)
 sgr0=$(tput sgr0)
-printf -v usage 'usage: %s [-h|--help] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall | %su%sninstall }\n' "$progname" \
+dryrun=
+printf -v usage 'usage: %s [-h|--help] [-n|-dryrun] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall | %su%sninstall }\n' "$progname" \
         "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
 
 if [[ $# -ge 1 ]]
@@ -112,6 +147,12 @@ then
     if [[ "$1" == '-h' || "$1" == '--help' ]]
     then
         _help
+    fi
+
+    if [[ "$1" == '-n' || "$1" == '--dryrun' ]]
+    then
+        dryrun=echo
+        shift
     fi
 
     if ! which android-select-device >/dev/null
@@ -122,23 +163,28 @@ then
 
     case "$1" in
         forward-port|f)
-            forward_port
+            shift
+            forward_port "$@"
             ;;
 
         run-instrumentation|r)
+            shift
             run_instrumentation
             ;;
 
         start-server|s)
+            shift
             check_installed
-            forward_port && run_instrumentation
+            forward_port "$@" && run_instrumentation
             ;;
 
         install|i)
+            shift
             ./gradlew installDebug installDebugAndroidTest
             ;;
 
         uninstall|u)
+            shift
             uninstall_pkgs
             ;;
 
