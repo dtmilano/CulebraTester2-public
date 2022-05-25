@@ -2,6 +2,7 @@ package com.dtmilano.android.culebratester2.location
 
 import android.content.ComponentName
 import android.content.Intent
+import android.net.Uri
 import com.dtmilano.android.culebratester2.ApplicationComponent
 import com.dtmilano.android.culebratester2.DaggerApplicationComponent
 import com.dtmilano.android.culebratester2.Holder
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class TargetContext {
 
     @Location("/startActivity")
-    /*inner*/ class StartActivity(val pkg: String, val cls: String) {
+    /*inner*/ class StartActivity(val pkg: String, val cls: String, val uri: String?) {
         private var holder: Holder
         @Inject
         lateinit var holderHolder: HolderHolder
@@ -31,6 +32,9 @@ class TargetContext {
             val intent = Intent(Intent.ACTION_MAIN)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             intent.component = ComponentName(pkg, cls)
+            uri?.let {
+                intent.data = Uri.parse(uri)
+            }
             holder.targetContext.get()!!.startActivity(intent)
             holder.uiDevice.waitForIdle(5000)
             return StatusResponse(StatusResponse.Status.OK)
