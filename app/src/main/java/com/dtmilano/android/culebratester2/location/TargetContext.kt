@@ -17,7 +17,7 @@ import javax.inject.Inject
 class TargetContext {
 
     @Location("/startActivity")
-    /*inner*/ class StartActivity(val pkg: String, val cls: String, val uri: String?) {
+    /*inner*/ class StartActivity(private val pkg: String, private val cls: String, private val uri: String? = null) {
         private var holder: Holder
         @Inject
         lateinit var holderHolder: HolderHolder

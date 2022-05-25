@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.26
+  version: 2.0.27
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -146,7 +146,7 @@ paths:
         - name: uri
           in: query
           required: false
-          description: the URI
+          description: the URI (i. e. https://example.com)
           schema:
             type: string
       responses:
