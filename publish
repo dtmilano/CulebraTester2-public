@@ -1,3 +1,17 @@
 #! /bin/bash
 
+set -u
+set -e
+
+dry_run=
+if [[ "${1:-}" == '-n' || "${1:-}" == '--dry-run' ]]
+then
+    dry_run=echo
+fi
+
+eval $(grep 'version:' openapi.yaml | sed 's/: */=/')
+tag="$version"
+$dry_run git tag "$tag" || printf 'WARNING: tag "%s" already exists\n' "$tag"
+$dry_run git push --tags
+
 printf '😼 Nothing to do. Now Github Actions should build APKs...\n'
