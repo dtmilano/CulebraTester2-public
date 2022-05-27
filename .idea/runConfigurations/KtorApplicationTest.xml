@@ -4,17 +4,14 @@
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="--tests &quot;com.dtmilano.android.culebratester2.KtorApplicationTest&quot;" />
+      <option name="scriptParameters" value=":app:cleanTestDebugUnitTest :app:testDebugUnitTest --tests &quot;com.dtmilano.android.culebratester2.KtorApplicationTest&quot;" />
       <option name="taskDescriptions">
         <list />
       </option>
       <option name="taskNames">
-        <list>
-          <option value=":app:cleanTestDebugUnitTest" />
-          <option value=":app:testDebugUnitTest" />
-        </list>
+        <list />
       </option>
-      <option name="vmOptions" value="" />
+      <option name="vmOptions" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>

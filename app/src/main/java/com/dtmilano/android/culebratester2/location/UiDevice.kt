@@ -325,14 +325,10 @@ class UiDevice {
         @Inject
         lateinit var holderHolder: HolderHolder
 
-        @Inject
-        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
-
         init {
             CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
-
 
         fun response(): io.swagger.server.models.DisplayRotation {
             return io.swagger.server.models.DisplayRotation(DisplayRotationEnum.of(holder.uiDevice.displayRotation))
