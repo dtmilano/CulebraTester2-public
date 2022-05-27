@@ -71,7 +71,7 @@ $ dump -ah emulator-5554 | jq
     ...
 ```
 
-or set `useuiautomatorhelper=true` when you create a `ViewClient` object.
+or set `useuiautomatorhelper=True` when you create a `ViewClient` object.
 
 # culebra
 **CulebraTester2** is a new implementation in Kotlin of [culebra](culebra.dtmilano.com).
