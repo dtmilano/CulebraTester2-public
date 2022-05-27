@@ -222,6 +222,14 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiDevice.IsNaturalOrientation> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.IsScreenOn> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.LastTraversedText> {
                 call.respond(it.response())
             }
@@ -277,6 +285,10 @@ fun Application.module(testing: Boolean = false) {
                 // println("body ${it.body}");
                 val body = call.receive<SwipeBody>()
                 call.respond(it.response(body))
+            }
+
+            get<UiDevice.UnfreezeRotation> {
+                call.respond(it.response())
             }
 
             get<UiDevice.Wait> {

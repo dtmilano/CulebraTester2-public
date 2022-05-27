@@ -10,10 +10,11 @@
 * Do not edit the class manually.
 */package io.swagger.server.models
 
-import io.swagger.server.models.Point
 
 /**
- *  * @param segments  * @param segmentSteps */
-data class SwipeBody (    val segments: kotlin.Array<Point>? = null,    val segmentSteps: kotlin.Int? = null
+ *  * @param name the name of the contained value * @param value the value*/
+data class BooleanResponse (        /* the name of the contained value */
+        val name: kotlin.String,        /* the value */
+        val value: kotlin.Boolean
 ) {
 }

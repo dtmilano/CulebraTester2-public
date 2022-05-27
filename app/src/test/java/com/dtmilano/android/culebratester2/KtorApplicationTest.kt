@@ -17,21 +17,7 @@ import io.ktor.server.testing.contentType
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import io.swagger.server.models.CurrentPackageName
-import io.swagger.server.models.DisplayHeight
-import io.swagger.server.models.DisplayRealSize
-import io.swagger.server.models.DisplayRotation
-import io.swagger.server.models.DisplaySizeDp
-import io.swagger.server.models.DisplayWidth
-import io.swagger.server.models.Help
-import io.swagger.server.models.LastTraversedText
-import io.swagger.server.models.ObjectRef
-import io.swagger.server.models.ProductName
-import io.swagger.server.models.Selector
-import io.swagger.server.models.StatusCode
-import io.swagger.server.models.StatusResponse
-import io.swagger.server.models.SwipeBody
-import io.swagger.server.models.Text
+import io.swagger.server.models.*
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
@@ -50,10 +36,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
 import java.io.OutputStream
-import kotlin.test.Ignore
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 import kotlin.text.Regex.Companion.escape
 
 
@@ -473,6 +456,48 @@ class KtorApplicationTest {
                 "/v2/uiDevice/freezeRotation"
             ).apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test unfreeze rotation`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/unfreezeRotation"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test is natural orientation`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/isNaturalOrientation"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val booleanResponse = jsonResponse<BooleanResponse>()
+                assertEquals(booleanResponse.name, "isNaturalOrientation")
+                assertFalse(booleanResponse.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test is screen on`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/isScreenOn"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val booleanResponse = jsonResponse<BooleanResponse>()
+                assertEquals(booleanResponse.name, "isScreenOn")
+                assertFalse(booleanResponse.value)
             }
         }
     }

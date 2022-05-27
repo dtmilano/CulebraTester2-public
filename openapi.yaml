@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.27
+  version: 2.0.28
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -523,6 +523,32 @@ paths:
                 $ref: '#/components/schemas/DisplayWidth'
         default:
           $ref: '#/components/responses/error'
+  /uiDevice/isNaturalOrientation:
+    get:
+      summary: Check if the device is in its natural orientation.
+      description: This is determined by checking if the orientation is at 0 or 180 degrees.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        default:
+          $ref: '#/components/responses/error'
+  /uiDevice/isScreenOn:
+    get:
+      summary: Checks the power manager if the screen is ON.
+      description: Checks the power manager if the screen is ON.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        default:
+          $ref: '#/components/responses/error'
   /uiDevice/lastTraversedText:
     get:
       summary: Retrieves the text from the last UI traversal event received.
@@ -669,6 +695,15 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SwipeBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+  /uiDevice/unfreezeRotation:
+    get:
+      summary: Re-enables the sensors and un-freezes the device rotation allowing its contents to rotate with the device physical rotation
+      description: During a test execution, it is best to keep the device frozen in a specific orientation until the test case execution has completed.
       responses:
         '200':
           $ref: '#/components/responses/ok'
@@ -1091,6 +1126,21 @@ paths:
           $ref: '#/components/responses/error'
 components:
   schemas:
+    BooleanResponse:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+          description: the name of the contained value
+        value:
+          type: boolean
+          description: the value
+      example:
+        name: isSomething
+        value: true
     StatusResponse:
       type: object
       required:

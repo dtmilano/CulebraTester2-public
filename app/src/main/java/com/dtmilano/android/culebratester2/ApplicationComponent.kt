@@ -67,5 +67,8 @@ interface ApplicationComponent {
     fun inject(waitForNewToast: Device.WaitForNewToast)
     fun inject(pixel: UiDevice.Pixel)
     fun inject(post: UiDevice.Click.Post)
+    fun inject(unfreezeRotation: UiDevice.UnfreezeRotation)
+    fun inject(isNaturalOrientation: UiDevice.IsNaturalOrientation)
+    fun inject(isScreenOn: UiDevice.IsScreenOn)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

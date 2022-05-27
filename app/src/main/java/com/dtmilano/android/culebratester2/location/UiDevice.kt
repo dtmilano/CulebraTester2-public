@@ -577,6 +577,47 @@ class UiDevice {
     }
 
     /**
+     * Check if the device is in its natural orientation.
+     * This is determined by checking if the orientation is at 0 or 180 degrees.
+     */
+    @Location("/isNaturalOrientation")
+    /* inner */ class IsNaturalOrientation {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): BooleanResponse {
+            return BooleanResponse("isNaturalOrientation", holder.uiDevice.isNaturalOrientation)
+        }
+    }
+
+    /**
+     * Checks the power manager if the screen is ON.
+     */
+    @Location("/isScreenOn")
+    /* inner */ class IsScreenOn {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): BooleanResponse {
+            return BooleanResponse("isScreenOn", holder.uiDevice.isScreenOn)
+        }
+    }
+
+    /**
      * Retrieves the text from the last UI traversal event received.
      * Retrieves the text from the last UI traversal event received.
      */
@@ -901,6 +942,28 @@ class UiDevice {
                 }
                 return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot swipe")
             }
+        }
+    }
+
+    /**
+     *
+     */
+    @Location("/unfreezeRotation")
+    /* inner */ class UnfreezeRotation() {
+
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            holder.uiDevice.unfreezeRotation()
+            return StatusResponse(StatusResponse.Status.OK)
         }
     }
 
