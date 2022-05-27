@@ -816,8 +816,8 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/displayRotation").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val displayRotation = jsonResponse<DisplayRotation>()
-                assertEquals(0, displayRotation.displayRotation?.value)
+                val displayRotation = jsonResponse<DisplayRotationEnum>()
+                assertEquals(0, displayRotation.value)
             }
         }
     }

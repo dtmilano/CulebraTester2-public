@@ -330,8 +330,8 @@ class UiDevice {
             holder = holderHolder.instance
         }
 
-        fun response(): io.swagger.server.models.DisplayRotation {
-            return io.swagger.server.models.DisplayRotation(DisplayRotationEnum.of(holder.uiDevice.displayRotation))
+        fun response(): DisplayRotationResponse {
+            return DisplayRotationResponse(DisplayRotationEnum.of(holder.uiDevice.displayRotation))
         }
     }
 
