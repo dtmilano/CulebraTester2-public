@@ -37,19 +37,21 @@ android {
         }
     }
 
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
         useIR = true
     }
+
     buildFeatures {
         viewBinding true
         compose true
     }
+
     testOptions {
         unitTests {
             returnDefaultValues = true
@@ -59,8 +61,13 @@ android {
         //    systemProperty 'robolectric.enabledSdks', '28'
         //}
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
+    }
+
+    lintOptions {
+        disable "JvmStaticProvidesInObjectDetector", "FieldSiteTargetOnQualifierAnnotation", "ModuleCompanionObjects", "ModuleCompanionObjectsNotInModuleParent"
     }
 }
 
