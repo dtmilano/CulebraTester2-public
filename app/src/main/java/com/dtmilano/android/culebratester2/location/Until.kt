@@ -1,8 +1,7 @@
 package com.dtmilano.android.culebratester2.location
 
-import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Until
-import com.dtmilano.android.culebratester2.DaggerApplicationComponent
+import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
@@ -12,11 +11,27 @@ import javax.inject.Inject
 
 private const val TAG = "Until"
 
+/**
+ * See https://github.com/ktorio/ktor/issues/1660 for the reason why we need the extra parameter
+ * in nested classes:
+ *
+ * "One of the problematic features is nested location classes and nested location objects.
+ *
+ * What we are thinking of to change:
+ *
+ * a nested location class should always have a property of the outer class or object
+ * nested objects in objects are not allowed
+ * The motivation for the first point is the fact that a location class nested to another, makes no
+ * sense without the ability to refer to the outer class."
+ */
 @KtorExperimentalLocationsAPI
 @Location("/until")
 class Until {
     @Location("/findObject")
-    /*inner*/ class FindObject(private val bySelector: String) {
+    /*inner*/ class FindObject(
+        private val bySelector: String,
+        private val parent: com.dtmilano.android.culebratester2.location.Until = com.dtmilano.android.culebratester2.location.Until()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -26,7 +41,7 @@ class Until {
         lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -39,7 +54,7 @@ class Until {
     }
 
     @Location("/newWindow")
-    /*inner*/ class NewWindow {
+    /*inner*/ class NewWindow(private val parent: com.dtmilano.android.culebratester2.location.Until = com.dtmilano.android.culebratester2.location.Until()) {
         private var holder: Holder
 
         @Inject
@@ -49,7 +64,7 @@ class Until {
         lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 

@@ -1,7 +1,7 @@
 package com.dtmilano.android.culebratester2.location
 
 import androidx.test.uiautomator.EventCondition
-import com.dtmilano.android.culebratester2.DaggerApplicationComponent
+import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
@@ -15,11 +15,24 @@ import javax.inject.Inject
 
 private const val TAG = "UiObject2"
 
+/**
+ * See https://github.com/ktorio/ktor/issues/1660 for the reason why we need the extra parameter
+ * in nested classes:
+ *
+ * "One of the problematic features is nested location classes and nested location objects.
+ *
+ * What we are thinking of to change:
+ *
+ * a nested location class should always have a property of the outer class or object
+ * nested objects in objects are not allowed
+ * The motivation for the first point is the fact that a location class nested to another, makes no
+ * sense without the ability to refer to the outer class."
+ */
 @KtorExperimentalLocationsAPI
 @Location("/uiObject2")
 class UiObject2 {
     @Location("/{oid}/clear")
-    /*inner*/ class Clear(val oid: Int) {
+    /*inner*/ class Clear(val oid: Int, private val parent: UiObject2 = UiObject2()) {
         private var holder: Holder
 
         @Inject
@@ -29,7 +42,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -44,7 +57,7 @@ class UiObject2 {
     }
 
     @Location("/{oid}/click")
-    /*inner*/ class Click(val oid: Int) {
+    /*inner*/ class Click(val oid: Int, private val parent: UiObject2 = UiObject2()) {
         private var holder: Holder
 
         @Inject
@@ -54,7 +67,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -72,7 +85,8 @@ class UiObject2 {
     /*inner*/ class ClickAndWait(
         val oid: Int,
         private val eventConditionRef: Int,
-        private val timeout: Long = 10000
+        private val timeout: Long = 10000,
+        private val parent: UiObject2 = UiObject2()
     ) {
         private var holder: Holder
 
@@ -83,14 +97,14 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
         fun response(): StatusResponse {
             uiObject2(oid, objectStore)?.let {
                 val eventCondition: EventCondition<*> =
-                    objectStore.get(eventConditionRef) as EventCondition<*>
+                    objectStore[eventConditionRef] as EventCondition<*>
                 val result = it.clickAndWait(eventCondition, timeout)
                 if (result is Boolean) {
                     if (result) {
@@ -114,7 +128,7 @@ class UiObject2 {
     }
 
     @Location("/{oid}/dump")
-    /*inner*/ class Dump(val oid: Int) {
+    /*inner*/ class Dump(val oid: Int, private val parent: UiObject2 = UiObject2()) {
         private var holder: Holder
 
         @Inject
@@ -124,7 +138,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -135,7 +149,7 @@ class UiObject2 {
     }
 
     @Location("/{oid}/getText")
-    /*inner*/ class GetText(val oid: Int) {
+    /*inner*/ class GetText(val oid: Int, private val parent: UiObject2 = UiObject2()) {
         private var holder: Holder
 
         @Inject
@@ -145,7 +159,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -158,7 +172,7 @@ class UiObject2 {
     }
 
     @Location("/{oid}/longClick")
-    /*inner*/ class LongClick(val oid: Int) {
+    /*inner*/ class LongClick(val oid: Int, private val parent: UiObject2 = UiObject2()) {
         private var holder: Holder
 
         @Inject
@@ -168,7 +182,7 @@ class UiObject2 {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -184,7 +198,11 @@ class UiObject2 {
 
     @Location("/{oid}/setText")
     /*inner*/ class SetText(val oid: Int) {
-        class Get(val text: String, val setText: SetText) {
+        class Get(
+            val text: String,
+            private val setText: SetText,
+            private val parent: UiObject2 = UiObject2()
+        ) {
             private var holder: Holder
 
             @Inject
@@ -194,7 +212,7 @@ class UiObject2 {
             lateinit var objectStore: ObjectStore
 
             init {
-                DaggerApplicationComponent.factory().create().inject(this)
+                CulebraTesterApplication().appComponent.inject(this)
                 holder = holderHolder.instance
             }
 
@@ -209,7 +227,11 @@ class UiObject2 {
 
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        class Post(val text: Text? = null, val setText: SetText) {
+        class Post(
+            val text: Text? = null,
+            private val setText: SetText,
+            private val parent: UiObject2 = UiObject2()
+        ) {
             private var holder: Holder
 
             @Inject
@@ -219,7 +241,7 @@ class UiObject2 {
             lateinit var objectStore: ObjectStore
 
             init {
-                DaggerApplicationComponent.factory().create().inject(this)
+                CulebraTesterApplication().appComponent.inject(this)
                 holder = holderHolder.instance
             }
 

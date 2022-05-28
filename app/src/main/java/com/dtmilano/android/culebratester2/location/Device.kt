@@ -5,21 +5,33 @@ import android.app.UiAutomation
 import android.graphics.Point
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
-import com.dtmilano.android.culebratester2.DaggerApplicationComponent
-import com.dtmilano.android.culebratester2.Holder
-import com.dtmilano.android.culebratester2.HolderHolder
+import com.dtmilano.android.culebratester2.*
 import com.dtmilano.android.culebratester2.ObjectStore
 import io.ktor.locations.*
 import io.swagger.server.models.Text
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
+/**
+ * See https://github.com/ktorio/ktor/issues/1660 for the reason why we need the extra parameter
+ * in nested classes:
+ *
+ * "One of the problematic features is nested location classes and nested location objects.
+ *
+ * What we are thinking of to change:
+ *
+ * a nested location class should always have a property of the outer class or object
+ * nested objects in objects are not allowed
+ * The motivation for the first point is the fact that a location class nested to another, makes no
+ * sense without the ability to refer to the outer class."
+ */
 @KtorExperimentalLocationsAPI
 @Location("/device")
 class Device {
     @Location("/displayRealSize")
-    class DisplayRealSize {
+    class DisplayRealSize(private val parent: Device = Device()) {
         private var holder: Holder
+
         @Inject
         lateinit var holderHolder: HolderHolder
 
@@ -27,7 +39,7 @@ class Device {
         lateinit var objectStore: ObjectStore
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
@@ -43,14 +55,17 @@ class Device {
     }
 
     @Location("/waitForNewToast")
-    /*inner*/ class WaitForNewToast(private val timeout: Long) {
+    /*inner*/ class WaitForNewToast(
+        private val timeout: Long,
+        private val parent: Device = Device()
+    ) {
         private var holder: Holder
 
         @Inject
         lateinit var holderHolder: HolderHolder
 
         @Inject
-        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+        lateinit var objectStore: ObjectStore
 
         private var lastToastMessage: String? = null
 

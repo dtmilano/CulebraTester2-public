@@ -28,12 +28,25 @@ import kotlin.collections.ArrayList
 private const val TAG = "UiDevice"
 private const val REMOVE_TEMP_FILE_DELAY = 2000L
 
+/**
+ * See https://github.com/ktorio/ktor/issues/1660 for the reason why we need the extra parameter
+ * in nested classes:
+ *
+ * "One of the problematic features is nested location classes and nested location objects.
+ *
+ * What we are thinking of to change:
+ *
+ * a nested location class should always have a property of the outer class or object
+ * nested objects in objects are not allowed
+ * The motivation for the first point is the fact that a location class nested to another, makes no
+ * sense without the ability to refer to the outer class."
+ */
 @KtorExperimentalLocationsAPI
 @Location("/uiDevice")
 class UiDevice {
 
     @Location("/clearLastTraversedText")
-    /*inner*/ class ClearLastTraversedText {
+    /*inner*/ class ClearLastTraversedText(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -51,7 +64,10 @@ class UiDevice {
     }
 
     /**
-     * Performs a swipe from one coordinate to another coordinate. You can control the smoothness and speed of the swipe by specifying the number of steps. Each step execution is throttled to 5 milliseconds per step, so for a 100 steps, the swipe will take around 0.5 seconds to complete.
+     * Performs a swipe from one coordinate to another coordinate. You can control the smoothness
+     * and speed of the swipe by specifying the number of steps. Each step execution is throttled to
+     * 5 milliseconds per step, so for a 100 steps, the swipe will take around 0.5 seconds to
+     * complete.
      */
     @Location("/drag")
     /*inner*/ class Drag(
@@ -59,7 +75,8 @@ class UiDevice {
         private val startY: Int,
         private val endX: Int,
         private val endY: Int,
-        private val steps: Int
+        private val steps: Int,
+        private val parent: UiDevice = UiDevice()
     ) {
         private var holder: Holder
 
@@ -80,7 +97,7 @@ class UiDevice {
     }
 
     @Location("/dumpWindowHierarchy")
-    /*inner*/ class DumpWindowHierarchy(private val format: String = "JSON") {
+    /*inner*/ class DumpWindowHierarchy(private val format: String = "JSON", private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -109,7 +126,7 @@ class UiDevice {
      * Gets the value of a pixel on the device screen.
      */
     @Location("/pixel")
-    /*inner*/ class Pixel(private val x: Int, private val y: Int) {
+    /*inner*/ class Pixel(private val x: Int, private val y: Int, private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -161,7 +178,7 @@ class UiDevice {
     }
 
     @Location("/screenshot")
-    /*inner*/ class Screenshot(private val scale: Float = 1.0F, private val quality: Int = 90) {
+    /*inner*/ class Screenshot(private val scale: Float = 1.0F, private val quality: Int = 90, private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -209,8 +226,8 @@ class UiDevice {
     }
 
     @Location("/click")
-    /*inner*/ class Click {
-        class Get(private val x: Int, private val y: Int) {
+    /*inner*/ class Click(private val parent: UiDevice = UiDevice()) {
+        class Get(private val x: Int, private val y: Int, private val parent: Click = Click()) {
             private var holder: Holder
 
             @Inject
@@ -238,7 +255,7 @@ class UiDevice {
          */
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        /*inner*/ class Post(val body: ClickBody? = null) {
+        /*inner*/ class Post(val body: ClickBody? = null, private val parent: Click = Click()) {
             private var holder: Holder
 
             @Inject
@@ -270,7 +287,7 @@ class UiDevice {
      * Gets the current package name
      */
     @Location("/currentPackageName")
-    /*inner*/ class CurrentPackageName {
+    /*inner*/ class CurrentPackageName(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -285,7 +302,7 @@ class UiDevice {
         }
 
         fun response(): io.swagger.server.models.CurrentPackageName {
-            return io.swagger.server.models.CurrentPackageName(holder.uiDevice.currentPackageName)
+            return CurrentPackageName(holder.uiDevice.currentPackageName)
         }
     }
 
@@ -294,7 +311,7 @@ class UiDevice {
      * Gets the display height
      */
     @Location("/displayHeight")
-    /*inner*/ class DisplayHeight {
+    /*inner*/ class DisplayHeight(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -310,7 +327,7 @@ class UiDevice {
 
 
         fun response(): io.swagger.server.models.DisplayHeight {
-            return io.swagger.server.models.DisplayHeight(holder.uiDevice.displayHeight)
+            return DisplayHeight(holder.uiDevice.displayHeight)
         }
     }
 
@@ -319,7 +336,7 @@ class UiDevice {
      * Gets the display rotation
      */
     @Location("/displayRotation")
-    /*inner*/ class DisplayRotation {
+    /*inner*/ class DisplayRotation(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -340,7 +357,7 @@ class UiDevice {
      * Gets the display size in DP
      */
     @Location("/displaySizeDp")
-    /*inner*/ class DisplaySizeDp {
+    /*inner*/ class DisplaySizeDp(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -357,7 +374,7 @@ class UiDevice {
 
         fun response(): io.swagger.server.models.DisplaySizeDp {
             val dp = holder.uiDevice.displaySizeDp
-            return io.swagger.server.models.DisplaySizeDp(dp.x, dp.y)
+            return DisplaySizeDp(dp.x, dp.y)
         }
     }
 
@@ -366,7 +383,7 @@ class UiDevice {
      * Gets the display width
      */
     @Location("/displayWidth")
-    /*inner*/ class DisplayWidth {
+    /*inner*/ class DisplayWidth(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -382,12 +399,12 @@ class UiDevice {
 
 
         fun response(): io.swagger.server.models.DisplayWidth {
-            return io.swagger.server.models.DisplayWidth(holder.uiDevice.displayWidth)
+            return DisplayWidth(holder.uiDevice.displayWidth)
         }
     }
 
     @Location("/findObject")
-    /*inner*/ class FindObject {
+    /*inner*/ class FindObject(private val parent: UiDevice = UiDevice()) {
         /**
          * Finds an object
          * Finds an object. The object found, if any, can be later used in other call like API.click.
@@ -398,7 +415,8 @@ class UiDevice {
         /*inner*/ class Get(
             private val resourceId: String? = null,
             private val uiSelector: String? = null,
-            private val bySelector: String? = null
+            private val bySelector: String? = null,
+            private val parent: FindObject = FindObject()
         ) {
             private var holder: Holder
 
@@ -415,7 +433,7 @@ class UiDevice {
 
 
             fun response(): Any {
-                if (resourceId ?: uiSelector ?: bySelector == null) {
+                if ((resourceId ?: uiSelector ?: bySelector) == null) {
                     return StatusResponse(
                         StatusResponse.Status.ERROR,
                         StatusCode.ARGUMENT_MISSING.value,
@@ -464,7 +482,7 @@ class UiDevice {
          */
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        /*inner*/ class Post(private val body: Selector? = null) {
+        /*inner*/ class Post(private val body: Selector? = null, private val parent: FindObject = FindObject()) {
             private var holder: Holder
 
             @Inject
@@ -498,14 +516,22 @@ class UiDevice {
     }
 
     @Location("/findObjects")
-    /*inner*/ class FindObjects {
+    /*inner*/ class FindObjects(private val parent: UiDevice = UiDevice()) {
         /**
          * Finds objects
-         * Finds all object matching selector. The object found, if any, can be later used in other call like API.click.
-         * @param bySelector the selectorStr sets the resource name criteria for matching. A UI element will be considered a match if its resource name exactly matches the selectorStr parameter and all other criteria for this selectorStr are met. The format of the selectorStr string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of - clickable - depth - desc - res - text - scrollable &#x60;@&#x60; replaces the &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL. If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created. (optional)
+         * Finds all object matching selector. The object found, if any, can be later used in other
+         * call like API.click.
+         * @param bySelector the selectorStr sets the resource name criteria for matching. A UI
+         * element will be considered a match if its resource name exactly matches the selectorStr
+         * parameter and all other criteria for this selectorStr are met. The format of the
+         * selectorStr string is &#x60;sel@[\$]value,...&#x60; Where &#x60;sel&#x60; can be one of
+         * - clickable - depth - desc - res - text - scrollable &#x60;@&#x60; replaces the
+         * &#x60;&#x3D;&#x60; sign that is used to separate parameters and values in the URL.
+         * If the first character of value is &#x60;$&#x60; then a &#x60;Pattern&#x60; is created.
+         * (optional)
          */
         /*inner*/ class Get(
-            private val bySelector: String? = null
+            private val bySelector: String? = null, private val parent: FindObjects = FindObjects()
         ) {
             private var holder: Holder
 
@@ -551,7 +577,7 @@ class UiDevice {
      * Disables the sensors and freezes the device rotation at its current rotation state.
      */
     @Location("/freezeRotation")
-    /*inner*/ class FreezeRotation {
+    /*inner*/ class FreezeRotation(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -577,7 +603,7 @@ class UiDevice {
      * This is determined by checking if the orientation is at 0 or 180 degrees.
      */
     @Location("/isNaturalOrientation")
-    /* inner */ class IsNaturalOrientation {
+    /* inner */ class IsNaturalOrientation(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -597,7 +623,7 @@ class UiDevice {
      * Checks the power manager if the screen is ON.
      */
     @Location("/isScreenOn")
-    /* inner */ class IsScreenOn {
+    /* inner */ class IsScreenOn(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -618,7 +644,7 @@ class UiDevice {
      * Retrieves the text from the last UI traversal event received.
      */
     @Location("/lastTraversedText")
-    /*inner*/ class LastTraversedText {
+    /*inner*/ class LastTraversedText(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -634,7 +660,7 @@ class UiDevice {
 
 
         fun response(): io.swagger.server.models.LastTraversedText {
-            return io.swagger.server.models.LastTraversedText(holder.uiDevice.lastTraversedText)
+            return LastTraversedText(holder.uiDevice.lastTraversedText)
         }
     }
 
@@ -655,7 +681,7 @@ class UiDevice {
      * Simulates a short press on the BACK button.
      */
     @Location("/pressBack")
-    /*inner*/ class PressBack {
+    /*inner*/ class PressBack(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -680,7 +706,7 @@ class UiDevice {
      * Simulates a short press on the DELETE key.
      */
     @Location("/pressDelete")
-    /*inner*/ class PressDelete {
+    /*inner*/ class PressDelete(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -705,7 +731,7 @@ class UiDevice {
      * Simulates a short press on the ENTER key.
      */
     @Location("/pressEnter")
-    /*inner*/ class PressEnter {
+    /*inner*/ class PressEnter(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -729,7 +755,7 @@ class UiDevice {
      * Simulates a short press on the HOME button.
      */
     @Location("/pressHome")
-    /*inner*/ class PressHome {
+    /*inner*/ class PressHome(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -755,7 +781,7 @@ class UiDevice {
      * @param metaState an integer in which each bit set to 1 represents a pressed meta key (optional)
      */
     @Location("/pressKeyCode")
-    /*inner*/ class PressKeyCode(private val keyCode: Int, private val metaState: Int = 0) {
+    /*inner*/ class PressKeyCode(private val keyCode: Int, private val metaState: Int = 0, private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -787,7 +813,7 @@ class UiDevice {
      * Simulates a short press on the Recent Apps button.
      */
     @Location("/pressRecentApps")
-    /*inner*/ class PressRecentApps {
+    /*inner*/ class PressRecentApps(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -811,7 +837,7 @@ class UiDevice {
      * Retrieves the product name of the device.
      */
     @Location("/productName")
-    /*inner*/ class ProductName {
+    /*inner*/ class ProductName(private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -826,7 +852,7 @@ class UiDevice {
         }
 
         fun response(): io.swagger.server.models.ProductName {
-            return io.swagger.server.models.ProductName(holder.uiDevice.productName)
+            return ProductName(holder.uiDevice.productName)
         }
     }
 
@@ -834,7 +860,7 @@ class UiDevice {
      *
      */
     @Location("/hasObject")
-    /*inner*/ class HasObject(private val bySelector: String) {
+    /*inner*/ class HasObject(private val bySelector: String, private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -870,7 +896,7 @@ class UiDevice {
      * Performs a swipe.
      */
     @Location("/swipe")
-    /*inner*/ class Swipe {
+    /*inner*/ class Swipe(private val parent: UiDevice = UiDevice()) {
 
         /**
          * Performs a swipe from one coordinate to another using the number of steps to determine
@@ -882,7 +908,8 @@ class UiDevice {
             private val startY: Int,
             private val endX: Int,
             private val endY: Int,
-            private val steps: Int
+            private val steps: Int,
+            private val parent: Swipe = Swipe()
         ) {
             private var holder: Holder
 
@@ -912,7 +939,7 @@ class UiDevice {
          */
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        /*inner*/ class Post(val body: SwipeBody? = null) {
+        /*inner*/ class Post(val body: SwipeBody? = null, private val parent: Swipe = Swipe()) {
             private var holder: Holder
 
             @Inject
@@ -945,7 +972,7 @@ class UiDevice {
      *
      */
     @Location("/unfreezeRotation")
-    /* inner */ class UnfreezeRotation() {
+    /* inner */ class UnfreezeRotation(private val parent: UiDevice = UiDevice()) {
 
         private var holder: Holder
 
@@ -967,7 +994,7 @@ class UiDevice {
      *
      */
     @Location("/wait")
-    /* inner */ class Wait(private val searchConditionRef: Int, private val timeout: Long = 10000) {
+    /* inner */ class Wait(private val searchConditionRef: Int, private val timeout: Long = 10000, private val parent: UiDevice = UiDevice()) {
 
         private var holder: Holder
 
@@ -985,7 +1012,7 @@ class UiDevice {
 
         fun response(): ObjectRef {
             val searchCondition: SearchCondition<*> =
-                objectStore.get(searchConditionRef) as SearchCondition<*>
+                objectStore[searchConditionRef] as SearchCondition<*>
             val obj = holder.uiDevice.wait(searchCondition, timeout)
             println("🔮obj: $obj")
 
@@ -1007,7 +1034,7 @@ class UiDevice {
      * @param timeout in milliseconds (optional)
      */
     @Location("/waitForIdle")
-    /*inner*/ class WaitForIdle(private val timeout: Long = 10_000) {
+    /*inner*/ class WaitForIdle(private val timeout: Long = 10_000, private val parent: UiDevice = UiDevice()) {
         private var holder: Holder
 
         @Inject
@@ -1037,7 +1064,8 @@ class UiDevice {
     @Location("/waitForWindowUpdate")
     /*inner*/ class WaitForWindowUpdate(
         private val timeout: Long,
-        val packageName: String? = null
+        private val packageName: String? = null,
+        private val parent: UiDevice = UiDevice()
     ) {
         private var holder: Holder
 
