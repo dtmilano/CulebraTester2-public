@@ -5,7 +5,9 @@ import android.app.UiAutomation
 import android.graphics.Point
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
-import com.dtmilano.android.culebratester2.*
+import com.dtmilano.android.culebratester2.CulebraTesterApplication
+import com.dtmilano.android.culebratester2.Holder
+import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
 import io.ktor.locations.*
 import io.swagger.server.models.Text
@@ -72,7 +74,7 @@ class Device {
         private val runnable: Runnable = Runnable { /* do nothing */ }
 
         init {
-            DaggerApplicationComponent.factory().create().inject(this)
+            CulebraTesterApplication().appComponent.inject(this)
             holder = holderHolder.instance
         }
 
