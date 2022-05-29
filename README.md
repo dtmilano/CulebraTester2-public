@@ -7,7 +7,7 @@ CulebraTester: Snaky Android Testing
 Android testing can be complicated, time-consuming, and tedious.
 What if it didn’t have to be? 
 
-**CulebraTester2** provides an API that facilitates the creation of test automation tools and UI's.
+**CulebraTester2** provides an API that facilitates the creation of tests and test automation tools and UI's.
 Not sure what we mean?
 
 Continue reading and see how you can run this early preview.
