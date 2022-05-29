@@ -70,5 +70,6 @@ interface ApplicationComponent {
     fun inject(unfreezeRotation: UiDevice.UnfreezeRotation)
     fun inject(isNaturalOrientation: UiDevice.IsNaturalOrientation)
     fun inject(isScreenOn: UiDevice.IsScreenOn)
+    fun inject(query: Culebra.Help.Query)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

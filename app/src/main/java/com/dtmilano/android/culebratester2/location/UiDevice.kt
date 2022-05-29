@@ -1,5 +1,6 @@
 package com.dtmilano.android.culebratester2.location
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.util.Log
@@ -15,12 +16,14 @@ import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.swagger.experimental.*
 import io.swagger.server.models.*
+import io.swagger.server.models.Help
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.ref.WeakReference
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -665,6 +668,10 @@ class UiDevice {
     }
 
     companion object {
+        fun help(apiComponents: List<String>, targetContext: WeakReference<Context>): Help {
+            return Help("This is UiDevice help for ${apiComponents}.")
+        }
+
         fun pressKeyResponse(pressAny: () -> Boolean, name: String): StatusResponse {
             if (pressAny()) {
                 return StatusResponse(StatusResponse.Status.OK)

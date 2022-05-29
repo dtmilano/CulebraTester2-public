@@ -2,15 +2,16 @@ package com.dtmilano.android.culebratester2.location
 
 import android.app.Notification
 import android.app.UiAutomation
+import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
-import com.dtmilano.android.culebratester2.CulebraTesterApplication
-import com.dtmilano.android.culebratester2.Holder
-import com.dtmilano.android.culebratester2.HolderHolder
+import com.dtmilano.android.culebratester2.*
 import com.dtmilano.android.culebratester2.ObjectStore
 import io.ktor.locations.*
+import io.swagger.server.models.Help
 import io.swagger.server.models.Text
+import java.lang.ref.WeakReference
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
@@ -113,6 +114,18 @@ class Device {
                 }
             }
             return false
+        }
+    }
+
+    companion object {
+        fun help(apiComponents: List<String>, targetContext: WeakReference<Context>): Help {
+            val res = when (apiComponents[0]) {
+                "displayRealSize" -> R.string.help__device__display_real_size
+                "waitForNewToast" -> R.string.help__device__wait_for_new_toast
+                else -> -1
+            }
+            val helpMsg = targetContext.get()?.resources?.getString(res)
+            return Help("This is Device help for $apiComponents: $helpMsg")
         }
     }
 }

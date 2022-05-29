@@ -18,4 +18,9 @@
     <string name="fab_content_description">TODO</string>
     <string name="title_activity_main">CulebraTester2</string>
     <string name="msg_activity_will_exit">As soon as the Service is started this Activity will exit automatically (don\'t panic)</string>
+    <string name="help__device__display_real_size">
+        Gets the display real size.
+        This is deprecated in Java.
+    </string>
+    <string name="help__device__wait_for_new_toast">Waits for a new Toast until timeout.</string>
 </resources>

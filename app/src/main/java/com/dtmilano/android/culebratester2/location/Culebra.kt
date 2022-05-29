@@ -1,8 +1,12 @@
 package com.dtmilano.android.culebratester2.location
 
 import com.dtmilano.android.culebratester2.BuildConfig
+import com.dtmilano.android.culebratester2.CulebraTesterApplication
+import com.dtmilano.android.culebratester2.Holder
+import com.dtmilano.android.culebratester2.HolderHolder
 import io.ktor.locations.*
 import io.swagger.server.models.CulebraInfo
+import javax.inject.Inject
 
 /**
  * See https://github.com/ktorio/ktor/issues/1660 for the reason why we need the extra parameter
@@ -28,10 +32,30 @@ class Culebra {
         }
 
         @Location("/{api}")
-        data class Query(val api: String?, private val help: Help = Help()) {
+        data class Query(val api: String?, private val parent: Help = Help()) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
 
             fun response(): io.swagger.server.models.Help {
-                return io.swagger.server.models.Help("This is a sample help text for \"$api\"")
+                val apiComponents = api?.split("/")!!
+                if (apiComponents.size < 2) {
+                    val extraMsg = if (!api.startsWith("/")) " and should start with \"/\"" else ""
+                    val msg = "{api} must be specified${extraMsg}."
+                    throw IllegalArgumentException(msg)
+                }
+                val restOfApiComponents = apiComponents.drop(2)
+                return when (apiComponents[1]) { // there's an empty apiComponents[0] as it starts with `/`
+                    "device" -> Device.help(restOfApiComponents, holder.targetContext)
+                    "uiDevice" -> UiDevice.help(restOfApiComponents, holder.targetContext)
+                    else -> io.swagger.server.models.Help("This is a sample help text for \"$api\"")
+                }
             }
         }
     }
