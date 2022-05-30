@@ -11,6 +11,23 @@ fi
 
 eval $(grep 'version:' openapi.yaml | sed 's/: */=/')
 tag="$version"
+
+version_name=$(grep versionName app/build.gradle)
+if ! grep -q "$version" <<<"$version_name"
+then
+    printf 'WARNING: versionName="%s" in app/build.gradle does not contain "%s"\n' "$version_name" "$version"
+    read -p 'Continue? [y/N]: ' REPLY
+    case "$REPLY" in
+        y|Y)
+            :
+            ;;
+
+        *)
+            exit
+            ;;
+    esac
+fi
+
 $dry_run git tag "$tag" || printf 'WARNING: tag "%s" already exists\n' "$tag"
 $dry_run git push --tags
 

@@ -1,10 +1,15 @@
 package com.dtmilano.android.culebratester2
 
 import android.app.UiAutomation
+import android.content.Context
 import android.graphics.Point
 import android.view.Display
 import android.view.WindowManager
-import androidx.test.uiautomator.*
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiSelector
 import com.dtmilano.android.culebratester2.location.OidObj
 import com.google.gson.Gson
 import io.ktor.http.ContentType
@@ -17,10 +22,27 @@ import io.ktor.server.testing.contentType
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import io.swagger.server.models.*
+import io.swagger.server.models.BooleanResponse
+import io.swagger.server.models.CurrentPackageName
+import io.swagger.server.models.DisplayHeight
+import io.swagger.server.models.DisplayRealSize
+import io.swagger.server.models.DisplayRotationEnum
+import io.swagger.server.models.DisplaySizeDp
+import io.swagger.server.models.DisplayWidth
+import io.swagger.server.models.Help
+import io.swagger.server.models.LastTraversedText
+import io.swagger.server.models.ObjectRef
+import io.swagger.server.models.ProductName
+import io.swagger.server.models.Selector
+import io.swagger.server.models.StatusCode
+import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.SwipeBody
+import io.swagger.server.models.Text
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
+import org.junit.Ignore
+import org.junit.Test
 import org.junit.contrib.java.lang.system.ExpectedSystemExit
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatcher
@@ -36,7 +58,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
 import java.io.OutputStream
-import kotlin.test.*
+import java.lang.ref.WeakReference
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.text.Regex.Companion.escape
 
 
@@ -143,6 +168,10 @@ class KtorApplicationTest {
 
         private const val MOCK_CLASS_NAME = "MockClassName"
 
+        val targetContext = mock<WeakReference<Context>> {
+
+        }
+
         val uiObject = mock<UiObject> {
             on { className } doReturn MOCK_CLASS_NAME
             on { text } doReturn "Hello Culebra!"
@@ -194,6 +223,7 @@ class KtorApplicationTest {
 
     @Before
     fun setup() {
+        holder.targetContext = targetContext
         holder.uiDevice = uiDevice
         holder.uiAutomation = uiAutomation
         objectStore.clear()
@@ -281,10 +311,30 @@ class KtorApplicationTest {
     @Test
     fun `test culebra help for some api`() {
         withTestApplication({ module(testing = true) }) {
-            handleRequest(HttpMethod.Get, "/v2/culebra/help/someapi").apply {
+            handleRequest(HttpMethod.Get, "/v2/culebra/help/%2Fsomeapi").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val help = Gson().fromJson<Help>(response.content, Help::class.java)
                 assertTrue { help.text.matches(Regex(".*someapi.*")) }
+            }
+        }
+    }
+
+    @Test
+    fun `test culebra help for uiDevice`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/culebra/help/%2FuiDevice%2Fsomethingelse").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val help = Gson().fromJson<Help>(response.content, Help::class.java)
+                assertTrue { help.text.matches(Regex(".*UiDevice.*somethingelse.*")) }
+            }
+        }
+    }
+
+    @Test
+    fun `test culebra help for some api not starting with slash 0x2F`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/culebra/help/someapi").apply {
+                assertEquals(HttpStatusCode.InternalServerError, response.status())
             }
         }
     }
