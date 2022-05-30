@@ -71,7 +71,7 @@ import kotlin.text.Regex.Companion.escape
 @KtorExperimentalLocationsAPI
 // We need Robolectric to run these tests because some classes use Log.[we]
 @RunWith(RobolectricTestRunner::class)
-@Config(minSdk = 26, maxSdk = 29)
+@Config(minSdk = 26, maxSdk = 31)
 class KtorApplicationTest {
 
     companion object {
@@ -80,7 +80,7 @@ class KtorApplicationTest {
         @JvmField
         val exit: ExpectedSystemExit = ExpectedSystemExit.none()
 
-        val appComponent: ApplicationComponent = DaggerApplicationComponent.factory().create()
+        val appComponent: ApplicationComponent = CulebraTesterApplication().appComponent
 
         var holder: Holder = appComponent.holder().instance
 
