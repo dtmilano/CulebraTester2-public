@@ -44,7 +44,7 @@ class TargetContext {
             holder = holderHolder.instance
         }
 
-        fun response(): Any {
+        fun response(): StatusResponse {
             println("TargetContext.StartActivity: holder = $holder")
             val intent = Intent(Intent.ACTION_MAIN)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
