@@ -1,38 +1,8 @@
-//// Top-level build file where you can add configuration options common to all sub-projects/modules.
-//
-//buildscript {
-//    //ext.kotlin_version = '1.3.61'
-//
-//    repositories {
-//        google()
-//        // copied from ktor-demo-cio-2
-//        maven { url 'https://kotlin.bintray.com/ktor' }
-//    }
-//    dependencies {
-//        classpath 'com.android.tools.build:gradle:7.0.1'
-//        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin"
-//        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-//        // NOTE: Do not place your application dependencies here; they belong
-//        // in the individual module build.gradle files
-//    }
-//}
-//
-//allprojects {
-//    repositories {
-//        google()
-//    }
-//}
-//
-//task clean(type: Delete) {
-//    delete rootProject.buildDir
-//}
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
         kotlin_version = '1.6.10'
-        compose_version = '1.1.1'
-        hilt_android_version = '2.40.5'
+        hilt_android_version = '2.42'
     }
 
     repositories {
@@ -41,6 +11,7 @@ buildscript {
         // copied from ktor-demo-cio-2
         maven { url 'https://kotlin.bintray.com/ktor' }
     }
+    
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"

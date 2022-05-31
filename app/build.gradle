@@ -8,6 +8,11 @@ plugins {
     id("dagger.hilt.android.plugin")
 }
 
+ext {
+    compose_version = '1.1.1'
+    ktor_version = '1.6.8'
+}
+
 android {
     compileSdk 31
 
@@ -31,6 +36,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     packagingOptions {
         resources {
             excludes += ['/META-INF/{AL2.0,LGPL2.1}', 'META-INF/DEPENDENCIES', 'META-INF/io.netty.versions.properties', 'META-INF/INDEX.LIST', 'META-INF/ktor-http.kotlin_module', 'META-INF/ktor-utils.kotlin_module', 'META-INF/kotlinx-coroutines-core.kotlin_module', 'META-INF/ktor-io.kotlin_module', 'META-INF/ktor-http-cio.kotlin_module', 'META-INF/ktor-client-core.kotlin_module']
@@ -71,17 +77,13 @@ android {
     }
 }
 
-ext {
-    ktor_version = '1.6.7'
-}
-
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.6.0'
     implementation "com.google.dagger:hilt-android:$hilt_android_version"
-    kapt "com.google.dagger:hilt-compiler:$hilt_android_version"
+    //kapt "com.google.dagger:hilt-compiler:$hilt_android_version"
     implementation("io.ktor:ktor:$ktor_version")
     implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation "androidx.compose.ui:ui:$compose_version"
@@ -93,10 +95,10 @@ dependencies {
     testImplementation('androidx.test:core:1.4.0')
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation('com.google.dagger:hilt-android:2.40.5')
+    implementation('com.google.dagger:hilt-android:2.42')
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    kapt('com.google.dagger:hilt-android-compiler:2.40.5')
+    kapt("com.google.dagger:hilt-android-compiler:$hilt_android_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:1.2.6")
@@ -106,11 +108,11 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     androidTestImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
-    testImplementation('org.mockito:mockito-core:4.3.1')
+    testImplementation('org.mockito:mockito-core:4.6.0')
     testImplementation('org.mockito.kotlin:mockito-kotlin:4.0.0')
     testImplementation('org.jetbrains.kotlin:kotlin-test:1.6.10')
     androidTestImplementation('org.jetbrains.kotlin:kotlin-test:1.6.10')
-    testImplementation 'org.robolectric:robolectric:4.7.3'
+    testImplementation 'org.robolectric:robolectric:4.8.1'
 }
 
 // Allow references to generated code

@@ -80,11 +80,11 @@ class KtorApplicationTest {
         @JvmField
         val exit: ExpectedSystemExit = ExpectedSystemExit.none()
 
-        val appComponent: ApplicationComponent = CulebraTesterApplication().appComponent
+        private val appComponent: ApplicationComponent = CulebraTesterApplication().appComponent
 
-        var holder: Holder = appComponent.holder().instance
+        val holder: Holder = appComponent.holder().instance
 
-        var objectStore: ObjectStore = appComponent.objectStore()
+        val objectStore: ObjectStore = appComponent.objectStore()
 
         private val realSize = mapOf("x" to 1080, "y" to 2400)
 
