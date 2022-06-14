@@ -20,8 +20,8 @@ android {
         applicationId "com.dtmilano.android.culebratester2"
         minSdk 26
         targetSdk 31
-        versionCode 20031
-        versionName "2.0.31-alpha"
+        versionCode 20032
+        versionName "2.0.32-alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -79,9 +79,9 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation "com.google.dagger:hilt-android:$hilt_android_version"
     //kapt "com.google.dagger:hilt-compiler:$hilt_android_version"
     implementation("io.ktor:ktor:$ktor_version")
@@ -101,7 +101,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:$hilt_android_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:1.2.6")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
     implementation("io.ktor:ktor-jackson:$ktor_version")
     implementation("io.ktor:ktor-locations:$ktor_version")
     implementation("io.ktor:ktor-gson:$ktor_version")
@@ -113,6 +113,7 @@ dependencies {
     testImplementation('org.jetbrains.kotlin:kotlin-test:1.6.10')
     androidTestImplementation('org.jetbrains.kotlin:kotlin-test:1.6.10')
     testImplementation 'org.robolectric:robolectric:4.8.1'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
 }
 
 // Allow references to generated code

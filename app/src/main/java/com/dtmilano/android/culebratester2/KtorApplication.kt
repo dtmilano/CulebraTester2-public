@@ -135,6 +135,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<Device.Dumpsys> {
+                call.respond(it.response())
+            }
+
             get<Device.WaitForNewToast> {
                 call.respond(it.response())
             }

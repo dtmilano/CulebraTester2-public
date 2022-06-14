@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.31
+  version: 2.0.32
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -113,6 +113,23 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Gets display real size.
+  /device/dumpsys:
+    get:
+      description: dumpsys is a tool that runs on Android devices and provides information about system services. You can call dumpsys from the command line using the Android Debug Bridge (ADB) to get diagnostic output for all system services running on a connected device.
+      parameters:
+      - name: service
+        in: query
+        description: dumps only service SERVICE
+        required: true
+        schema:
+          example: usb
+          format: string
+      responses:
+        '200':
+          content:
+            text/plain:
+              example: Hello
+          description: dumpsys output
   /device/waitForNewToast:
     get:
       description: Waits for a new Toast until timeout.

@@ -71,5 +71,6 @@ interface ApplicationComponent {
     fun inject(isNaturalOrientation: UiDevice.IsNaturalOrientation)
     fun inject(isScreenOn: UiDevice.IsScreenOn)
     fun inject(query: Culebra.Help.Query)
+    fun inject(dumpsys: Device.Dumpsys)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

@@ -6,12 +6,18 @@ import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
-import com.dtmilano.android.culebratester2.*
+import com.dtmilano.android.culebratester2.CulebraTesterApplication
+import com.dtmilano.android.culebratester2.Holder
+import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
-import io.ktor.locations.*
+import com.dtmilano.android.culebratester2.R
+import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.locations.Location
 import io.swagger.server.models.Help
 import io.swagger.server.models.Text
+import org.apache.commons.io.IOUtils
 import java.lang.ref.WeakReference
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
@@ -54,6 +60,27 @@ class Device {
                 size.x,
                 size.y
             )
+        }
+    }
+
+    @Location("/dumpsys")
+    class Dumpsys(private val parent: Device = Device(), private val service: String) {
+
+        fun response(): String {
+            println("Executing dumpsys $service")
+            val pb = ProcessBuilder("dumpsys", service)
+            val p = pb.start()
+            val stdOut = IOUtils.toString(p.inputStream, Charsets.UTF_8)
+            val stdErr = IOUtils.toString(p.errorStream, Charsets.UTF_8)
+            val exitStatus = p.waitFor(30, TimeUnit.SECONDS)
+            println("dumpsys exit status: $exitStatus")
+            return if (exitStatus) {
+                stdOut
+            } else {
+                stdErr.ifEmpty {
+                    "ERROR"
+                }
+            }
         }
     }
 
