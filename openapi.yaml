@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.32
+  version: 2.0.33
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -123,6 +123,24 @@ paths:
         required: true
         schema:
           example: usb
+          format: string
+      - name: arg1
+        in: query
+        description: argument 1 for dumpsys service command
+        required: false
+        schema:
+          format: string
+      - name: arg2
+        in: query
+        description: argument 2 for dumpsys service command
+        required: false
+        schema:
+          format: string
+      - name: arg3
+        in: query
+        description: argument 3 for dumpsys service command
+        required: false
+        schema:
           format: string
       responses:
         '200':

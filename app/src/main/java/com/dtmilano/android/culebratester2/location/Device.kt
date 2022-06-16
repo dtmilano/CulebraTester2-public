@@ -64,11 +64,27 @@ class Device {
     }
 
     @Location("/dumpsys")
-    class Dumpsys(private val parent: Device = Device(), private val service: String) {
+    class Dumpsys(
+        private val service: String,
+        private val arg1: String? = null,
+        private val arg2: String? = null,
+        private val arg3: String? = null,
+        private val parent: Device = Device()
+    ) {
 
         fun response(): String {
-            println("Executing dumpsys $service")
-            val pb = ProcessBuilder("dumpsys", service)
+            val command = mutableListOf("dumpsys", service)
+            if (arg1 != null) {
+                command.add(arg1)
+            }
+            if (arg2 != null) {
+                command.add(arg2)
+            }
+            if (arg3 != null) {
+                command.add(arg3)
+            }
+            println("Executing $command")
+            val pb = ProcessBuilder(command)
             val p = pb.start()
             val stdOut = IOUtils.toString(p.inputStream, Charsets.UTF_8)
             val stdErr = IOUtils.toString(p.errorStream, Charsets.UTF_8)

@@ -119,6 +119,7 @@ forward_port() {
 
 run_instrumentation() {
     $dryrun adb $D shell pm grant "$PKG" 'android.permission.DUMP' && \
+    $dryrun adb $D shell pm grant "$PKG" 'android.permission.PACKAGE_USAGE_STATS' && \
     $dryrun adb $D shell am instrument -w -r -e debug false -e class "$ORIGINAL_PKG.UiAutomatorHelper" \
                 "$PKG.test/androidx.test.runner.AndroidJUnitRunner"
 }
