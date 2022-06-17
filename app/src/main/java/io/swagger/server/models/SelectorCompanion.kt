@@ -38,11 +38,18 @@ fun Selector.toBySelector(): BySelector {
     var bySelector: BySelector? = null
 
     checkable?.let { bySelector = bySelector?.checkable(checkable) ?: By.checkable(checkable) }
+    // missing checked
     clazz?.let { bySelector = bySelector?.clazz(clazz) ?: By.clazz(clazz) }
     clickable?.let { bySelector = bySelector?.clickable(clickable) ?: By.clickable(clickable) }
     depth?.let { bySelector = bySelector?.depth(depth) ?: By.depth(depth) }
+    desc?.let { bySelector = bySelector?.desc(desc) ?: By.desc(desc) }
+    // missing enabled
+    // missing focusable
+    // missing focused
+    // missing hasChild
     pkg?.let { bySelector = bySelector?.pkg(pkg) ?: By.pkg(pkg) }
     res?.let { bySelector = bySelector?.res(res) ?: By.res(res) }
+    // missing selected
     scrollable?.let {
         bySelector = bySelector?.scrollable(scrollable) ?: By.scrollable(scrollable)
     }
