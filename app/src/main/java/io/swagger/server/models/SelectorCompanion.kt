@@ -35,6 +35,13 @@ fun Selector(obj: UiObject): Selector = Selector(
  * Returns a [BySelector] from Selector values
  */
 fun Selector.toBySelector(): BySelector {
+    /*
+     * As there is a problem with `swagger-codegen` generating OAS3.x `oneOf` we are using an
+     * internal encoding for now to support Patterns for `desc` and `text`. We use an special string
+     * that starts with a literal `Pattern:` followed by the actual pattern.
+     * For example `Pattern:^[a-z]+$`
+     */
+    val patternPrefix = "Pattern:"
     var bySelector: BySelector? = null
 
     checkable?.let { bySelector = bySelector?.checkable(checkable) ?: By.checkable(checkable) }
@@ -42,7 +49,18 @@ fun Selector.toBySelector(): BySelector {
     clazz?.let { bySelector = bySelector?.clazz(clazz) ?: By.clazz(clazz) }
     clickable?.let { bySelector = bySelector?.clickable(clickable) ?: By.clickable(clickable) }
     depth?.let { bySelector = bySelector?.depth(depth) ?: By.depth(depth) }
-    desc?.let { bySelector = bySelector?.desc(desc) ?: By.desc(desc) }
+    desc?.let {
+        bySelector = if (desc.startsWith(patternPrefix)) {
+            val pattern: java.util.regex.Pattern = java.util.regex.Pattern.compile(
+                desc.substring(
+                    patternPrefix.length
+                )
+            )
+            bySelector?.desc(pattern) ?: By.desc(pattern)
+        } else {
+            bySelector?.desc(desc) ?: By.desc(desc)
+        }
+    }
     // missing enabled
     // missing focusable
     // missing focused
@@ -53,7 +71,19 @@ fun Selector.toBySelector(): BySelector {
     scrollable?.let {
         bySelector = bySelector?.scrollable(scrollable) ?: By.scrollable(scrollable)
     }
-    text?.let { bySelector = bySelector?.text(text) ?: By.text(text) }
+    text?.let {
+        bySelector = if (text.startsWith(patternPrefix)) {
+            val pattern: java.util.regex.Pattern = java.util.regex.Pattern.compile(
+                text.substring(
+                    patternPrefix.length
+                )
+            )
+            bySelector?.text(pattern) ?: By.text(pattern)
+        } else {
+            bySelector?.text(text) ?: By.text(text)
+        }
+    }
+    // items not present in BySelector:
     // no index in BySelector
     // no instance in BySelector
 

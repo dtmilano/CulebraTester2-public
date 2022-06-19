@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.33
+  version: 2.0.35
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -450,7 +450,7 @@ paths:
           the selector parameter and all other criteria for this selector are met.
           The format of the selector string is
 
-          `sel@[$]value,...`
+          `sel@[\$]value,...`
 
           Where `sel` can be one of - clazz or className - clickable - depth - desc
           - index - instance - package - parentIndex - res - scrollable - text
@@ -467,7 +467,7 @@ paths:
           the selector parameter and all other criteria for this selector are met.
           The format of the selector string is
 
-          `sel@[$]value,...`
+          `sel@[\$]value,...`
 
           Where `sel` can be one of - checkable - clazz - clickable - depth - desc
           - package - res - scrollable - text
@@ -545,7 +545,7 @@ paths:
           the selector parameter and all other criteria for this selector are met.
           The format of the selector string is
 
-          `sel@[$]value,...`
+          `sel@[\$]value,...`
 
           Where `sel` can be one of - checkable - clazz - clickable - depth - desc
           - package - res - scrollable - text
@@ -604,7 +604,7 @@ paths:
           the selector parameter and all other criteria for this selector are met.
           The format of the selector string is
 
-          `sel@[$]value,...`
+          `sel@[\$]value,...`
 
           Where `sel` can be one of - checkable - clazz - clickable - depth - desc
           - package - res - scrollable - text
@@ -1173,7 +1173,7 @@ paths:
           the selector parameter and all other criteria for this selector are met.
           The format of the selector string is
 
-          `sel@[$]value,...`
+          `sel@[\$]value,...`
 
           Where `sel` can be one of - checkable - clazz - clickable - depth - desc
           - package - res - scrollable - text
@@ -1309,15 +1309,15 @@ components:
       example:
         displayHeight: 1776
     DisplayRotationEnum:
-      type: string
+      type: integer
       description: the current display rotation
       enum:
-        - "_0"
-        - "_180"
-        - "_270"
-        - "_90"
+        - 0
+        - 180
+        - 270
+        - 90
       example:
-        "_0"
+        0
     DisplayRotationResponse:
       type: object
       description: the display rotation response
@@ -1514,7 +1514,20 @@ components:
               - 1080
               - 1920
             children: [ ]
+    Pattern:
+      description: A pattern.
+      type: object
+      properties:
+        regex:
+          type: string
+        flags:
+          type: integer
+      required:
+        - regex
     Selector:
+      description: A selector. As there is a problem with `swagger-codegen` generating OAS3.x `oneOf` we are using an internal encoding for now to support Patterns for `desc` and `text`.
+        We use an special string that starts with a literal `Pattern:` followed by the actual pattern.
+        For example `Pattern:^[a-z]+$`
       type: object
       properties:
         checkable:
@@ -1526,6 +1539,10 @@ components:
         depth:
           type: integer
         desc:
+          # oneOf is not supported correctly by swagger-codegen therefore we are using an internal encoding
+          #oneOf:
+          #  - type: string
+          #  - $ref: '#/components/schemas/Pattern'
           type: string
         pkg:
           type: string
@@ -1534,6 +1551,10 @@ components:
         scrollable:
           type: boolean
         text:
+          # oneOf is not supported correctly by swagger-codegen therefore we are using an internal encoding
+          #oneOf:
+          #  - type: string
+          #  - $ref: '#/components/schemas/Pattern'
           type: string
         index:
           type: integer
@@ -1544,15 +1565,20 @@ components:
         clazz: android.widget.Button
         depth: 1
     ObjectRef:
+      description: An object reference. This is a reference to an object that has been stored in the **Object Store**.
+        The object reference can be later used by APIs requiring an object.
       type: object
       properties:
         oid:
+          description: the object ID
           type: integer
         className:
+          description: the class name
           type: string
       required:
         - oid
     Point:
+      description: A point.
       type: object
       properties:
         x:
@@ -1560,6 +1586,7 @@ components:
         'y':
           type: integer
     ProductName:
+      description: The product name.
       type: object
       properties:
         productName:
@@ -1568,6 +1595,7 @@ components:
       example:
         productName: sailfish
     Text:
+      description: Some text.
       type: object
       properties:
         text:
@@ -1576,6 +1604,7 @@ components:
       example:
         text: lorem ipsum
     SwipeBody:
+      description: The body for a **swipe** action. Contains an array of points.
       type: object
       properties:
         segments:

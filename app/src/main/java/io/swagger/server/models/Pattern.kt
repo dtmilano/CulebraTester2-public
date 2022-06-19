@@ -10,10 +10,9 @@
 * Do not edit the class manually.
 */package io.swagger.server.models
 
-import io.swagger.server.models.DisplayRotationEnum
 
 /**
- * the display rotation response * @param displayRotation */
-data class DisplayRotationResponse (    val displayRotation: DisplayRotationEnum? = null
+ * A pattern. * @param regex  * @param flags */
+data class Pattern (    val regex: kotlin.String,    val flags: kotlin.Int? = null
 ) {
 }

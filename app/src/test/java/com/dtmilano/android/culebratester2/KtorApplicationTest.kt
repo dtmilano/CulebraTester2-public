@@ -27,6 +27,7 @@ import io.swagger.server.models.CurrentPackageName
 import io.swagger.server.models.DisplayHeight
 import io.swagger.server.models.DisplayRealSize
 import io.swagger.server.models.DisplayRotationEnum
+import io.swagger.server.models.DisplayRotationResponse
 import io.swagger.server.models.DisplaySizeDp
 import io.swagger.server.models.DisplayWidth
 import io.swagger.server.models.Help
@@ -127,6 +128,16 @@ class KtorApplicationTest {
                 if (selector.toString().matches(Regex(escape(res)))) {
                     return false
                 }
+                // There's no way of comparing other than via String
+                val desc = "BySelector [DESC='^${DOES_NOT_MATCH}$']"
+                if (selector.toString().matches(Regex(escape(desc)))) {
+                    return false
+                }
+                // There's no way of comparing other than via String
+                val text = "BySelector [TEXT='^${DOES_NOT_MATCH}$']"
+                if (selector.toString().matches(Regex(escape(text)))) {
+                    return false
+                }
                 return true
             }
         }
@@ -158,11 +169,11 @@ class KtorApplicationTest {
             }
         }
 
-        val display: Display = mock {
+        private val display: Display = mock {
             on { getRealSize(argThat(matcher = MatchPoint())) } doAnswer {}
         }
 
-        val windowManager = mock<WindowManager> {
+        private val windowManager = mock<WindowManager> {
             on { defaultDisplay } doReturn display
         }
 
@@ -172,7 +183,7 @@ class KtorApplicationTest {
 
         }
 
-        val uiObject = mock<UiObject> {
+        private val uiObject = mock<UiObject> {
             on { className } doReturn MOCK_CLASS_NAME
             on { text } doReturn "Hello Culebra!"
         }
@@ -191,6 +202,7 @@ class KtorApplicationTest {
             on { displayWidth } doReturn x
             on { displayHeight } doReturn y
             on { displaySizeDp } doReturn p
+            on { displayRotation } doReturn 0
             on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
             on { findObject(argThat(BySelectorMatcherRes())) } doReturn uiObject2
             on { findObject(argThat(UiSelectorMatcherRes())) } doReturn uiObject
@@ -636,6 +648,94 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test find object post selector with desc pattern`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            desc = "Pattern:^${MATCHES}$"
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objectRef = jsonResponse<ObjectRef>()
+                assertTrue(objectRef.oid > 0)
+                assertEquals(MOCK_CLASS_NAME, objectRef.className)
+            }
+        }
+    }
+
+    @Test
+    fun `test find object post selector with desc pattern does not match should respond not found`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            desc = "Pattern:^${DOES_NOT_MATCH}$"
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(
+                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    response.content
+                )
+                assertEquals(0, objectStore.size())
+            }
+        }
+    }
+
+    @Test
+    fun `test find object post selector with text pattern`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            text = "Pattern:^${MATCHES}$"
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objectRef = jsonResponse<ObjectRef>()
+                assertTrue(objectRef.oid > 0)
+                assertEquals(MOCK_CLASS_NAME, objectRef.className)
+            }
+        }
+    }
+
+    @Test
+    fun `test find object post selector with text pattern does not match should respond not found`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            text = "Pattern:^${DOES_NOT_MATCH}$"
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(
+                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
+                    response.content
+                )
+                assertEquals(0, objectStore.size())
+            }
+        }
+    }
+
+    @Test
     fun `test find object post selector not matching should respond not found`() {
         withTestApplication({ module(testing = true) }) {
             assertEquals(0, objectStore.size())
@@ -866,8 +966,24 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/displayRotation").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val displayRotation = jsonResponse<DisplayRotationEnum>()
-                assertEquals(0, displayRotation.value)
+                val displayRotationResponse = jsonResponse<DisplayRotationResponse>()
+                assertEquals(DisplayRotationEnum._0, displayRotationResponse.displayRotation)
+            }
+        }
+    }
+
+    @Test
+    fun `test get display rotation rotated device`() {
+        val uiDeviceRotated = mock<UiDevice> {
+            on { displayRotation } doReturn 3
+        }
+        holder.uiDevice = uiDeviceRotated
+
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/displayRotation").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val displayRotationResponse = jsonResponse<DisplayRotationResponse>()
+                assertEquals(DisplayRotationEnum._270, displayRotationResponse.displayRotation)
             }
         }
     }
