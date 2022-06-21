@@ -148,6 +148,29 @@ class UiObject2 {
         }
     }
 
+    @Location("/{oid}/getContentDescription")
+    /*inner*/ class GetContentDescription(val oid: Int, private val parent: UiObject2 = UiObject2()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): Text {
+            uiObject2(oid, objectStore)?.let {
+                return@response Text(it.contentDescription)
+            }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/getText")
     /*inner*/ class GetText(val oid: Int, private val parent: UiObject2 = UiObject2()) {
         private var holder: Holder

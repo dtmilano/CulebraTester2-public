@@ -190,6 +190,7 @@ class KtorApplicationTest {
 
         val uiObject2 = mock<UiObject2> {
             on { className } doReturn MOCK_CLASS_NAME
+            on { contentDescription } doReturn "Description of Hello Culebra!"
             on { text } doReturn "Hello Culebra!"
         }
         val uiDevice = mock<UiDevice> {
@@ -758,6 +759,20 @@ class KtorApplicationTest {
             }
         }
     }
+
+    @Test
+    fun `test uiobject2 get content description`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/getContentDescription").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val text = jsonResponse<Text>()
+                assertEquals("Description of Hello Culebra!", text.text)
+            }
+        }
+    }
+
 
     @Test
     fun `test uiobject2 get text`() {

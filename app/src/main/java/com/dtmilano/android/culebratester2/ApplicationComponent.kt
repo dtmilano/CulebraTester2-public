@@ -72,5 +72,6 @@ interface ApplicationComponent {
     fun inject(isScreenOn: UiDevice.IsScreenOn)
     fun inject(query: Culebra.Help.Query)
     fun inject(dumpsys: Device.Dumpsys)
+    fun inject(getContentDescription: UiObject2.GetContentDescription)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }
