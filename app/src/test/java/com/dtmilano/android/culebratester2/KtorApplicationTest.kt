@@ -193,6 +193,15 @@ class KtorApplicationTest {
             on { contentDescription } doReturn "Description of Hello Culebra!"
             on { text } doReturn "Hello Culebra!"
         }
+
+        private val uiObject22 = mock<UiObject2> {
+            on { className } doReturn MOCK_CLASS_NAME
+            on { contentDescription } doReturn "Description of Hello Culebra!"
+            on { text } doReturn "Hello Culebra!"
+        }
+
+        private val listOfUiObject2: List<UiObject2> = mutableListOf(uiObject2, uiObject22)
+
         val uiDevice = mock<UiDevice> {
             val x = realSize["x"] ?: error("x not defined")
             val y = realSize["y"] ?: error("y not defined")
@@ -207,6 +216,9 @@ class KtorApplicationTest {
             on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
             on { findObject(argThat(BySelectorMatcherRes())) } doReturn uiObject2
             on { findObject(argThat(UiSelectorMatcherRes())) } doReturn uiObject
+            on { findObjects(argThat(BySelectorMatcherRes()))} doReturn listOfUiObject2
+            on { findObjects(argThat(BySelectorMatcherClassMatches()))} doReturn listOfUiObject2
+            on { findObjects(argThat(BySelectorMatcherClassDoesNotMatch()))} doReturn null
             on { hasObject(argThat(BySelectorMatcherClassDoesNotMatch())) } doReturn false
             on { hasObject(argThat(BySelectorMatcherClassMatches())) } doReturn true
             on { pressBack() } doReturn true
@@ -732,6 +744,25 @@ class KtorApplicationTest {
                     response.content
                 )
                 assertEquals(0, objectStore.size())
+            }
+        }
+    }
+
+    @Test
+    fun `test find all objects post selector with text pattern`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObjects") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            text = "Pattern:^${MATCHES}$"
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals(listOfUiObject2.size, objectStore.size())
             }
         }
     }

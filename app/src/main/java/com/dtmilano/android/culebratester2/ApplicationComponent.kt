@@ -73,5 +73,6 @@ interface ApplicationComponent {
     fun inject(query: Culebra.Help.Query)
     fun inject(dumpsys: Device.Dumpsys)
     fun inject(getContentDescription: UiObject2.GetContentDescription)
+    fun inject(post: UiDevice.FindObjects.Post)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

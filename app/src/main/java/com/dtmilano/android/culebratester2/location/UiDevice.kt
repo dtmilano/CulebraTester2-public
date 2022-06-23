@@ -574,6 +574,42 @@ class UiDevice {
             }
         }
 
+        /**
+         * Finds all objects
+         * Finds aall objects. The objects found, if any, can be later used in other call like API.click.
+         * @param body Selector
+         */
+        // WARNING: ktor is not passing this argument so the '?' and null are needed
+        // see https://github.com/ktorio/ktor/issues/190
+        /*inner*/ class Post(private val body: Selector? = null, private val parent: FindObjects = FindObjects()) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+
+            fun response(selector: Selector): Any {
+
+                val objs = holder.uiDevice.findObjects(selector.toBySelector())
+                println("🔮objs: $objs")
+                if (objs.isNotEmpty()) {
+                    return objs.map { ObjectRef(objectStore.put(it), it.className) }
+                }
+
+                throw HttpException(
+                    HttpStatusCode.NotFound,
+                    StatusCode.OBJECT_NOT_FOUND.message()
+                )
+            }
+        }
     }
 
     /**

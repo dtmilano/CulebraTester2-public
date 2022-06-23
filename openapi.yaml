@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.36
+  version: 2.0.37
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -584,6 +584,42 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Finds *all* objects that match the selector criteria.
+    post:
+      description: Finds all objects. The objects found, if any, can be later used in
+        other call like API.click.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Selector'
+        description: Selector
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+              - className: android.widget.Button
+                oid: 1
+              - className: android.widget.TextView
+                oid: 2
+              schema:
+                items:
+                  $ref: '#/components/schemas/ObjectRef'
+                type: array
+        '404':
+          content:
+            application/json:
+              example:
+                errorMessage: Object not found
+                errorStatusResponse: 1001
+                status: ERROR
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+          description: Object not found
+        default:
+          $ref: '#/components/responses/error'
+      summary: Finds *all* objects.
   /uiDevice/freezeRotation:
     get:
       description: Disables the sensors and freezes the device rotation at its current

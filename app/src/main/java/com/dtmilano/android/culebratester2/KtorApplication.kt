@@ -218,6 +218,15 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            post<UiDevice.FindObjects.Post> {
+                // We have to get the body as ktor doesn't do it
+                // see https://github.com/ktorio/ktor/issues/190
+                // also, it.body is null here
+                // println("body ${it.body}");
+                val selector = call.receive<Selector>()
+                call.respond(it.response(selector))
+            }
+
             get<UiDevice.FreezeRotation> {
                 call.respond(it.response())
             }
