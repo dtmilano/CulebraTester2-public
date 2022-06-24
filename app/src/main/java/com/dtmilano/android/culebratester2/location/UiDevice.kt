@@ -1037,7 +1037,7 @@ class UiDevice {
      *
      */
     @Location("/wait")
-    /* inner */ class Wait(private val searchConditionRef: Int, private val timeout: Long = 10000, private val parent: UiDevice = UiDevice()) {
+    /* inner */ class Wait(private val oid: Int, private val timeout: Long = 10000, private val parent: UiDevice = UiDevice()) {
 
         private var holder: Holder
 
@@ -1055,7 +1055,7 @@ class UiDevice {
 
         fun response(): ObjectRef {
             val searchCondition: SearchCondition<*> =
-                objectStore[searchConditionRef] as SearchCondition<*>
+                objectStore[oid] as SearchCondition<*>
             val obj = holder.uiDevice.wait(searchCondition, timeout)
             println("🔮obj: $obj")
 

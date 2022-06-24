@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.37
+  version: 2.0.38
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -607,6 +607,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ObjectRef'
                 type: array
+          description: Objects found
         '404':
           content:
             application/json:
@@ -948,9 +949,9 @@ paths:
       description: The final result returned by the condition, or null if the condition
         was not met before the timeout.
       parameters:
-      - description: The search condition
+      - description: The search condition object ID
         in: query
-        name: searchConditionRef
+        name: oid
         required: true
         schema:
           example: 1
@@ -1252,6 +1253,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/ObjectRef'
           description: SearchCondition created
+        '404':
+          content:
+            application/json:
+              example:
+                errorMessage: Object not found
+                errorStatusResponse: 1001
+                status: ERROR
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+          description: Object not found
+        default:
+          $ref: '#/components/responses/error'
+      summary: Returns a SearchCondition that is satisfied when at least one element
+        matching the selector can be found.
+    post:
+      description:  The condition will return the first matching element.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Selector'
+        description: Selector
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                className: android.widget.Button
+                oid: 1
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+          description: Object found
         '404':
           content:
             application/json:

@@ -7,6 +7,8 @@ import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
 import io.ktor.locations.*
 import io.swagger.server.models.ObjectRef
+import io.swagger.server.models.Selector
+import io.swagger.server.models.toBySelector
 import javax.inject.Inject
 
 private const val TAG = "Until"
@@ -29,27 +31,55 @@ private const val TAG = "Until"
 class Until {
     @Location("/findObject")
     /*inner*/ class FindObject(
-        private val bySelector: String,
-        private val parent: com.dtmilano.android.culebratester2.location.Until = com.dtmilano.android.culebratester2.location.Until()
-    ) {
-        private var holder: Holder
+        private val parent: com.dtmilano.android.culebratester2.location.Until = com.dtmilano.android.culebratester2.location.Until()) {
 
-        @Inject
-        lateinit var holderHolder: HolderHolder
+        class Get(
+            private val bySelector: String,
+            private val parent: FindObject = FindObject()
+        ) {
+            private var holder: Holder
 
-        @Inject
-        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+            @Inject
+            lateinit var holderHolder: HolderHolder
 
-        init {
-            CulebraTesterApplication().appComponent.inject(this)
-            holder = holderHolder.instance
+            @Inject
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(): ObjectRef {
+                val bsb = bySelectorBundleFromString(bySelector)
+                val searchCondition = Until.findObject(bsb.selector)
+                val oid = objectStore.put(searchCondition)
+                return ObjectRef(oid, searchCondition::class.simpleName)
+            }
         }
 
-        fun response(): ObjectRef {
-            val bsb = bySelectorBundleFromString(bySelector)
-            val searchCondition = Until.findObject(bsb.selector)
-            val oid = objectStore.put(searchCondition)
-            return ObjectRef(oid, searchCondition::class.simpleName)
+        class Post(
+            private val selector: Selector? = null,
+            private val parent: FindObject = FindObject()
+        ) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(selector: Selector): ObjectRef {
+                val searchCondition = Until.findObject(selector.toBySelector())
+                val oid = objectStore.put(searchCondition)
+                return ObjectRef(oid, searchCondition::class.simpleName)
+            }
         }
     }
 

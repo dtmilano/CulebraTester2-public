@@ -56,7 +56,6 @@ interface ApplicationComponent {
     fun inject(clear: com.dtmilano.android.culebratester2.location.ObjectStore.Clear)
     fun inject(remove: com.dtmilano.android.culebratester2.location.ObjectStore.Remove)
     fun inject(clear: UiObject2.Clear)
-    fun inject(findObject: Until.FindObject)
     fun inject(wait: UiDevice.Wait)
     fun inject(newWindow: Until.NewWindow)
     fun inject(clickAndWait: UiObject2.ClickAndWait)
@@ -74,5 +73,7 @@ interface ApplicationComponent {
     fun inject(dumpsys: Device.Dumpsys)
     fun inject(getContentDescription: UiObject2.GetContentDescription)
     fun inject(post: UiDevice.FindObjects.Post)
+    fun inject(get: Until.FindObject.Get)
+    fun inject(post: Until.FindObject.Post)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }
