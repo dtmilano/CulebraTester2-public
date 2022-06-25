@@ -361,7 +361,7 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
-            get<Until.FindObject.Post> {
+            post<Until.FindObject.Post> {
                 // We have to get the body as ktor doesn't do it
                 // see https://github.com/ktorio/ktor/issues/190
                 // also, it.body is null here

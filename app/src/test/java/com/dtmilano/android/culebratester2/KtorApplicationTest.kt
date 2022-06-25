@@ -1301,7 +1301,7 @@ class KtorApplicationTest {
     fun `test until find object post selector`() {
         assertEquals(0, objectStore.size())
         withTestApplication({ module(testing = true) }) {
-            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+            handleRequest(HttpMethod.Post, "/v2/until/findObject") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
                     Gson().toJson(
