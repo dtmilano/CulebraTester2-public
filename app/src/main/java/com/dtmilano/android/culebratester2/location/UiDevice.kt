@@ -27,6 +27,7 @@ import java.lang.ref.WeakReference
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.reflect.jvm.jvmName
 
 private const val TAG = "UiDevice"
 private const val REMOVE_TEMP_FILE_DELAY = 2000L
@@ -1061,7 +1062,7 @@ class UiDevice {
 
             obj?.let {
                 val oid = objectStore.put(it)
-                return ObjectRef(oid, it::class.simpleName)
+                return ObjectRef(oid, it::class.jvmName)
             }
 
             throw HttpException(

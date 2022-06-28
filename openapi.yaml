@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.39
+  version: 2.0.40
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1262,7 +1262,7 @@ paths:
                 status: ERROR
               schema:
                 $ref: '#/components/schemas/StatusResponse'
-          description: Object not found
+          description: SearchCondition not created
         default:
           $ref: '#/components/responses/error'
       summary: Returns a SearchCondition that is satisfied when at least one element
@@ -1281,21 +1281,100 @@ paths:
           content:
             application/json:
               example:
-                className: android.widget.Button
+                className:   androidx.test.uiautomator.Until$3@41c9fff
                 oid: 1
               schema:
                 $ref: '#/components/schemas/ObjectRef'
-          description: Object found
+          description: The SearchCondition reference
         '404':
           content:
             application/json:
               example:
-                errorMessage: Object not found
+                errorMessage: SearchCondition not created
                 errorStatusResponse: 1001
                 status: ERROR
               schema:
                 $ref: '#/components/schemas/StatusResponse'
           description: Object not found
+        default:
+          $ref: '#/components/responses/error'
+      summary: Returns a SearchCondition that is satisfied when at least one element
+        matching the selector can be found.
+  /until/findObjects:
+    get:
+      description: Finds an object. The object found, if any, can be later used in other call like API.click.
+      parameters:
+      - description: 'the selector sets the resource name criteria for matching. A
+          UI element will be considered a match if its resource name exactly matches
+          the selector parameter and all other criteria for this selector are met.
+          The format of the selector string is
+
+          `sel@[\$]value,...`
+
+          Where `sel` can be one of - checkable - clazz - clickable - depth - desc
+          - package - res - scrollable - text
+
+          `@` replaces the `=` sign that is used to separate parameters and values
+          in the URL. If the first character of value is `$` then a `Pattern` is created.'
+        example: res@com.android.calendar:id/d0_label,depth@2
+        in: query
+        name: bySelector
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                className: androidx.test.uiautomator.Until$3@41c9fff
+                oid: 1
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+          description: Objects found
+        '404':
+          content:
+            application/json:
+              example:
+                errorMessage: SearchCondition not created
+                errorStatusResponse: 1001
+                status: ERROR
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+          description: Object not found
+        default:
+          $ref: '#/components/responses/error'
+      summary: Returns a SearchCondition that is satisfied when at least one element
+        matching the selector can be found. 
+    post:
+      description: Returns a SearchCondition that is satisfied when at least one element
+        matching the selector can be found.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Selector'
+        description: Selector
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                className: androidx.test.uiautomator.Until$3@41c9fff
+                oid: 1
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+          description: SearchCondition created
+        '404':
+          content:
+            application/json:
+              example:
+                errorMessage: SearchCondition not created
+                errorStatusResponse: 1001
+                status: ERROR
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+          description: SearchCondition not created
         default:
           $ref: '#/components/responses/error'
       summary: Returns a SearchCondition that is satisfied when at least one element

@@ -1292,6 +1292,7 @@ class KtorApplicationTest {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val objRef = jsonResponse<ObjectRef>()
                 assertTrue(objRef.oid > 0)
+                assertTrue(objRef.className?.startsWith("androidx.test.uiautomator.Until$")!!)
                 assertEquals(1, objectStore.size())
             }
         }
@@ -1314,8 +1315,48 @@ class KtorApplicationTest {
                 )
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val objectRef = jsonResponse<ObjectRef>()
-                assertTrue(objectRef.oid > 0)
+                val objRef = jsonResponse<ObjectRef>()
+                assertTrue(objRef.oid > 0)
+                assertTrue(objRef.className?.startsWith("androidx.test.uiautomator.Until$")!!)
+                assertEquals(1, objectStore.size())
+            }
+        }
+    }
+
+    @Test
+    fun `test until find objects get by selector`() {
+        assertEquals(0, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/until/findObjects?bySelector=clazz@$MATCHES").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objRef = jsonResponse<ObjectRef>()
+                assertTrue(objRef.oid > 0)
+                assertTrue(objRef.className?.startsWith("androidx.test.uiautomator.Until$")!!)
+                assertEquals(1, objectStore.size())
+            }
+        }
+    }
+
+    @Test
+    fun `test until find objects post selector`() {
+        assertEquals(0, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/until/findObjects") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            clazz = "android.widget.Button",
+                            depth = 1,
+                            desc = "Equal"
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objRef = jsonResponse<ObjectRef>()
+                assertTrue(objRef.oid > 0)
+                assertTrue(objRef.className?.startsWith("androidx.test.uiautomator.Until$")!!)
                 assertEquals(1, objectStore.size())
             }
         }
