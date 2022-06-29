@@ -6,17 +6,36 @@ import android.graphics.Color
 import android.util.Log
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.SearchCondition
+import androidx.test.uiautomator.UiObject2
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.convertWindowHierarchyDumpToJson
 import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
 import com.dtmilano.android.culebratester2.utils.uiSelectorBundleFromString
-import io.ktor.http.*
-import io.ktor.locations.*
-import io.ktor.swagger.experimental.*
-import io.swagger.server.models.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.locations.KtorExperimentalLocationsAPI
+import io.ktor.locations.Location
+import io.ktor.swagger.experimental.HttpException
+import io.swagger.server.models.BooleanResponse
+import io.swagger.server.models.ClickBody
+import io.swagger.server.models.CurrentPackageName
+import io.swagger.server.models.DisplayHeight
+import io.swagger.server.models.DisplayRotationEnum
+import io.swagger.server.models.DisplayRotationResponse
+import io.swagger.server.models.DisplaySizeDp
+import io.swagger.server.models.DisplayWidth
 import io.swagger.server.models.Help
+import io.swagger.server.models.LastTraversedText
+import io.swagger.server.models.ObjectRef
+import io.swagger.server.models.Pixel
+import io.swagger.server.models.ProductName
+import io.swagger.server.models.Selector
+import io.swagger.server.models.StatusCode
+import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.SwipeBody
+import io.swagger.server.models.of
+import io.swagger.server.models.toBySelector
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -26,7 +45,6 @@ import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.reflect.jvm.jvmName
 
 private const val TAG = "UiDevice"
@@ -101,7 +119,10 @@ class UiDevice {
     }
 
     @Location("/dumpWindowHierarchy")
-    /*inner*/ class DumpWindowHierarchy(private val format: String = "JSON", private val parent: UiDevice = UiDevice()) {
+    /*inner*/ class DumpWindowHierarchy(
+        private val format: String = "JSON",
+        private val parent: UiDevice = UiDevice()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -130,7 +151,11 @@ class UiDevice {
      * Gets the value of a pixel on the device screen.
      */
     @Location("/pixel")
-    /*inner*/ class Pixel(private val x: Int, private val y: Int, private val parent: UiDevice = UiDevice()) {
+    /*inner*/ class Pixel(
+        private val x: Int,
+        private val y: Int,
+        private val parent: UiDevice = UiDevice()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -158,7 +183,12 @@ class UiDevice {
                 // requires API >= Q
                 //val color = bitmap.getColor(x, y)
                 val colorInt = bitmap.getPixel(x, y)
-                return Pixel(Color.red(colorInt), Color.green(colorInt), Color.blue(colorInt), Color.alpha(colorInt))
+                return Pixel(
+                    Color.red(colorInt),
+                    Color.green(colorInt),
+                    Color.blue(colorInt),
+                    Color.alpha(colorInt)
+                )
             }
             throw RuntimeException("Cannot get pixel")
         }
@@ -182,7 +212,11 @@ class UiDevice {
     }
 
     @Location("/screenshot")
-    /*inner*/ class Screenshot(private val scale: Float = 1.0F, private val quality: Int = 90, private val parent: UiDevice = UiDevice()) {
+    /*inner*/ class Screenshot(
+        private val scale: Float = 1.0F,
+        private val quality: Int = 90,
+        private val parent: UiDevice = UiDevice()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -486,7 +520,10 @@ class UiDevice {
          */
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        /*inner*/ class Post(private val body: Selector? = null, private val parent: FindObject = FindObject()) {
+        /*inner*/ class Post(
+            private val body: Selector? = null,
+            private val parent: FindObject = FindObject()
+        ) {
             private var holder: Holder
 
             @Inject
@@ -582,7 +619,10 @@ class UiDevice {
          */
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        /*inner*/ class Post(private val body: Selector? = null, private val parent: FindObjects = FindObjects()) {
+        /*inner*/ class Post(
+            private val body: Selector? = null,
+            private val parent: FindObjects = FindObjects()
+        ) {
             private var holder: Holder
 
             @Inject
@@ -825,7 +865,11 @@ class UiDevice {
      * @param metaState an integer in which each bit set to 1 represents a pressed meta key (optional)
      */
     @Location("/pressKeyCode")
-    /*inner*/ class PressKeyCode(private val keyCode: Int, private val metaState: Int = 0, private val parent: UiDevice = UiDevice()) {
+    /*inner*/ class PressKeyCode(
+        private val keyCode: Int,
+        private val metaState: Int = 0,
+        private val parent: UiDevice = UiDevice()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -904,7 +948,10 @@ class UiDevice {
      *
      */
     @Location("/hasObject")
-    /*inner*/ class HasObject(private val bySelector: String, private val parent: UiDevice = UiDevice()) {
+    /*inner*/ class HasObject(
+        private val bySelector: String,
+        private val parent: UiDevice = UiDevice()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -1038,7 +1085,11 @@ class UiDevice {
      *
      */
     @Location("/wait")
-    /* inner */ class Wait(private val oid: Int, private val timeout: Long = 10000, private val parent: UiDevice = UiDevice()) {
+    /* inner */ class Wait(
+        private val oid: Int,
+        private val timeout: Long = 10000,
+        private val parent: UiDevice = UiDevice()
+    ) {
 
         private var holder: Holder
 
@@ -1054,13 +1105,22 @@ class UiDevice {
         }
 
 
-        fun response(): ObjectRef {
+        fun response(): Any {
             val searchCondition: SearchCondition<*> =
                 objectStore[oid] as SearchCondition<*>
             val obj = holder.uiDevice.wait(searchCondition, timeout)
-            println("🔮obj: $obj")
+            println("🔮obj: $obj  className=${obj::class.jvmName}")
 
             obj?.let {
+                if (it is List<*>) {
+                    if (it.isNotEmpty()) {
+                        return it.map { listElement ->
+                            val uiObject2 = listElement as UiObject2
+                            ObjectRef(objectStore.put(uiObject2), uiObject2.className)
+                        }
+                    }
+                }
+
                 val oid = objectStore.put(it)
                 return ObjectRef(oid, it::class.jvmName)
             }
@@ -1078,7 +1138,10 @@ class UiDevice {
      * @param timeout in milliseconds (optional)
      */
     @Location("/waitForIdle")
-    /*inner*/ class WaitForIdle(private val timeout: Long = 10_000, private val parent: UiDevice = UiDevice()) {
+    /*inner*/ class WaitForIdle(
+        private val timeout: Long = 10_000,
+        private val parent: UiDevice = UiDevice()
+    ) {
         private var holder: Holder
 
         @Inject
