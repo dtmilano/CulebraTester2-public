@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.util.Log
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.EventCondition
 import androidx.test.uiautomator.SearchCondition
 import androidx.test.uiautomator.UiObject2
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
@@ -36,6 +37,7 @@ import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.SwipeBody
 import io.swagger.server.models.of
 import io.swagger.server.models.toBySelector
+import io.swagger.server.models.toJson
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -508,7 +510,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusCode.OBJECT_NOT_FOUND.message("findObject could not find any object matching selector")
                 )
             }
         }
@@ -550,7 +552,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusCode.OBJECT_NOT_FOUND.message("findObject could not find any object matching selector ${selector.toJson()}")
                 )
             }
         }
@@ -607,7 +609,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusCode.OBJECT_NOT_FOUND.message("findObjects could not find any object matching selector $bySelector")
                 )
             }
         }
@@ -647,7 +649,7 @@ class UiDevice {
 
                 throw HttpException(
                     HttpStatusCode.NotFound,
-                    StatusCode.OBJECT_NOT_FOUND.message()
+                    StatusCode.OBJECT_NOT_FOUND.message("findObjects could not find any object matching selector ${selector.toJson()}")
                 )
             }
         }
@@ -1106,28 +1108,54 @@ class UiDevice {
 
 
         fun response(): Any {
-            val searchCondition: SearchCondition<*> =
-                objectStore[oid] as SearchCondition<*>
-            val obj = holder.uiDevice.wait(searchCondition, timeout)
-            println("🔮obj: $obj  className=${obj::class.jvmName}")
+            if (objectStore[oid] is SearchCondition<*>) {
+                val searchCondition: SearchCondition<*> =
+                    objectStore[oid] as SearchCondition<*>
+                val obj = holder.uiDevice.wait(searchCondition, timeout)
 
-            obj?.let {
-                if (it is List<*>) {
-                    if (it.isNotEmpty()) {
-                        return it.map { listElement ->
-                            val uiObject2 = listElement as UiObject2
-                            ObjectRef(objectStore.put(uiObject2), uiObject2.className)
+                print("🔮obj: $obj ")
+                if (obj != null) {
+                    println("className=${obj::class.jvmName}")
+                } else {
+                    println("")
+                }
+                Log.d(TAG, "UiDevice.Wait: searching by $searchCondition returns $obj")
+
+                obj?.let {
+                    if (it is List<*>) {
+                        if (it.isNotEmpty()) {
+                            return it.map { listElement ->
+                                val uiObject2 = listElement as UiObject2
+                                ObjectRef(objectStore.put(uiObject2), uiObject2.className)
+                            }
                         }
                     }
+
+                    val oid = objectStore.put(it)
+                    return ObjectRef(oid, it::class.jvmName)
                 }
 
-                val oid = objectStore.put(it)
-                return ObjectRef(oid, it::class.jvmName)
+                throw HttpException(
+                    HttpStatusCode.NotFound,
+                    StatusCode.OBJECT_NOT_FOUND.message("Waiting for $searchCondition (oid=$oid) found no objects")
+                )
+            }
+
+            if (objectStore[oid] is EventCondition<*>) {
+                val eventCondition: EventCondition<*> =
+                    objectStore[oid] as EventCondition<*>
+                // FIXME: UiAutomator still does not support this wait:
+                //val obj = holder.uiDevice.wait(eventCondition)
+
+                throw HttpException(
+                    HttpStatusCode.NotImplemented,
+                    StatusCode.NOT_IMPLEMENTED.message("Not implemented in androidx.test.uiautomator.UiDevice")
+                )
             }
 
             throw HttpException(
                 HttpStatusCode.NotFound,
-                StatusCode.OBJECT_NOT_FOUND.message()
+                StatusCode.OBJECT_NOT_FOUND.message("Waiting did not receive a search condition: ${objectStore[oid]} (oid=$oid)")
             )
         }
     }

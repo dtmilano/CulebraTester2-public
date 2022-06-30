@@ -47,6 +47,7 @@ class ObjectStore {
             CulebraTesterApplication().appComponent.inject(this)
         }
 
+        // FIXME: should be more specific than Any
         fun response(): Any {
             val a = ArrayList<Any>()
             objectStore.list().forEach { (k, v) ->

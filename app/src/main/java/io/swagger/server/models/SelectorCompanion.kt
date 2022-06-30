@@ -5,6 +5,7 @@ import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
+import com.google.gson.Gson
 
 /**
  * Constructor from [UiObject2].
@@ -61,6 +62,7 @@ fun Selector.toBySelector(): BySelector {
             bySelector?.desc(desc) ?: By.desc(desc)
         }
     }
+    // FIXME:
     // missing enabled
     // missing focusable
     // missing focused
@@ -109,4 +111,11 @@ fun Selector.toUiSelector(): UiSelector {
     instance?.let { uiSelector.instance(instance) }
 
     return uiSelector
+}
+
+/**
+ * Returns a JSON string created from this [Selector].
+ */
+fun Selector.toJson(): String {
+    return Gson().toJson(this)
 }

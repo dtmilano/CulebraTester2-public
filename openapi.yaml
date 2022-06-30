@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.40
+  version: 2.0.41
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -189,8 +189,8 @@ paths:
               schema:
                 items:
                   properties:
-                    object:
-                      type: object
+                    obj:
+                      $ref: '#/components/schemas/AnyValue'
                     oid:
                       type: integer
                   type: object
@@ -973,8 +973,8 @@ paths:
                 className: android.widget.Button
                 oid: 1
               schema:
-                $ref: '#/components/schemas/ObjectRef'
-          description: Object found
+                $ref: '#/components/schemas/AnyValue'
+          description: Some objects found
         '404':
           content:
             application/json:
@@ -1408,6 +1408,9 @@ paths:
 
 components:
   schemas:
+    AnyValue:
+      # As the swagger-codegen (3.0.34) version we are using now does not support `oneOf` correctly, we are forced to use this
+      description: 'Can be anything: string, number, array, object, etc., including `null`'
     BooleanResponse:
       type: object
       required:
@@ -1685,6 +1688,7 @@ components:
               - 1920
             children: [ ]
     Pattern:
+      # As the swagger-codegen (3.0.34) version we are using now does not support `oneOf` correctly, we cannot use this
       description: A pattern.
       type: object
       properties:
