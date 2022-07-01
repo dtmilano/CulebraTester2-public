@@ -578,13 +578,75 @@ class KtorApplicationTest {
     }
 
     @Test
-    fun `test has object`() {
+    fun `test has object get`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(
                 HttpMethod.Get,
                 "/v2/uiDevice/hasObject?bySelector=clazz@${MATCHES}"
             ).apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+                val response = jsonResponse<BooleanResponse>()
+                assertEquals(response.name, "hasObject")
+                assertTrue(response.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test does not have object get`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiDevice/hasObject?bySelector=desc@${DOES_NOT_MATCH}"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val response = jsonResponse<BooleanResponse>()
+                assertEquals(response.name, "hasObject")
+                assertFalse(response.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test has object post`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/hasObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            desc = MATCHES,
+                            depth = 1
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val response = jsonResponse<BooleanResponse>()
+                assertEquals(response.name, "hasObject")
+                assertTrue(response.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test does not have object post`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/hasObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            desc = DOES_NOT_MATCH,
+                            depth = 1
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val response = jsonResponse<BooleanResponse>()
+                assertEquals(response.name, "hasObject")
+                assertFalse(response.value)
             }
         }
     }

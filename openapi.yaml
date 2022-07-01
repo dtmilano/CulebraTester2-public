@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.41
+  version: 2.0.42
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -656,7 +656,22 @@ paths:
           type: string
       responses:
         '200':
-          $ref: '#/components/responses/ok'
+          $ref: '#/components/responses/trueResponse'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Returns whether there is a match for the given selector criteria.
+    post:
+      description: Returns whether there is a match for the given selector criteria.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Selector'
+        description: Selector
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/trueResponse'
         default:
           $ref: '#/components/responses/error'
       summary: Returns whether there is a match for the given selector criteria.
@@ -1828,6 +1843,24 @@ components:
         clazz: android.widget.Button
         depth: 1
   responses:
+    trueResponse:
+      description: True response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BooleanResponse'
+          example:
+            name: hasProperty
+            value: true
+    falseResponse:
+      description: False response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BooleanResponse'
+          example:
+            name: hasProperty
+            value: false
     ok:
       description: OK
       content:

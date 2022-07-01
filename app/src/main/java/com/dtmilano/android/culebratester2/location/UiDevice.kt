@@ -950,38 +950,62 @@ class UiDevice {
      *
      */
     @Location("/hasObject")
-    /*inner*/ class HasObject(
-        private val bySelector: String,
-        private val parent: UiDevice = UiDevice()
-    ) {
-        private var holder: Holder
+    /*inner*/ class HasObject(private val parent: UiDevice = UiDevice()) {
 
-        @Inject
-        lateinit var holderHolder: HolderHolder
+        /*inner*/ class Get(
+            private val bySelector: String,
+            private val parent: HasObject = HasObject()
+        ) {
+            private var holder: Holder
 
-        @Inject
-        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+            @Inject
+            lateinit var holderHolder: HolderHolder
 
-        init {
-            CulebraTesterApplication().appComponent.inject(this)
-            holder = holderHolder.instance
+            @Inject
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+
+            fun response(): BooleanResponse {
+                val bsb = bySelectorBundleFromString(bySelector)
+                println("👽")
+                println("selector=${bsb.selector}")
+                println("bySelector=${bySelector}")
+                println("hasObject=${holder.uiDevice.hasObject(bsb.selector)}")
+                return BooleanResponse("hasObject", holder.uiDevice.hasObject(bsb.selector))
+            }
         }
 
+        /*inner*/ class Post(
+            private val selector: Selector? = null,
+            private val parent: HasObject = HasObject()
+        ) {
+            private var holder: Holder
 
-        fun response(): StatusResponse {
-            val bsb = bySelectorBundleFromString(bySelector)
-            println("👽")
-            println("selector=${bsb.selector}")
-            println("bySelector=${bySelector}")
-            println("hasObject=${holder.uiDevice.hasObject(bsb.selector)}")
-            println("uiDevice=${holder.uiDevice}")
-            if (holder.uiDevice.hasObject(bsb.selector)) {
-                return StatusResponse(StatusResponse.Status.OK)
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
             }
-            throw HttpException(
-                HttpStatusCode.NotFound,
-                StatusCode.OBJECT_NOT_FOUND.message()
-            )
+
+
+            fun response(selector: Selector): BooleanResponse {
+                println("👽")
+                println("hasObject=${holder.uiDevice.hasObject(selector.toBySelector())}")
+                return BooleanResponse(
+                    "hasObject",
+                    holder.uiDevice.hasObject(selector.toBySelector())
+                )
+            }
         }
     }
 
@@ -1022,7 +1046,10 @@ class UiDevice {
                 if (holder.uiDevice.swipe(startX, startY, endX, endY, steps)) {
                     return StatusResponse(StatusResponse.Status.OK)
                 }
-                return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot swipe")
+                return StatusResponse(
+                    StatusResponse.Status.ERROR,
+                    errorMessage = "Cannot swipe"
+                )
             }
         }
 
@@ -1032,7 +1059,10 @@ class UiDevice {
          */
         // WARNING: ktor is not passing this argument so the '?' and null are needed
         // see https://github.com/ktorio/ktor/issues/190
-        /*inner*/ class Post(val body: SwipeBody? = null, private val parent: Swipe = Swipe()) {
+        /*inner*/ class Post(
+            val body: SwipeBody? = null,
+            private val parent: Swipe = Swipe()
+        ) {
             private var holder: Holder
 
             @Inject
@@ -1056,7 +1086,10 @@ class UiDevice {
                 if (holder.uiDevice.swipe(segments, body.segmentSteps!!)) {
                     return StatusResponse(StatusResponse.Status.OK)
                 }
-                return StatusResponse(StatusResponse.Status.ERROR, errorMessage = "Cannot swipe")
+                return StatusResponse(
+                    StatusResponse.Status.ERROR,
+                    errorMessage = "Cannot swipe"
+                )
             }
         }
     }
