@@ -78,5 +78,7 @@ interface ApplicationComponent {
     fun inject(post: Until.FindObject.Post)
     fun inject(get: Until.FindObjects.Get)
     fun inject(post: Until.FindObjects.Post)
+    fun inject(get: UiObject2.FindObject.Get)
+    fun inject(post: UiObject2.FindObject.Post)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

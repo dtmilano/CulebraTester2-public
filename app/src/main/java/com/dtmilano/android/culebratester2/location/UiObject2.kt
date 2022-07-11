@@ -5,13 +5,18 @@ import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
+import com.dtmilano.android.culebratester2.utils.BySelectorBundle
+import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
 import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.swagger.experimental.*
+import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.Text
+import io.swagger.server.models.toBySelector
 import javax.inject.Inject
+import kotlin.reflect.jvm.jvmName
 
 private const val TAG = "UiObject2"
 
@@ -148,8 +153,77 @@ class UiObject2 {
         }
     }
 
+    @Location("/{oid}/findObject")
+    /*inner*/ class FindObject(val oid: Int) {
+        class Get(
+            val bySelector: String,
+            private val findObject: FindObject,
+            private val parent: UiObject2 = UiObject2()
+        ) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: ObjectStore
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(): ObjectRef {
+                uiObject2(findObject.oid, objectStore)?.let {
+                    val bsb = bySelectorBundleFromString(bySelector)
+                    it.findObject(bsb.selector)?.let { uiObject2Child ->
+                        val oid = objectStore.put(uiObject2Child)
+                        return@response ObjectRef(oid, uiObject2Child::class.jvmName)
+                    }
+                    throw notFound(bsb)
+                }
+                throw notFound(findObject.oid)
+            }
+        }
+
+        // WARNING: ktor is not passing this argument so the '?' and null are needed
+        // see https://github.com/ktorio/ktor/issues/190
+        class Post(
+            val selector: Selector? = null,
+            private val findObject: FindObject,
+            private val parent: UiObject2 = UiObject2()
+        ) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            @Inject
+            lateinit var objectStore: ObjectStore
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(selector: Selector): ObjectRef {
+                uiObject2(findObject.oid, objectStore)?.let {
+                    it.findObject(selector.toBySelector())?.let { uiObject2Child ->
+                        val oid = objectStore.put(uiObject2Child)
+                        return@response ObjectRef(oid, uiObject2Child.className)
+                    }
+                    throw notFound(selector)
+                }
+                throw notFound(findObject.oid)
+            }
+        }
+    }
+
     @Location("/{oid}/getContentDescription")
-    /*inner*/ class GetContentDescription(val oid: Int, private val parent: UiObject2 = UiObject2()) {
+    /*inner*/ class GetContentDescription(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -287,6 +361,17 @@ class UiObject2 {
 
         fun notFound(oid: Int): HttpException {
             return HttpException(HttpStatusCode.NotFound, "⚠️ Object with oid=${oid} not found")
+        }
+
+        fun notFound(selector: Selector): HttpException {
+            return HttpException(
+                HttpStatusCode.NotFound,
+                "⚠️ UiObject2 matching $selector not found"
+            )
+        }
+
+        private fun notFound(bsb: BySelectorBundle): Throwable {
+            return HttpException(HttpStatusCode.NotFound, "⚠️ UiObject2 matching $bsb not found")
         }
     }
 }

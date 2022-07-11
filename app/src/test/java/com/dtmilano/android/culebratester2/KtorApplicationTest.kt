@@ -74,6 +74,12 @@ import kotlin.text.Regex.Companion.escape
 @RunWith(RobolectricTestRunner::class)
 @Config(minSdk = 26, maxSdk = 31)
 class KtorApplicationTest {
+    lateinit var uiObject: UiObject
+    lateinit var uiObject2: UiObject2
+    lateinit var uiObject22: UiObject2
+    lateinit var listOfUiObject2: List<UiObject2>
+    lateinit var uiDevice: UiDevice
+    lateinit var uiDeviceNoScreenshot: UiDevice
 
     companion object {
 
@@ -169,6 +175,8 @@ class KtorApplicationTest {
             }
         }
 
+        private const val MOCK_CLASS_NAME = "MockClassName"
+
         private val display: Display = mock {
             on { getRealSize(argThat(matcher = MatchPoint())) } doAnswer {}
         }
@@ -177,61 +185,8 @@ class KtorApplicationTest {
             on { defaultDisplay } doReturn display
         }
 
-        private const val MOCK_CLASS_NAME = "MockClassName"
-
         val targetContext = mock<WeakReference<Context>> {
 
-        }
-
-        private val uiObject = mock<UiObject> {
-            on { className } doReturn MOCK_CLASS_NAME
-            on { text } doReturn "Hello Culebra!"
-        }
-
-        val uiObject2 = mock<UiObject2> {
-            on { className } doReturn MOCK_CLASS_NAME
-            on { contentDescription } doReturn "Description of Hello Culebra!"
-            on { text } doReturn "Hello Culebra!"
-        }
-
-        private val uiObject22 = mock<UiObject2> {
-            on { className } doReturn MOCK_CLASS_NAME
-            on { contentDescription } doReturn "Description of Hello Culebra!"
-            on { text } doReturn "Hello Culebra!"
-        }
-
-        private val listOfUiObject2: List<UiObject2> = mutableListOf(uiObject2, uiObject22)
-
-        val uiDevice = mock<UiDevice> {
-            val x = realSize["x"] ?: error("x not defined")
-            val y = realSize["y"] ?: error("y not defined")
-            val p = Point()
-            setDisplaySize(p)
-
-            on { click(any(), any()) } doReturn true
-            on { displayWidth } doReturn x
-            on { displayHeight } doReturn y
-            on { displaySizeDp } doReturn p
-            on { displayRotation } doReturn 0
-            on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
-            on { findObject(argThat(BySelectorMatcherRes())) } doReturn uiObject2
-            on { findObject(argThat(UiSelectorMatcherRes())) } doReturn uiObject
-            on { findObjects(argThat(BySelectorMatcherRes()))} doReturn listOfUiObject2
-            on { findObjects(argThat(BySelectorMatcherClassMatches()))} doReturn listOfUiObject2
-            on { findObjects(argThat(BySelectorMatcherClassDoesNotMatch()))} doReturn null
-            on { hasObject(argThat(BySelectorMatcherClassDoesNotMatch())) } doReturn false
-            on { hasObject(argThat(BySelectorMatcherClassMatches())) } doReturn true
-            on { pressBack() } doReturn true
-            on { pressEnter() } doReturn true
-            on { pressDelete() } doReturn true
-            on { pressHome() } doReturn true
-            on { pressKeyCode(anyInt(), anyInt()) } doReturn true
-            on { pressRecentApps() } doReturn true
-            on { takeScreenshot(any(), any(), any()) } doReturn true
-        }
-
-        val uiDeviceNoScreenshot = mock<UiDevice> {
-            on { takeScreenshot(any(), any(), any()) } doReturn false
         }
 
         val uiAutomation = mock<UiAutomation> {
@@ -246,8 +201,66 @@ class KtorApplicationTest {
         }
     }
 
+    private fun initMocks() {
+        println("ð initializing mocks")
+
+        uiObject = mock<UiObject> {
+            on { className } doReturn MOCK_CLASS_NAME
+            on { text } doReturn "Hello Culebra!"
+        }
+
+        uiObject22 = mock<UiObject2> {
+            on { className } doReturn MOCK_CLASS_NAME
+            on { contentDescription } doReturn "Description of Hello Culebra!"
+            on { text } doReturn "Hello Culebra!"
+        }
+
+        uiObject2 = mock<UiObject2> {
+            on { className } doReturn MOCK_CLASS_NAME
+            on { contentDescription } doReturn "Description of Hello Culebra!"
+            on { text } doReturn "Hello Culebra!"
+            on { findObject(argThat(BySelectorMatcherClassMatches())) } doReturn uiObject22
+        }
+
+        listOfUiObject2 = mutableListOf(uiObject2, uiObject22)
+
+        uiDevice = mock<UiDevice> {
+            val x = realSize["x"] ?: error("x not defined")
+            val y = realSize["y"] ?: error("y not defined")
+            val p = Point()
+            setDisplaySize(p)
+
+            on { click(any(), any()) } doReturn true
+            on { displayWidth } doReturn x
+            on { displayHeight } doReturn y
+            on { displaySizeDp } doReturn p
+            on { displayRotation } doReturn 0
+            on { dumpWindowHierarchy(argThat(MatchOutputStream())) } doAnswer {}
+            on { findObject(argThat(BySelectorMatcherRes())) } doReturn uiObject2
+            on { findObject(argThat(UiSelectorMatcherRes())) } doReturn uiObject
+            on { findObjects(argThat(BySelectorMatcherRes())) } doReturn listOfUiObject2
+            on { findObjects(argThat(BySelectorMatcherClassMatches())) } doReturn listOfUiObject2
+            on { findObjects(argThat(BySelectorMatcherClassDoesNotMatch())) } doReturn null
+            on { hasObject(argThat(BySelectorMatcherClassDoesNotMatch())) } doReturn false
+            on { hasObject(argThat(BySelectorMatcherClassMatches())) } doReturn true
+            on { pressBack() } doReturn true
+            on { pressEnter() } doReturn true
+            on { pressDelete() } doReturn true
+            on { pressHome() } doReturn true
+            on { pressKeyCode(anyInt(), anyInt()) } doReturn true
+            on { pressRecentApps() } doReturn true
+            on { takeScreenshot(any(), any(), any()) } doReturn true
+        }
+
+        uiDeviceNoScreenshot = mock<UiDevice> {
+            on { takeScreenshot(any(), any(), any()) } doReturn false
+        }
+    }
+
     @Before
     fun setup() {
+        println("ð setup")
+        initMocks()
         holder.targetContext = targetContext
         holder.uiDevice = uiDevice
         holder.uiAutomation = uiAutomation
@@ -887,6 +900,7 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/setText?text=hello+world").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+                // We can't check the exact text unless we implement `setText()` in UiObject2 mock
                 verify(uiObject2, times(1)).text = any()
             }
         }
@@ -927,6 +941,7 @@ class KtorApplicationTest {
                 )
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+                // We can't check the exact text unless we implement `setText()` in UiObject2 mock
                 verify(uiObject2, times(1)).text = any()
             }
         }
@@ -1342,6 +1357,89 @@ class KtorApplicationTest {
                 println(response.content)
                 println(response.status())
                 println(response.content)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 find object get`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        assertEquals(1, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiObject2/${oid}/findObject?bySelector=clazz@$MATCHES"
+            ).apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals(2, objectStore.size())
+                verify(uiObject2, times(1)).findObject(any())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 find object get does not match`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        assertEquals(1, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiObject2/${oid}/findObject?bySelector=clazz@$DOES_NOT_MATCH"
+            ).apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(1, objectStore.size())
+                verify(uiObject2, times(1)).findObject(any())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 find object post`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        assertEquals(1, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiObject2/$oid/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            clazz = MATCHES
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objRef = jsonResponse<ObjectRef>()
+                assertTrue(objRef.oid > 0)
+                assertEquals(objRef.className, MOCK_CLASS_NAME)
+                assertEquals(2, objectStore.size())
+                verify(uiObject2, times(1)).findObject(any())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 find object post does not match`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        assertEquals(1, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiObject2/$oid/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            clazz = DOES_NOT_MATCH
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(1, objectStore.size())
+                verify(uiObject2, times(1)).findObject(any())
             }
         }
     }

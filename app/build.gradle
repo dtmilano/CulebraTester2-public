@@ -20,8 +20,8 @@ android {
         applicationId "com.dtmilano.android.culebratester2"
         minSdk 26
         targetSdk 31
-        versionCode 20042
-        versionName "2.0.42-alpha"
+        versionCode 20043
+        versionName "2.0.43-alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -63,9 +63,6 @@ android {
             returnDefaultValues = true
             includeAndroidResources = true
         }
-        //unitTests.all {
-        //    systemProperty 'robolectric.enabledSdks', '28'
-        //}
     }
 
     composeOptions {

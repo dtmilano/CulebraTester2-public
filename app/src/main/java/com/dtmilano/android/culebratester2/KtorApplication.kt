@@ -341,6 +341,19 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject2.FindObject.Get> {
+                call.respond(it.response())
+            }
+
+            post<UiObject2.FindObject.Post> {
+                // We have to get the body as ktor doesn't do it
+                // see https://github.com/ktorio/ktor/issues/190
+                // also, it.body is null here
+                // println("body ${it.body}");
+                val selector = call.receive<Selector>()
+                call.respond(it.response(selector))
+            }
+
             get<UiObject2.GetContentDescription> {
                 call.respond(it.response())
             }

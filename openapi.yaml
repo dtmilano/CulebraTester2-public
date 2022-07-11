@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.42
+  version: 2.0.43
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1153,6 +1153,95 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Returns the content description for this object.
+  /uiObject2/{oid}/findObject:
+    get:
+      description: Searches all elements under this object and returns the first object to match the criteria, or not found if no matching objects are found.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      - description: 'the selector sets the resource name criteria for matching. A
+          UI element will be considered a match if its resource name exactly matches
+          the selector parameter and all other criteria for this selector are met.
+          The format of the selector string is
+
+          `sel@[\$]value,...`
+
+          Where `sel` can be one of - checkable - clazz - clickable - depth - desc
+          - package - res - scrollable - text
+
+          `@` replaces the `=` sign that is used to separate parameters and values
+          in the URL. If the first character of value is `$` then a `Pattern` is created.'
+        example: res@com.android.calendar:id/d0_label,depth@2
+        in: query
+        name: bySelector
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                className: android.widget.TextView
+                oid: 1
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+          description: Object found
+        '404':
+          content:
+            application/json:
+              example:
+                errorMessage: Object not found
+                errorStatusResponse: 1001
+                status: ERROR
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+          description: Object not found
+        default:
+          $ref: '#/components/responses/error'
+      summary: Finds an object.
+    post:
+      description: Searches all elements under this object and returns the first object to match the criteria, or not found if no matching objects are found.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Selector'
+        description: Selector
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                className: android.widget.Button
+                oid: 1
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+          description: Object found
+        '404':
+          content:
+            application/json:
+              example:
+                errorMessage: Object not found
+                errorStatusResponse: 1001
+                status: ERROR
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+          description: Object not found
+        default:
+          $ref: '#/components/responses/error'
+      summary: Finds an object.  
   /uiObject2/{oid}/getText:
     get:
       description: The target object should have been found using `findObject` with
