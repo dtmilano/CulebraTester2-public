@@ -1000,6 +1000,7 @@ class UiDevice {
 
             fun response(selector: Selector): BooleanResponse {
                 println("👽")
+                println("selector=${selector}")
                 println("hasObject=${holder.uiDevice.hasObject(selector.toBySelector())}")
                 return BooleanResponse(
                     "hasObject",

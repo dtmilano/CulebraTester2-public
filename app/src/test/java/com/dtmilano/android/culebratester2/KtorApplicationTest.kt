@@ -39,6 +39,8 @@ import io.swagger.server.models.StatusCode
 import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.SwipeBody
 import io.swagger.server.models.Text
+import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.ClassRule
@@ -60,6 +62,7 @@ import org.robolectric.annotation.Config
 import java.io.File
 import java.io.OutputStream
 import java.lang.ref.WeakReference
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -193,11 +196,26 @@ class KtorApplicationTest {
 
         }
 
+        private var testsRun: AtomicInteger = AtomicInteger(0)
+
         @BeforeClass
         @JvmStatic
         fun setupClass() {
+            println("setupClass")
             holder.windowManager = windowManager
             holder.cacheDir = File("/tmp")
+            testsRun.set(0)
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun tearDownClass() {
+            println("tearDownClass")
+            println("\u001b[45m")
+            println("++++++++++++++++++++++++++++++++++++++++")
+            println("+ Number of tests run: ${testsRun.get()}")
+            println("++++++++++++++++++++++++++++++++++++++++")
+            println("\u001b(B\u001b[m")
         }
     }
 
@@ -267,6 +285,11 @@ class KtorApplicationTest {
         objectStore.clear()
     }
 
+    @After
+    fun tearDown() {
+        println("tearDown")
+    }
+
     private inline fun <reified T> TestApplicationCall.jsonResponse(content: String? = response.content) =
         Gson().fromJson<T>(content, T::class.java)
 
@@ -283,17 +306,6 @@ class KtorApplicationTest {
         }
     }
 
-    @Test
-    fun testQuit() {
-        withTestApplication({ module(testing = true) }) {
-            exit.expectSystemExit()
-            handleRequest(HttpMethod.Get, "/quit").apply {
-                assertEquals(HttpStatusCode.Gone, response.status())
-                // added sleep to try to alleviate an exception for "shutdown in progress"
-                Thread.sleep(2000)
-            }
-        }
-    }
 
     @Test
     fun `test non-existent url`() {
@@ -499,10 +511,7 @@ class KtorApplicationTest {
                 "/v2/uiDevice/findObject?resourceId=$DOES_NOT_MATCH"
             ).apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
-                assertEquals(
-                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
-                    response.content
-                )
+                assert(response.content?.startsWith(StatusCode.OBJECT_NOT_FOUND.message()) == true)
             }
             assertEquals(0, objectStore.size())
         }
@@ -628,8 +637,7 @@ class KtorApplicationTest {
                 setBody(
                     Gson().toJson(
                         Selector(
-                            desc = MATCHES,
-                            depth = 1
+                            clazz = MATCHES
                         )
                     )
                 )
@@ -671,11 +679,9 @@ class KtorApplicationTest {
                 HttpMethod.Get,
                 "/v2/uiDevice/hasObject?bySelector=clazz@${DOES_NOT_MATCH}"
             ).apply {
-                assertEquals(HttpStatusCode.NotFound, response.status())
-                assertEquals(
-                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
-                    response.content
-                )
+                assertEquals(HttpStatusCode.OK, response.status())
+                val booleanResponse = jsonResponse<BooleanResponse>()
+                assertFalse(booleanResponse.value)
             }
         }
     }
@@ -689,12 +695,9 @@ class KtorApplicationTest {
                 "/v2/uiDevice/findObject?resourceId=$DOES_NOT_MATCH"
             ).apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
-                assertEquals(
-                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
-                    response.content
-                )
-                assertEquals(0, objectStore.size())
+                assert(response.content?.startsWith(StatusCode.OBJECT_NOT_FOUND.message()) == true)
             }
+            assertEquals(0, objectStore.size())
         }
     }
 
@@ -770,12 +773,9 @@ class KtorApplicationTest {
                 )
             }.apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
-                assertEquals(
-                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
-                    response.content
-                )
-                assertEquals(0, objectStore.size())
+                assert(response.content?.startsWith(StatusCode.OBJECT_NOT_FOUND.message()) == true)
             }
+            assertEquals(0, objectStore.size())
         }
     }
 
@@ -814,12 +814,9 @@ class KtorApplicationTest {
                 )
             }.apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
-                assertEquals(
-                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
-                    response.content
-                )
-                assertEquals(0, objectStore.size())
+                assert(response.content?.startsWith(StatusCode.OBJECT_NOT_FOUND.message()) == true)
             }
+            assertEquals(0, objectStore.size())
         }
     }
 
@@ -857,12 +854,9 @@ class KtorApplicationTest {
                 )
             }.apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
-                assertEquals(
-                    StatusCode.OBJECT_NOT_FOUND.message() + "\n",
-                    response.content
-                )
-                assertEquals(0, objectStore.size())
+                assert(response.content?.startsWith(StatusCode.OBJECT_NOT_FOUND.message()) == true)
             }
+            assertEquals(0, objectStore.size())
         }
     }
 
