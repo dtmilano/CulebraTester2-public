@@ -80,5 +80,10 @@ interface ApplicationComponent {
     fun inject(post: Until.FindObjects.Post)
     fun inject(get: UiObject2.FindObject.Get)
     fun inject(post: UiObject2.FindObject.Post)
+    fun inject(pressDPadCenter: UiDevice.PressDPadCenter)
+    fun inject(pressDPadDown: UiDevice.PressDPadDown)
+    fun inject(pressDPadLeft: UiDevice.PressDPadLeft)
+    fun inject(pressDPadRight: UiDevice.PressDPadRight)
+    fun inject(pressDPadUp: UiDevice.PressDPadUp)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

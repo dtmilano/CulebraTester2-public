@@ -251,6 +251,26 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiDevice.PressDPadCenter> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressDPadLeft> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressDPadRight> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressDPadUp> {
+                call.respond(it.response())
+            }
+
+            get<UiDevice.PressDPadDown> {
+                call.respond(it.response())
+            }
+
             get<UiDevice.PressDelete> {
                 call.respond(it.response())
             }

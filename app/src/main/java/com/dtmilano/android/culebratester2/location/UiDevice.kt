@@ -788,6 +788,131 @@ class UiDevice {
     }
 
     /**
+     * Simulates a short press on the CENTER button.
+     * Simulates a short press on the CENTER button.
+     */
+    @Location("/pressDPadCenter")
+    /*inner*/ class PressDPadCenter(private val parent: UiDevice = UiDevice()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): StatusResponse {
+            return pressKeyResponse(holder.uiDevice::pressDPadCenter, "CENTER")
+        }
+    }
+
+    /**
+     * Simulates a short press on the DOWN button.
+     * Simulates a short press on the DOWN button.
+     */
+    @Location("/pressDPadDown")
+    /*inner*/ class PressDPadDown(private val parent: UiDevice = UiDevice()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): StatusResponse {
+            return pressKeyResponse(holder.uiDevice::pressDPadDown, "DOWN")
+        }
+    }
+
+    /**
+     * Simulates a short press on the LEFT button.
+     * Simulates a short press on the LEFT button.
+     */
+    @Location("/pressDPadLeft")
+    /*inner*/ class PressDPadLeft(private val parent: UiDevice = UiDevice()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): StatusResponse {
+            return pressKeyResponse(holder.uiDevice::pressDPadLeft, "LEFT")
+        }
+    }
+
+    /**
+     * Simulates a short press on the RIGHT button.
+     * Simulates a short press on the RIGHT button.
+     */
+    @Location("/pressDPadRight")
+    /*inner*/ class PressDPadRight(private val parent: UiDevice = UiDevice()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): StatusResponse {
+            return pressKeyResponse(holder.uiDevice::pressDPadLeft, "RIGHT")
+        }
+    }
+
+    /**
+     * Simulates a short press on the UP button.
+     * Simulates a short press on the UP button.
+     */
+    @Location("/pressDPadUp")
+    /*inner*/ class PressDPadUp(private val parent: UiDevice = UiDevice()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+
+        fun response(): StatusResponse {
+            return pressKeyResponse(holder.uiDevice::pressDPadUp, "UP")
+        }
+    }
+
+    /**
      * Simulates a short press on the DELETE key.
      * Simulates a short press on the DELETE key.
      */

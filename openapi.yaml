@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.43
+  version: 2.0.44
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -765,6 +765,51 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Simulates a short press on the BACK button.
+  /uiDevice/pressDPadCenter:
+    get:
+      description: Simulates a short press on the CENTER button.
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Simulates a short press on the CENTER button.
+  /uiDevice/pressDPadDown:
+    get:
+      description: Simulates a short press on the DOWN button.
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Simulates a short press on the DOWN button.
+  /uiDevice/pressDPadLeft:
+    get:
+      description: Simulates a short press on the LEFT button.
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Simulates a short press on the LEFT button.
+  /uiDevice/pressDPadRight:
+    get:
+      description: Simulates a short press on the RIGHT button.
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Simulates a short press on the RIGHT button.
+  /uiDevice/pressDPadUp:
+    get:
+      description: Simulates a short press on the UP button.
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Simulates a short press on the UP button.
   /uiDevice/pressDelete:
     get:
       description: Simulates a short press on the DELETE key.

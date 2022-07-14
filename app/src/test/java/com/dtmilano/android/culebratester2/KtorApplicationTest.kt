@@ -262,6 +262,11 @@ class KtorApplicationTest {
             on { hasObject(argThat(BySelectorMatcherClassDoesNotMatch())) } doReturn false
             on { hasObject(argThat(BySelectorMatcherClassMatches())) } doReturn true
             on { pressBack() } doReturn true
+            on { pressDPadCenter() } doReturn true
+            on { pressDPadDown() } doReturn true
+            on { pressDPadLeft() } doReturn true
+            on { pressDPadRight() } doReturn true
+            on { pressDPadUp() } doReturn true
             on { pressEnter() } doReturn true
             on { pressDelete() } doReturn true
             on { pressHome() } doReturn true
@@ -1176,6 +1181,61 @@ class KtorApplicationTest {
     fun `test press back`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiDevice/pressBack").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press dpad center`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressDPadCenter").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press dpad down`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressDPadDown").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press dpad left`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressDPadLeft").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press dpad right`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressDPadRight").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val statusResponse = jsonResponse<StatusResponse>()
+                assertEquals("OK", statusResponse.status.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test press dpad up`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiDevice/pressDPadUp").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val statusResponse = jsonResponse<StatusResponse>()
                 assertEquals("OK", statusResponse.status.value)
