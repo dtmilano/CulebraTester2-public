@@ -12,8 +12,7 @@
 
 
 /**
- * An object reference. This is a reference to an object that has been stored in the **Object Store**. The object reference can be later used by APIs requiring an object. * @param oid the object ID * @param className the class name*/
-data class ObjectRef (    /* the object ID */
-    val oid: kotlin.Int,    /* the class name */    val className: kotlin.String? = null
+ *  * @param language  * @param country  * @param variant */
+data class Locale (    val language: kotlin.String,    val country: kotlin.String? = null,    val variant: kotlin.String? = null
 ) {
 }

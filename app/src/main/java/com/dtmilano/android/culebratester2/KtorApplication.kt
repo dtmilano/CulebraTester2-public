@@ -28,6 +28,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.ShutDownUrl
 import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.ClickBody
+import io.swagger.server.models.Locale
 import io.swagger.server.models.Selector
 import io.swagger.server.models.SwipeBody
 import io.swagger.server.models.Text
@@ -137,6 +138,19 @@ fun Application.module(testing: Boolean = false) {
 
             get<Device.Dumpsys> {
                 call.respond(it.response())
+            }
+
+            get<Device.Locale.Get> {
+                call.respond(it.response())
+            }
+
+            post<Device.Locale.Post> {
+                // We have to get the body as ktor doesn't do it
+                // see https://github.com/ktorio/ktor/issues/190
+                // also, it.body is null here
+                // println("body ${it.body}");
+                val body = call.receive<Locale>()
+                call.respond(it.response(body))
             }
 
             get<Device.WaitForNewToast> {

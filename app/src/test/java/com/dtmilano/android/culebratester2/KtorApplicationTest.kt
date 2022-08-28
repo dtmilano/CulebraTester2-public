@@ -32,6 +32,7 @@ import io.swagger.server.models.DisplaySizeDp
 import io.swagger.server.models.DisplayWidth
 import io.swagger.server.models.Help
 import io.swagger.server.models.LastTraversedText
+import io.swagger.server.models.Locale
 import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.ProductName
 import io.swagger.server.models.Selector
@@ -415,6 +416,37 @@ class KtorApplicationTest {
                 assertEquals("robolectric", displayRealSize.device)
                 assertEquals(realSize["x"], displayRealSize.x)
                 assertEquals(realSize["y"], displayRealSize.y)
+            }
+        }
+    }
+
+    @Test
+    fun `test device locale get`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/device/locale").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val locale = jsonResponse<Locale>()
+                assertEquals("en", locale.language)
+                assertEquals("US", locale.country)
+            }
+        }
+    }
+
+    @Test
+    fun `test device locale post`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/device/locale") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Locale(
+                            language = "es",
+                            country = "US"
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
             }
         }
     }

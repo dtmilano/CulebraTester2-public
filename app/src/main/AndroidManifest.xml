@@ -8,6 +8,8 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:name=".CulebraTesterApplication"

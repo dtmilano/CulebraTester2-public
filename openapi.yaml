@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.44
+  version: 2.0.45
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -148,6 +148,33 @@ paths:
             text/plain:
               example: Hello
           description: dumpsys output
+  /device/locale:
+    get:
+      description: Gets the device locale
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Locale'
+          description: The locale
+    post:
+      description: Changes the device locale
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Locale'
+            example:
+              language: es
+              country: US
+        description: The locale
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /device/waitForNewToast:
     get:
       description: Waits for a new Toast until timeout.
@@ -1711,6 +1738,19 @@ components:
           description: text of the last traversal event, else return an empty string
       example:
         lastTraversedText: ''
+    Locale:
+      type: object
+      properties:
+        language:
+          type: string
+        country:
+          type: string
+        variant:
+          type: string
+      example:
+        language: es
+      required:
+        - language
     Pixel:
       type: object
       required:

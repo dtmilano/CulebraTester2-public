@@ -11,9 +11,12 @@ import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
 import com.dtmilano.android.culebratester2.R
+import com.dtmilano.android.culebratester2.utils.LocaleUtils
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.swagger.server.models.Help
+import io.swagger.server.models.Locale
+import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.Text
 import org.apache.commons.io.IOUtils
 import java.lang.ref.WeakReference
@@ -96,6 +99,72 @@ class Device {
                 stdErr.ifEmpty {
                     "ERROR"
                 }
+            }
+        }
+    }
+
+    @Location("/locale")
+    /*inner*/ class Locale(private val parent: Device = Device()) {
+        class Get(private val localeParent: Locale, val parent: Device = Device()) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(): io.swagger.server.models.Locale {
+                val default = java.util.Locale.getDefault()
+                return io.swagger.server.models.Locale(
+                    default.language,
+                    default.country,
+                    default.variant
+                )
+            }
+        }
+
+        class Post(
+            val locale: io.swagger.server.models.Locale? = null,
+            val localeParent: Locale = Locale(),
+            val parent: Device = Device()
+        ) {
+            private var holder: Holder
+
+            @Inject
+            lateinit var holderHolder: HolderHolder
+
+            init {
+                CulebraTesterApplication().appComponent.inject(this)
+                holder = holderHolder.instance
+            }
+
+            fun response(locale: io.swagger.server.models.Locale): StatusResponse {
+                changeLocale(locale)
+                return StatusResponse(StatusResponse.Status.OK)
+            }
+
+            private fun changeLocale(locale: io.swagger.server.models.Locale) {
+                locale.country?.let {
+                    locale.variant?.let {
+                        return LocaleUtils.changeLocale(
+                            java.util.Locale(
+                                locale.language,
+                                locale.country,
+                                locale.variant
+                            )
+                        )
+                    }
+                    return LocaleUtils.changeLocale(
+                        java.util.Locale(
+                            locale.language,
+                            locale.country
+                        )
+                    )
+                }
+                return LocaleUtils.changeLocale(java.util.Locale(locale.language))
             }
         }
     }

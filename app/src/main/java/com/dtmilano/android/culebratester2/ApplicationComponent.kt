@@ -85,5 +85,7 @@ interface ApplicationComponent {
     fun inject(pressDPadLeft: UiDevice.PressDPadLeft)
     fun inject(pressDPadRight: UiDevice.PressDPadRight)
     fun inject(pressDPadUp: UiDevice.PressDPadUp)
+    fun inject(get: Device.Locale.Get)
+    fun inject(post: Device.Locale.Post)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }
