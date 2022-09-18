@@ -11,7 +11,7 @@ import com.google.gson.Gson
  * Constructor from [UiObject2].
  */
 fun Selector(obj: UiObject2): Selector = Selector(
-    obj.isCheckable, obj.className, obj.isClickable, null, obj.contentDescription,
+    obj.isCheckable, obj.isChecked, obj.className, obj.isClickable, null, obj.contentDescription,
     obj.applicationPackage, obj.resourceName, obj.isScrollable, obj.text, null, null
 )
 
@@ -20,6 +20,7 @@ fun Selector(obj: UiObject2): Selector = Selector(
  */
 fun Selector(obj: UiObject): Selector = Selector(
     obj.isCheckable,
+    obj.isChecked,
     obj.className,
     obj.isClickable,
     null,
@@ -46,7 +47,7 @@ fun Selector.toBySelector(): BySelector {
     var bySelector: BySelector? = null
 
     checkable?.let { bySelector = bySelector?.checkable(checkable) ?: By.checkable(checkable) }
-    // missing checked
+    checked?.let { bySelector = bySelector?.checked(checked) ?: By.checked(checked) }
     clazz?.let { bySelector = bySelector?.clazz(clazz) ?: By.clazz(clazz) }
     clickable?.let { bySelector = bySelector?.clickable(clickable) ?: By.clickable(clickable) }
     depth?.let { bySelector = bySelector?.depth(depth) ?: By.depth(depth) }
@@ -99,6 +100,7 @@ fun Selector.toBySelector(): BySelector {
 fun Selector.toUiSelector(): UiSelector {
     val uiSelector = UiSelector()
     checkable?.let { uiSelector.checkable(checkable) }
+    checked?.let { uiSelector.checked(checked) }
     clazz?.let { uiSelector.className(clazz) }
     clickable?.let { uiSelector.clickable(clickable) }
     // no depth in UiSelector

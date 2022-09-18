@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.45
+  version: 2.0.46
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1894,6 +1894,8 @@ components:
       type: object
       properties:
         checkable:
+          type: boolean
+        checked:
           type: boolean
         clazz:
           type: string
