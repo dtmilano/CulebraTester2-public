@@ -87,5 +87,6 @@ interface ApplicationComponent {
     fun inject(pressDPadUp: UiDevice.PressDPadUp)
     fun inject(get: Device.Locale.Get)
     fun inject(post: Device.Locale.Post)
+    fun inject(post: UiObject.PerformTwoPointerGesture.Post)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

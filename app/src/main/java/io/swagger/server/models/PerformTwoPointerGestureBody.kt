@@ -13,7 +13,8 @@
 import io.swagger.server.models.Point
 
 /**
- * The body for a **swipe** action. Contains an array of points. * @param segments  * @param segmentSteps */
-data class SwipeBody (    val segments: kotlin.Array<Point>? = null,    val segmentSteps: kotlin.Int? = null
+ * The body for a **two pointer gesture** action. * @param startPoint1  * @param startPoint2  * @param endPoint1  * @param endPoint2  * @param steps the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.*/
+data class PerformTwoPointerGestureBody (    val startPoint1: Point,    val startPoint2: Point,    val endPoint1: Point,    val endPoint2: Point,    /* the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete. */
+    val steps: kotlin.Int
 ) {
 }

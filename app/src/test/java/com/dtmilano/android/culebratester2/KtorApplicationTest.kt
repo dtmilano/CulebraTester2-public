@@ -34,6 +34,7 @@ import io.swagger.server.models.Help
 import io.swagger.server.models.LastTraversedText
 import io.swagger.server.models.Locale
 import io.swagger.server.models.ObjectRef
+import io.swagger.server.models.PerformTwoPointerGestureBody
 import io.swagger.server.models.ProductName
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusCode
@@ -894,6 +895,24 @@ class KtorApplicationTest {
                 assert(response.content?.startsWith(StatusCode.OBJECT_NOT_FOUND.message()) == true)
             }
             assertEquals(0, objectStore.size())
+        }
+    }
+
+    @Test
+    fun `test uiobject post perform two pointer gesture`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiObject/1/performTwoPointerGesture") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        PerformTwoPointerGestureBody(io.swagger.server.models.Point(0, 0), io.swagger.server.models.Point(1, 1), io.swagger.server.models.Point(100, 100), io.swagger.server.models.Point(101, 101), 5)
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
         }
     }
 

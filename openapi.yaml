@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.46
+  version: 2.0.47
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1117,6 +1117,26 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Waits for a window content update event to occur.
+  /uiObject/{oid}/performTwoPointerGesture:
+    post:
+      description: Generates a two-pointer gesture with arbitrary starting and ending points.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerformTwoPointerGestureBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
   /uiObject2/{oid}/clear:
     get:
       description: The target object should have been found using `findObject` with
@@ -1968,6 +1988,28 @@ components:
           description: the text in the object
       example:
         text: lorem ipsum
+    PerformTwoPointerGestureBody:
+      description: The body for a **two pointer gesture** action.
+      type: object
+      properties:
+        startPoint1:
+          $ref: '#/components/schemas/Point'
+        startPoint2:
+          $ref: '#/components/schemas/Point'
+        endPoint1:
+          $ref: '#/components/schemas/Point'
+        endPoint2:
+          $ref: '#/components/schemas/Point'
+        steps:
+          description: the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.
+          type: integer
+          minimum: 0
+      required:
+        - startPoint1
+        - startPoint2
+        - endPoint1
+        - endPoint2
+        - steps
     SwipeBody:
       description: The body for a **swipe** action. Contains an array of points.
       type: object
