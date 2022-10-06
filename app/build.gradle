@@ -20,8 +20,8 @@ android {
         applicationId "com.dtmilano.android.culebratester2"
         minSdk 26
         targetSdk 31
-        versionCode 20047
-        versionName "2.0.47-alpha"
+        versionCode 20048
+        versionName "2.0.48-alpha"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
