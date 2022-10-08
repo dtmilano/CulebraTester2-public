@@ -369,6 +369,14 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response(body))
             }
 
+            get<UiObject.PinchIn> {
+                call.respond(it.response())
+            }
+
+            get<UiObject.PinchOut> {
+                call.respond(it.response())
+            }
+
             get<UiObject2.Clear> {
                 call.respond(it.response())
             }

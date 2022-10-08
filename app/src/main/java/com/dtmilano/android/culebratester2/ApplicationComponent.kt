@@ -88,5 +88,7 @@ interface ApplicationComponent {
     fun inject(get: Device.Locale.Get)
     fun inject(post: Device.Locale.Post)
     fun inject(post: UiObject.PerformTwoPointerGesture.Post)
+    fun inject(pinchIn: UiObject.PinchIn)
+    fun inject(pinchOut: UiObject.PinchOut)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

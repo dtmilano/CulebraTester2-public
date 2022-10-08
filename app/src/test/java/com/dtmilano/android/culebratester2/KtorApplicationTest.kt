@@ -917,6 +917,28 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test uiobject pinch in`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchIn?percent=50&steps=5").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject pinch out`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchOut?percent=50&steps=5").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
     fun `test uiobject2 get content description`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject2)

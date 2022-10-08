@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.48
+  version: 2.0.49
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1132,6 +1132,64 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PerformTwoPointerGestureBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+  /uiObject/{oid}/pinchIn:
+    get:
+      description: Performs a two-pointer gesture, where each pointer moves diagonally toward the other, from the edges to the center of this UiObject.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      - description: percentage of the object's diagonal length for the pinch gesture
+        in: query
+        name: percentage
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+      - description: the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.
+        in: query
+        name: steps
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+  /uiObject/{oid}/pinchOut:
+    get:
+      description: Performs a two-pointer gesture, where each pointer moves diagonally opposite across the other, from the center out towards the edges of the this UiObject.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      - description: percentage of the object's diagonal length for the pinch gesture
+        in: query
+        name: percentage
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+      - description: the number of steps for the gesture. Steps are injected about 5 milliseconds apart, so 100 steps may take around 0.5 seconds to complete.
+        in: query
+        name: steps
+        required: true
+        schema:
+          type: integer
+          minimum: 0
       responses:
         '200':
           $ref: '#/components/responses/ok'

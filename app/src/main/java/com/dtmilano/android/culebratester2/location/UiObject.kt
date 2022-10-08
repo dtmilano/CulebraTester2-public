@@ -73,6 +73,68 @@ class UiObject {
         }
     }
 
+    @Location("/{oid}/pinchIn")
+    /*inner*/ class PinchIn(
+        val oid: Int,
+        private val percent: Int,
+        private val steps: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            uiObject(oid, objectStore)?.let {
+                if (it.pinchIn(percent, steps)) {
+                    return@response StatusResponse(StatusResponse.Status.OK)
+                }
+                return StatusResponse(StatusResponse.Status.ERROR)
+            }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/pinchOut")
+    /*inner*/ class PinchOut(
+        val oid: Int,
+        private val percent: Int,
+        private val steps: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            uiObject(oid, objectStore)?.let {
+                if (it.pinchOut(percent, steps)) {
+                    return@response StatusResponse(StatusResponse.Status.OK)
+                }
+                return StatusResponse(StatusResponse.Status.ERROR)
+            }
+            throw notFound(oid)
+        }
+    }
+
     companion object {
         /**
          * Gets an object by its [oid].
