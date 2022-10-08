@@ -76,7 +76,7 @@ class UiObject {
     @Location("/{oid}/pinchIn")
     /*inner*/ class PinchIn(
         val oid: Int,
-        private val percent: Int,
+        private val percentage: Int,
         private val steps: Int,
         private val parent: UiObject2 = UiObject2()
     ) {
@@ -95,7 +95,7 @@ class UiObject {
 
         fun response(): StatusResponse {
             uiObject(oid, objectStore)?.let {
-                if (it.pinchIn(percent, steps)) {
+                if (it.pinchIn(percentage, steps)) {
                     return@response StatusResponse(StatusResponse.Status.OK)
                 }
                 return StatusResponse(StatusResponse.Status.ERROR)
@@ -107,7 +107,7 @@ class UiObject {
     @Location("/{oid}/pinchOut")
     /*inner*/ class PinchOut(
         val oid: Int,
-        private val percent: Int,
+        private val percentage: Int,
         private val steps: Int,
         private val parent: UiObject2 = UiObject2()
     ) {
@@ -126,7 +126,7 @@ class UiObject {
 
         fun response(): StatusResponse {
             uiObject(oid, objectStore)?.let {
-                if (it.pinchOut(percent, steps)) {
+                if (it.pinchOut(percentage, steps)) {
                     return@response StatusResponse(StatusResponse.Status.OK)
                 }
                 return StatusResponse(StatusResponse.Status.ERROR)

@@ -921,7 +921,7 @@ class KtorApplicationTest {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject)
         withTestApplication({ module(testing = true) }) {
-            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchIn?percent=50&steps=5").apply {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchIn?percentage=50&steps=5").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
         }
@@ -932,7 +932,7 @@ class KtorApplicationTest {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject)
         withTestApplication({ module(testing = true) }) {
-            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchOut?percent=50&steps=5").apply {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchOut?percentage=50&steps=5").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
         }
