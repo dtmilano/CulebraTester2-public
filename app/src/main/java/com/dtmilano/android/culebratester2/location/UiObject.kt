@@ -10,6 +10,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.swagger.experimental.HttpException
+import io.swagger.server.models.BooleanResponse
 import io.swagger.server.models.PerformTwoPointerGestureBody
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
@@ -33,6 +34,32 @@ private const val TAG = "UiObject2"
 @KtorExperimentalLocationsAPI
 @Location("/uiObject")
 class UiObject {
+    @Location("/{oid}/exists")
+    /*inner*/ class Exists(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): BooleanResponse {
+            uiObject(oid, objectStore)?.let {
+                return@response BooleanResponse("exists", it.exists())
+            }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/performTwoPointerGesture")
     /*inner*/ class PerformTwoPointerGesture(val oid: Int) {
         // WARNING: ktor is not passing this argument so the '?' and null are needed
@@ -130,6 +157,33 @@ class UiObject {
                     return@response StatusResponse(StatusResponse.Status.OK)
                 }
                 return StatusResponse(StatusResponse.Status.ERROR)
+            }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/waitForExists")
+    /*inner*/ class WaitForExists(
+        val oid: Int,
+        private val timeout: Long,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): BooleanResponse {
+            uiObject(oid, objectStore)?.let {
+                return@response BooleanResponse("exists", it.waitForExists(timeout))
             }
             throw notFound(oid)
         }

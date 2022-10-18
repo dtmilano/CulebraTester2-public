@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.50
+  version: 2.0.51
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1117,6 +1117,26 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Waits for a window content update event to occur.
+  /uiObject/{oid}/exists:
+    get:
+      description: Check if view exists. This methods performs a waitForExists with zero timeout.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: This basically returns immediately whether the view represented by this UiObject exists or not. If you need to wait longer for this view, then see waitForExists.
   /uiObject/{oid}/performTwoPointerGesture:
     post:
       description: Generates a two-pointer gesture with arbitrary starting and ending points.
@@ -1195,6 +1215,34 @@ paths:
           $ref: '#/components/responses/ok'
         default:
           $ref: '#/components/responses/error'
+  /uiObject/{oid}/waitForExists:
+    get:
+      description: Waits a specified length of time for a view to become visible.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+        - description: the amount of time to wait (in milliseconds)
+          in: query
+          name: timeout
+          required: true
+          schema:
+            example: 10000
+            format: int64
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: This method waits until the view becomes visible on the display, or until the timeout has elapsed. You can use this method in situations where the content that you want to select is not immediately displayed.  
   /uiObject2/{oid}/clear:
     get:
       description: The target object should have been found using `findObject` with

@@ -899,6 +899,20 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test uiobject exists`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/exists").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val booleanResponse = jsonResponse<BooleanResponse>()
+                assertEquals(booleanResponse.name, "exists")
+                assertFalse(booleanResponse.value)
+            }
+        }
+    }
+
+    @Test
     fun `test uiobject post perform two pointer gesture`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject)
@@ -934,6 +948,20 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchOut?percentage=50&steps=5").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject wait for exists`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/waitForExists?timeout=10000").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val booleanResponse = jsonResponse<BooleanResponse>()
+                assertEquals(booleanResponse.name, "exists")
+                assertFalse(booleanResponse.value)
             }
         }
     }

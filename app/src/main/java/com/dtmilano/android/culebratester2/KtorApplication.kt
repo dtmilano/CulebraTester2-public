@@ -360,6 +360,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject.Exists> {
+                call.respond(it.response())
+            }
+
             post<UiObject.PerformTwoPointerGesture.Post> {
                 // We have to get the body as ktor doesn't do it
                 // see https://github.com/ktorio/ktor/issues/190
@@ -374,6 +378,10 @@ fun Application.module(testing: Boolean = false) {
             }
 
             get<UiObject.PinchOut> {
+                call.respond(it.response())
+            }
+
+            get<UiObject.WaitForExists> {
                 call.respond(it.response())
             }
 

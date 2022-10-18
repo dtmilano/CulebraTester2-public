@@ -90,5 +90,7 @@ interface ApplicationComponent {
     fun inject(post: UiObject.PerformTwoPointerGesture.Post)
     fun inject(pinchIn: UiObject.PinchIn)
     fun inject(pinchOut: UiObject.PinchOut)
+    fun inject(exists: UiObject.Exists)
+    fun inject(waitForExists: UiObject.WaitForExists)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }
