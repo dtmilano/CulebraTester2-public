@@ -12,8 +12,9 @@
 
 
 /**
- * An object reference. This is a reference to an object that has been stored in the **Object Store**. The object reference can be later used by APIs requiring an object. * @param oid the object ID * @param className the class name*/
-data class ObjectRef (    /* the object ID */
-    val oid: kotlin.Int,    /* the class name */    val className: kotlin.String? = null
+ *  * @param name the name of the contained value * @param value the number*/
+data class NumberResponse (    /* the name of the contained value */
+    val name: kotlin.String,    /* the number */
+    val value: java.math.BigDecimal
 ) {
 }

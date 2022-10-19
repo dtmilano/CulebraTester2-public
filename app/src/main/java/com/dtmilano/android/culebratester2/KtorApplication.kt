@@ -360,7 +360,15 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject.Dump> {
+                call.respond(it.response())
+            }
+
             get<UiObject.Exists> {
+                call.respond(it.response())
+            }
+
+            get<UiObject.GetChildCount> {
                 call.respond(it.response())
             }
 

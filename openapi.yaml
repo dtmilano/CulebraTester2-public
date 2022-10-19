@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.51
+  version: 2.0.52
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1117,6 +1117,27 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Waits for a window content update event to occur.
+  /uiObject/{oid}/dump:
+    get:
+      description: The target object should have been found using `findObject` with
+        a `selector`.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Selector'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: Dumps the specified object.
   /uiObject/{oid}/exists:
     get:
       description: Check if view exists. This methods performs a waitForExists with zero timeout.
@@ -1137,6 +1158,26 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: This basically returns immediately whether the view represented by this UiObject exists or not. If you need to wait longer for this view, then see waitForExists.
+  /uiObject/{oid}/getChildCount:
+    get:
+      description: Counts the child views immediately under the present UiObject.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NumberResponse'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: Counts the child views immediately under the present UiObject.
   /uiObject/{oid}/performTwoPointerGesture:
     post:
       description: Generates a two-pointer gesture with arbitrary starting and ending points.
@@ -1728,6 +1769,21 @@ components:
       example:
         name: isSomething
         value: true
+    NumberResponse:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+          description: the name of the contained value
+        value:
+          type: number
+          description: the number
+      example:
+        name: count
+        value: 5
     StatusResponse:
       type: object
       required:

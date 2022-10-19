@@ -92,5 +92,7 @@ interface ApplicationComponent {
     fun inject(pinchOut: UiObject.PinchOut)
     fun inject(exists: UiObject.Exists)
     fun inject(waitForExists: UiObject.WaitForExists)
+    fun inject(dump: UiObject.Dump)
+    fun inject(getChildCount: UiObject.GetChildCount)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

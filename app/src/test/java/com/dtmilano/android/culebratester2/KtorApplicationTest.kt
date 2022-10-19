@@ -33,6 +33,7 @@ import io.swagger.server.models.DisplayWidth
 import io.swagger.server.models.Help
 import io.swagger.server.models.LastTraversedText
 import io.swagger.server.models.Locale
+import io.swagger.server.models.NumberResponse
 import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.PerformTwoPointerGestureBody
 import io.swagger.server.models.ProductName
@@ -64,9 +65,11 @@ import org.robolectric.annotation.Config
 import java.io.File
 import java.io.OutputStream
 import java.lang.ref.WeakReference
+import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import kotlin.text.Regex.Companion.escape
 
@@ -908,6 +911,20 @@ class KtorApplicationTest {
                 val booleanResponse = jsonResponse<BooleanResponse>()
                 assertEquals(booleanResponse.name, "exists")
                 assertFalse(booleanResponse.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject get child count`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getChildCount").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val numberResponse = jsonResponse<NumberResponse>()
+                assertEquals(numberResponse.name, "count")
+                assertNotEquals(-1, numberResponse.value.compareTo(BigDecimal.valueOf(0)))
             }
         }
     }

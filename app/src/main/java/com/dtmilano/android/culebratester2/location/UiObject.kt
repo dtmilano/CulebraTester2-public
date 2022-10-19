@@ -11,9 +11,11 @@ import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.BooleanResponse
+import io.swagger.server.models.NumberResponse
 import io.swagger.server.models.PerformTwoPointerGestureBody
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
+import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val TAG = "UiObject2"
@@ -34,6 +36,27 @@ private const val TAG = "UiObject2"
 @KtorExperimentalLocationsAPI
 @Location("/uiObject")
 class UiObject {
+    @Location("/{oid}/dump")
+    /*inner*/ class Dump(val oid: Int, private val parent: UiObject = UiObject()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): Selector {
+            uiObject(oid, objectStore)?.let { return@response Selector(it) }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/exists")
     /*inner*/ class Exists(
         val oid: Int,
@@ -55,6 +78,32 @@ class UiObject {
         fun response(): BooleanResponse {
             uiObject(oid, objectStore)?.let {
                 return@response BooleanResponse("exists", it.exists())
+            }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/getChildCount")
+    /*inner*/ class GetChildCount(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): NumberResponse {
+            uiObject(oid, objectStore)?.let {
+                return@response NumberResponse("count", BigDecimal(it.childCount))
             }
             throw notFound(oid)
         }
