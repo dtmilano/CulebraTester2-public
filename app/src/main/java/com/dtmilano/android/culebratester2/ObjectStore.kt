@@ -1,6 +1,7 @@
 package com.dtmilano.android.culebratester2
 
 import java.util.*
+import java.util.concurrent.ConcurrentSkipListMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -52,7 +53,7 @@ class ObjectStore @Inject constructor() {
     companion object {
         //val instance = ObjectStore()
 
-        private val objectMap = TreeMap<Int, Any>()
+        private val objectMap = ConcurrentSkipListMap<Int, Any>()
     }
 
 }

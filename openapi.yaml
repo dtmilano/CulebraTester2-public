@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.52
+  version: 2.0.53
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -100,6 +100,15 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Gets information about this app.
+  /culebra/quit:
+    get:
+      description: Quits cuebra server.
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Quits culebra server.
   /device/displayRealSize:
     get:
       description: Gets the display real size.
@@ -1565,6 +1574,26 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Sets the text content if this object is an editable field.
+  /until/{oid}/dump:
+    get:
+      description: Dumps the Until object.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: Dumps the specified object.
   /until/findObject:
     get:
       description: The condition will return the first matching element.

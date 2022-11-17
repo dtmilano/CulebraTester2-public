@@ -938,7 +938,13 @@ class KtorApplicationTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(
                     Gson().toJson(
-                        PerformTwoPointerGestureBody(io.swagger.server.models.Point(0, 0), io.swagger.server.models.Point(1, 1), io.swagger.server.models.Point(100, 100), io.swagger.server.models.Point(101, 101), 5)
+                        PerformTwoPointerGestureBody(
+                            io.swagger.server.models.Point(0, 0),
+                            io.swagger.server.models.Point(1, 1),
+                            io.swagger.server.models.Point(100, 100),
+                            io.swagger.server.models.Point(101, 101),
+                            5
+                        )
                     )
                 )
             }.apply {
@@ -963,7 +969,10 @@ class KtorApplicationTest {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject)
         withTestApplication({ module(testing = true) }) {
-            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/pinchOut?percentage=50&steps=5").apply {
+            handleRequest(
+                HttpMethod.Get,
+                "/v2/uiObject/$oid/pinchOut?percentage=50&steps=5"
+            ).apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
         }
@@ -1617,6 +1626,17 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test until dump`() {
+        assertEquals(0, objectStore.size())
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/until/2/dump").apply {
+                // We don't have an Until object in the store
+                assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+    }
+
+    @Test
     fun `test until find object get by selector`() {
         assertEquals(0, objectStore.size())
         withTestApplication({ module(testing = true) }) {
@@ -1624,7 +1644,10 @@ class KtorApplicationTest {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val objRef = jsonResponse<ObjectRef>()
                 assertTrue(objRef.oid > 0)
-                assertTrue(objRef.className?.startsWith("androidx.test.uiautomator.Until$")!!)
+                assertTrue(
+                    objRef.className.startsWith("androidx.test.uiautomator.Until$"),
+                    "${objRef.className} does not start with androidx.test.uiautomator.Until\$"
+                )
                 assertEquals(1, objectStore.size())
             }
         }

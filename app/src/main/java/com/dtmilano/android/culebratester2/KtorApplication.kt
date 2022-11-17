@@ -21,6 +21,7 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
+import io.ktor.response.respondRedirect
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.route
@@ -123,6 +124,11 @@ fun Application.module(testing: Boolean = false) {
 
             get<Culebra.Help.Query> {
                 call.respond(it.response())
+            }
+
+            get<Culebra.Quit> {
+                println("Going to quit...")
+                call.respondRedirect(shutdownUrl, permanent = true)
             }
 
             get<Configurator.GetWaitForIdleTimeout> {
@@ -445,6 +451,10 @@ fun Application.module(testing: Boolean = false) {
                 // println("body ${it.body}");
                 val text = call.receive<Text>()
                 call.respond(it.response(text))
+            }
+
+            get<Until.Dump> {
+                call.respond(it.response())
             }
 
             get<Until.FindObject.Get> {

@@ -4,8 +4,10 @@ import com.dtmilano.android.culebratester2.BuildConfig
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
+import io.ktor.http.cio.Response
 import io.ktor.locations.*
 import io.swagger.server.models.CulebraInfo
+import io.swagger.server.models.StatusResponse
 import javax.inject.Inject
 
 /**
@@ -47,7 +49,7 @@ class Culebra {
                 val apiComponents = api?.split("/")!!
                 if (apiComponents.size < 2) {
                     val extraMsg = if (!api.startsWith("/")) " and should start with \"/\"" else ""
-                    val msg = "{api} must be specified${extraMsg}."
+                    val msg = "{api} must be specified${extraMsg}. Found '${api}'"
                     throw IllegalArgumentException(msg)
                 }
                 val restOfApiComponents = apiComponents.drop(2)
@@ -65,5 +67,9 @@ class Culebra {
         fun response(): CulebraInfo {
             return CulebraInfo(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
         }
+    }
+
+    @Location("/quit")
+    class Quit(private val parent: Culebra = Culebra()) {
     }
 }

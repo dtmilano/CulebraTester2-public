@@ -94,5 +94,6 @@ interface ApplicationComponent {
     fun inject(waitForExists: UiObject.WaitForExists)
     fun inject(dump: UiObject.Dump)
     fun inject(getChildCount: UiObject.GetChildCount)
+    fun inject(dump: Until.Dump)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

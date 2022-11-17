@@ -4,8 +4,11 @@ import androidx.test.uiautomator.Until
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
+import com.dtmilano.android.culebratester2.ObjectStore
 import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
+import io.ktor.http.HttpStatusCode
 import io.ktor.locations.*
+import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.Selector
 import io.swagger.server.models.toBySelector
@@ -30,6 +33,28 @@ private const val TAG = "Until"
 @KtorExperimentalLocationsAPI
 @Location("/until")
 class Until {
+    @Location("/{oid}/dump")
+    /*inner*/ class Dump(private val oid:Int, private val parent: com.dtmilano.android.culebratester2.location.Until = com.dtmilano.android.culebratester2.location.Until()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: com.dtmilano.android.culebratester2.ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): String {
+            com.dtmilano.android.culebratester2.location.Until.until(oid, objectStore)?.let {
+                return@response it.toString() }
+            throw com.dtmilano.android.culebratester2.location.Until.notFound(oid)
+        }
+    }
+
     @Location("/findObject")
     /*inner*/ class FindObject(
         private val parent: com.dtmilano.android.culebratester2.location.Until = com.dtmilano.android.culebratester2.location.Until()) {
@@ -160,8 +185,19 @@ class Until {
         fun response(): ObjectRef {
             val eventCondition = Until.newWindow()
             val oid = objectStore.put(eventCondition)
-            return ObjectRef(oid, eventCondition::class.simpleName)
+            return ObjectRef(oid, eventCondition::class.jvmName)
         }
     }
 
+    companion object {
+        /**
+         * Gets an until by its [oid].
+         */
+        fun until(oid: Int, objectStore: ObjectStore) =
+            objectStore[oid] as androidx.test.uiautomator.SearchCondition<*>?
+
+        fun notFound(oid: Int): HttpException {
+            return HttpException(HttpStatusCode.NotFound, "⚠️ Until with oid=${oid} not found")
+        }
+    }
 }
