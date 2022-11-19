@@ -927,6 +927,20 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test uiobject click and wait for new window with timeout`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/clickAndWaitForNewWindow?timeout=10000").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val booleanResponse = jsonResponse<BooleanResponse>()
+                assertEquals(booleanResponse.name, "result")
+                assertFalse(booleanResponse.value)
+            }
+        }
+    }
+
+    @Test
     fun `test uiobject exists`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject)

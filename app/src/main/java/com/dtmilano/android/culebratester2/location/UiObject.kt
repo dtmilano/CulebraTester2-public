@@ -63,7 +63,11 @@ class UiObject {
     }
 
     @Location("/{oid}/clickAndWaitForNewWindow")
-    /*inner*/ class ClickAndWaitForNewWindow(val oid: Int, private val parent: UiObject = UiObject()) {
+    /*inner*/ class ClickAndWaitForNewWindow(
+        private val oid: Int,
+        private val timeout: Long? = null,
+        private val parent: UiObject = UiObject()
+    ) {
         private var holder: Holder
 
         @Inject
@@ -79,6 +83,13 @@ class UiObject {
 
         fun response(): BooleanResponse {
             uiObject(oid, objectStore)?.let {
+                timeout?.let { timeout ->
+                    return@response BooleanResponse(
+                        "result",
+                        it.clickAndWaitForNewWindow(timeout)
+                    )
+                }
+
                 return@response BooleanResponse(
                     "result",
                     it.clickAndWaitForNewWindow()
