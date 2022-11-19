@@ -366,6 +366,14 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject.Click> {
+                call.respond(it.response())
+            }
+
+            get<UiObject.ClickAndWaitForNewWindow> {
+                call.respond(it.response())
+            }
+
             get<UiObject.Dump> {
                 call.respond(it.response())
             }

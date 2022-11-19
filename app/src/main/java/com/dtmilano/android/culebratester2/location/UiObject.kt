@@ -36,6 +36,58 @@ private const val TAG = "UiObject2"
 @KtorExperimentalLocationsAPI
 @Location("/uiObject")
 class UiObject {
+    @Location("/{oid}/click")
+    /*inner*/ class Click(val oid: Int, private val parent: UiObject = UiObject()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            uiObject(oid, objectStore)?.let {
+                if (it.click()) {
+                    return@response StatusResponse(StatusResponse.Status.OK)
+                }
+                return@response StatusResponse(StatusResponse.Status.ERROR)
+            }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/clickAndWaitForNewWindow")
+    /*inner*/ class ClickAndWaitForNewWindow(val oid: Int, private val parent: UiObject = UiObject()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): BooleanResponse {
+            uiObject(oid, objectStore)?.let {
+                return@response BooleanResponse(
+                    "result",
+                    it.clickAndWaitForNewWindow()
+                )
+            }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/dump")
     /*inner*/ class Dump(val oid: Int, private val parent: UiObject = UiObject()) {
         private var holder: Holder

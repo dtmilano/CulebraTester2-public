@@ -902,6 +902,31 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test uiobject click`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/click").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject click and wait for new window`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/clickAndWaitForNewWindow").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val booleanResponse = jsonResponse<BooleanResponse>()
+                assertEquals(booleanResponse.name, "result")
+                assertFalse(booleanResponse.value)
+            }
+        }
+    }
+
+    @Test
     fun `test uiobject exists`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject)

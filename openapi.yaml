@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.53
+  version: 2.0.54
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1126,6 +1126,50 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Waits for a window content update event to occur.
+  /uiObject/{oid}/click:
+    get:
+      description: The target object should have been found using `findObject` with
+        a `selector`.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Clicks on the specified object.
+  /uiObject/{oid}/clickAndWaitForNewWindow:
+    get:
+      description: Performs a click at the center of the visible bounds of the UI element represented by this UiObject and waits for window transitions. This method differ from click only in that this method waits for a a new window transition as a result of the click.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      - description: Timeout in milliseconds
+        in: query
+        name: timeout
+        schema:
+          default: 10000
+          format: int64
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: Clicks on the specified object.
   /uiObject/{oid}/dump:
     get:
       description: The target object should have been found using `findObject` with

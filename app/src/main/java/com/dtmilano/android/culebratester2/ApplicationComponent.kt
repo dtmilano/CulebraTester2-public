@@ -95,5 +95,7 @@ interface ApplicationComponent {
     fun inject(dump: UiObject.Dump)
     fun inject(getChildCount: UiObject.GetChildCount)
     fun inject(dump: Until.Dump)
+    fun inject(click: UiObject.Click)
+    fun inject(clickAndWaitForNewWindow: UiObject.ClickAndWaitForNewWindow)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }
