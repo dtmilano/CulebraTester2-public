@@ -36,6 +36,30 @@ private const val TAG = "UiObject2"
 @KtorExperimentalLocationsAPI
 @Location("/uiObject")
 class UiObject {
+    @Location("/{oid}/clearTextField")
+    /*inner*/ class ClearTextField(val oid: Int, private val parent: UiObject = UiObject()) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StatusResponse {
+            uiObject(oid, objectStore)?.let {
+                it.clearTextField()
+                return@response StatusResponse(StatusResponse.Status.OK)
+            }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/click")
     /*inner*/ class Click(val oid: Int, private val parent: UiObject = UiObject()) {
         private var holder: Holder

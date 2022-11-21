@@ -366,6 +366,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject.ClearTextField> {
+                call.respond(it.response())
+            }
+
             get<UiObject.Click> {
                 call.respond(it.response())
             }

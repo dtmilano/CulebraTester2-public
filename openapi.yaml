@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.55
+  version: 2.0.56
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1126,6 +1126,22 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Waits for a window content update event to occur.
+  /uiObject/{oid}/clearTextField:
+    get:
+      description: Clears the existing text contents in an editable field. The UiSelector of this object must reference a UI element that is editable. When you call this method, the method sets focus on the editable field, selects all of its existing content, and clears it by sending a DELETE key press.
+      parameters:
+      - description: The object ID
+        in: path
+        name: oid
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/ok'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Clears the existing text contents in an editable field.
   /uiObject/{oid}/click:
     get:
       description: The target object should have been found using `findObject` with
@@ -1825,6 +1841,10 @@ paths:
 components:
   schemas:
     AnyValue:
+      type: object
+      properties:
+        any:
+          type: object
       # As the swagger-codegen (3.0.34) version we are using now does not support `oneOf` correctly, we are forced to use this
       description: 'Can be anything: string, number, array, object, etc., including `null`'
     BooleanResponse:
@@ -2197,6 +2217,7 @@ components:
           type: string
       required:
         - oid
+        - className
     Point:
       description: A point.
       type: object

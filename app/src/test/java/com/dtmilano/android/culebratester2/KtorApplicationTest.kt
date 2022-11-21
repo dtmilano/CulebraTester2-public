@@ -902,6 +902,17 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test uiobject clear text field`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/clearTextField").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
     fun `test uiobject click`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject)
