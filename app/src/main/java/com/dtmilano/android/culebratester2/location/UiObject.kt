@@ -15,6 +15,7 @@ import io.swagger.server.models.NumberResponse
 import io.swagger.server.models.PerformTwoPointerGestureBody
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.StringResponse
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -191,6 +192,59 @@ class UiObject {
         fun response(): NumberResponse {
             uiObject(oid, objectStore)?.let {
                 return@response NumberResponse("count", BigDecimal(it.childCount))
+            }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/getClassName")
+    /*inner*/ class GetClassName(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StringResponse {
+            uiObject(oid, objectStore)?.let {
+                return@response StringResponse("className",it.className)
+            }
+            throw notFound(oid)
+        }
+    }
+
+
+    @Location("/{oid}/getContentDescription")
+    /*inner*/ class GetContentDescription(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): StringResponse {
+            uiObject(oid, objectStore)?.let {
+                return@response StringResponse("contentDescription",it.contentDescription)
             }
             throw notFound(oid)
         }

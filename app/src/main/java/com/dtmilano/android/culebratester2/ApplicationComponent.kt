@@ -98,5 +98,7 @@ interface ApplicationComponent {
     fun inject(click: UiObject.Click)
     fun inject(clickAndWaitForNewWindow: UiObject.ClickAndWaitForNewWindow)
     fun inject(clearTextField: UiObject.ClearTextField)
+    fun inject(getContentDescription: UiObject.GetContentDescription)
+    fun inject(getClassName: UiObject.GetClassName)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

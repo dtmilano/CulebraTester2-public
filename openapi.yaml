@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.57
+  version: 2.0.58
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1247,6 +1247,46 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Counts the child views immediately under the present UiObject.
+  /uiObject/{oid}/getClassName:
+    get:
+      description: Retrieves the className property of the UI element.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResponse'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: Retrieves the className property of the UI element.
+  /uiObject/{oid}/getContentDescription:
+    get:
+      description: Reads the content_desc property of the UI element.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringResponse'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: Reads the content_desc property of the UI element.
   /uiObject/{oid}/performTwoPointerGesture:
     post:
       description: Generates a two-pointer gesture with arbitrary starting and ending points.
@@ -1892,6 +1932,21 @@ components:
         status: ERROR
         statusCode: 100
         errorMessage: Operation could not be completed
+    StringResponse:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+          description: the name of the contained value
+        value:
+          type: string
+          description: the value
+      example:
+        name: name
+        value: value
     ClickBody:
       type: object
       properties:

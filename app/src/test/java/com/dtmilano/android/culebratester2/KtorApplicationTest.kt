@@ -40,6 +40,7 @@ import io.swagger.server.models.ProductName
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusCode
 import io.swagger.server.models.StatusResponse
+import io.swagger.server.models.StringResponse
 import io.swagger.server.models.SwipeBody
 import io.swagger.server.models.Text
 import org.junit.After
@@ -230,6 +231,7 @@ class KtorApplicationTest {
         uiObject = mock<UiObject> {
             on { className } doReturn MOCK_CLASS_NAME
             on { text } doReturn "Hello Culebra!"
+            on { contentDescription } doReturn "Hello Culebra content description"
         }
 
         uiObject22 = mock<UiObject2> {
@@ -975,6 +977,34 @@ class KtorApplicationTest {
                 val numberResponse = jsonResponse<NumberResponse>()
                 assertEquals(numberResponse.name, "count")
                 assertNotEquals(-1, numberResponse.value.compareTo(BigDecimal.valueOf(0)))
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject get class name`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getClassName").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val stringResponse = jsonResponse<StringResponse>()
+                assertEquals(stringResponse.name, "className")
+                assertEquals("MockClassName", stringResponse.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject get content description`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getContentDescription").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val stringResponse = jsonResponse<StringResponse>()
+                assertEquals(stringResponse.name, "contentDescription")
+                assertEquals("Hello Culebra content description", stringResponse.value)
             }
         }
     }

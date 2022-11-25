@@ -12,7 +12,9 @@
 
 
 /**
- *  * @param lastTraversedText text of the last traversal event, else return an empty string*/
-data class LastTraversedText (    /* text of the last traversal event, else return an empty string */    val lastTraversedText: kotlin.String? = null
+ *  * @param name the name of the contained value * @param value the value*/
+data class StringResponse (    /* the name of the contained value */
+    val name: kotlin.String,    /* the value */
+    val value: kotlin.String
 ) {
 }
