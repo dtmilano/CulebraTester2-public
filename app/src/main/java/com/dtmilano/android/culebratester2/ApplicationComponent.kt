@@ -100,5 +100,6 @@ interface ApplicationComponent {
     fun inject(clearTextField: UiObject.ClearTextField)
     fun inject(getContentDescription: UiObject.GetContentDescription)
     fun inject(getClassName: UiObject.GetClassName)
+    fun inject(getChildCount: UiObject2.GetChildCount)
 //    fun inject(uiAutomatorHelper: UiAutomatorHelper)
 }

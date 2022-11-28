@@ -10,11 +10,13 @@ import com.dtmilano.android.culebratester2.utils.bySelectorBundleFromString
 import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.swagger.experimental.*
+import io.swagger.server.models.NumberResponse
 import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.Text
 import io.swagger.server.models.toBySelector
+import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.reflect.jvm.jvmName
 
@@ -216,6 +218,32 @@ class UiObject2 {
                 }
                 throw notFound(findObject.oid)
             }
+        }
+    }
+
+    @Location("/{oid}/getChildCount")
+    /*inner*/ class GetChildCount(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): NumberResponse {
+            uiObject2(oid, objectStore)?.let {
+                return@response NumberResponse("childCount", BigDecimal(it.childCount))
+            }
+            throw notFound(oid)
         }
     }
 

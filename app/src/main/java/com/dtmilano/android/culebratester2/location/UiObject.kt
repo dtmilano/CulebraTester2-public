@@ -191,7 +191,7 @@ class UiObject {
 
         fun response(): NumberResponse {
             uiObject(oid, objectStore)?.let {
-                return@response NumberResponse("count", BigDecimal(it.childCount))
+                return@response NumberResponse("childCount", BigDecimal(it.childCount))
             }
             throw notFound(oid)
         }

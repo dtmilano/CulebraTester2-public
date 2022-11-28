@@ -448,6 +448,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response(selector))
             }
 
+            get<UiObject2.GetChildCount> {
+                call.respond(it.response())
+            }
+
             get<UiObject2.GetContentDescription> {
                 call.respond(it.response())
             }

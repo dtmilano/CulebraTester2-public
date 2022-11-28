@@ -974,9 +974,9 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getChildCount").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val numberResponse = jsonResponse<NumberResponse>()
-                assertEquals(numberResponse.name, "count")
-                assertNotEquals(-1, numberResponse.value.compareTo(BigDecimal.valueOf(0)))
+                val childCount = jsonResponse<NumberResponse>()
+                assertEquals(childCount.name, "childCount")
+                assertNotEquals(-1, childCount.value.compareTo(BigDecimal.valueOf(0)))
             }
         }
     }
@@ -1068,6 +1068,20 @@ class KtorApplicationTest {
                 val booleanResponse = jsonResponse<BooleanResponse>()
                 assertEquals(booleanResponse.name, "exists")
                 assertFalse(booleanResponse.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject2 get child count`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/getChildCount").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val childCount = jsonResponse<NumberResponse>()
+                assertEquals(childCount.name, "childCount")
+                assertNotEquals(-1, childCount.value.compareTo(BigDecimal.valueOf(0)))
             }
         }
     }
