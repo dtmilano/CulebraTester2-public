@@ -137,7 +137,7 @@ else
     progname="$(basename $0)"
 fi
 port=9987
-if type tput >/dev/null 2>&1
+if [[ -n "$TERM" ]] && type tput >/dev/null 2>&1
 then
     smul=$(tput smul)
     rmul=$(tput rmul)
