@@ -137,10 +137,18 @@ else
     progname="$(basename $0)"
 fi
 port=9987
-smul=$(tput smul)
-rmul=$(tput rmul)
-red=$(tput setaf 1)
-sgr0=$(tput sgr0)
+if type tput >/dev/null 2>&1
+then
+    smul=$(tput smul)
+    rmul=$(tput rmul)
+    red=$(tput setaf 1)
+    sgr0=$(tput sgr0)
+else
+    smul=
+    rmul=
+    red=
+    sgr0=
+fi
 dryrun=
 printf -v usage 'usage: %s [-h|--help] [-n|-dryrun] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall | %su%sninstall }\n' "$progname" \
         "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
