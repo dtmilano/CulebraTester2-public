@@ -1,5 +1,6 @@
 package com.dtmilano.android.culebratester2.location
 
+import android.util.Log
 import androidx.test.uiautomator.EventCondition
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
@@ -20,7 +21,7 @@ import java.math.BigDecimal
 import javax.inject.Inject
 import kotlin.reflect.jvm.jvmName
 
-private const val TAG = "UiObject2"
+private const val TAG = "🐍 UiObject2"
 
 /**
  * See https://github.com/ktorio/ktor/issues/1660 for the reason why we need the extra parameter
@@ -265,7 +266,7 @@ class UiObject2 {
             holder = holderHolder.instance
         }
 
-        fun response(): List<ObjectRef> {
+        fun response(): Array<ObjectRef> {
             uiObject2(oid, objectStore)?.let { uiObject2 ->
                 val list = mutableListOf<ObjectRef>()
                 uiObject2.children.forEach { child ->
@@ -273,7 +274,7 @@ class UiObject2 {
                     list.add(ObjectRef(oid, child.className))
                 }
 
-                return@response list
+                return@response list.toTypedArray()
             }
             throw notFound(oid)
         }

@@ -86,6 +86,7 @@ class KtorApplicationTest {
     lateinit var uiObject: UiObject
     lateinit var uiObject2: UiObject2
     lateinit var uiObject22: UiObject2
+    lateinit var uiObject23: UiObject2
     lateinit var listOfUiObject2: List<UiObject2>
     lateinit var uiDevice: UiDevice
     lateinit var uiDeviceNoScreenshot: UiDevice
@@ -240,11 +241,19 @@ class KtorApplicationTest {
             on { text } doReturn "Hello Culebra!"
         }
 
+        uiObject23 = mock<UiObject2> {
+            on { className } doReturn MOCK_CLASS_NAME
+            on { contentDescription } doReturn "Description of Hello Culebra!"
+            on { text } doReturn "Hello Culebra!"
+        }
+
         uiObject2 = mock<UiObject2> {
             on { className } doReturn MOCK_CLASS_NAME
             on { contentDescription } doReturn "Description of Hello Culebra!"
             on { text } doReturn "Hello Culebra!"
             on { findObject(argThat(BySelectorMatcherClassMatches())) } doReturn uiObject22
+            on { children } doReturn listOf(uiObject22, uiObject23)
+            on { childCount} doReturn 2
         }
 
         listOfUiObject2 = mutableListOf(uiObject2, uiObject22)
@@ -1081,7 +1090,7 @@ class KtorApplicationTest {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val childCount = jsonResponse<NumberResponse>()
                 assertEquals(childCount.name, "childCount")
-                assertNotEquals(-1, childCount.value.compareTo(BigDecimal.valueOf(0)))
+                assertEquals(0, childCount.value.compareTo(BigDecimal.valueOf(2)))
             }
         }
     }
@@ -1093,8 +1102,8 @@ class KtorApplicationTest {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/getChildren").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val children = jsonResponse<List<ObjectRef>>()
-                assertEquals(children.size, 0)
+                val children = jsonResponse<Array<ObjectRef>>()
+                assertEquals(children.size, 2)
             }
         }
     }
