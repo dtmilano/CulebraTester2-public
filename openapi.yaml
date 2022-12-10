@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.60
+  version: 2.0.61
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -573,7 +573,7 @@ paths:
       summary: Finds an object.
   /uiDevice/findObjects:
     get:
-      description: Finds an object. The object found, if any, can be later used in
+      description: Finds objects. The object found, if any, can be later used in
         other call like API.click.
       parameters:
       - description: 'the selector sets the resource name criteria for matching. A
@@ -1514,14 +1514,16 @@ paths:
         '200':
           content:
             application/json:
+              example:
+              - className: android.widget.Button
+                oid: 1
+              - className: android.widget.TextView
+                oid: 2
               schema:
                 items:
-                  properties:
-                    obj:
-                      $ref: '#/components/schemas/ObjectRef'
-                  type: object
+                  $ref: '#/components/schemas/ObjectRef'
                 type: array
-          description: OK
+          description: Children found
         default:
           $ref: '#/components/responses/error'
   /uiObject2/{oid}/getContentDescription:
