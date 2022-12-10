@@ -1087,6 +1087,19 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test uiobject2 get children`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject2)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject2/$oid/getChildren").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val children = jsonResponse<List<ObjectRef>>()
+                assertEquals(children.size, 0)
+            }
+        }
+    }
+
+    @Test
     fun `test uiobject2 get content description`() {
         assertEquals(0, objectStore.size())
         val oid = objectStore.put(uiObject2)

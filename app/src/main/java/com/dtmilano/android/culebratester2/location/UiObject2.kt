@@ -247,6 +247,38 @@ class UiObject2 {
         }
     }
 
+    @Location("/{oid}/getChildren")
+    /*inner*/ class GetChildren(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): List<ObjectRef> {
+            uiObject2(oid, objectStore)?.let { uiObject2 ->
+                val list = mutableListOf<ObjectRef>()
+                uiObject2.children.forEach { child ->
+                    val oid = objectStore.put(child)
+                    list.add(ObjectRef(oid, child.className))
+                }
+
+                return@response list
+            }
+            throw notFound(oid)
+        }
+    }
+
     @Location("/{oid}/getContentDescription")
     /*inner*/ class GetContentDescription(
         val oid: Int,

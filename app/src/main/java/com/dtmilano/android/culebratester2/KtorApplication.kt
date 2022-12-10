@@ -452,6 +452,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject2.GetChildren> {
+                call.respond(it.response())
+            }
+
             get<UiObject2.GetContentDescription> {
                 call.respond(it.response())
             }

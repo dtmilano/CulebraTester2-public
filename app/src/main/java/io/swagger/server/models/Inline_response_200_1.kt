@@ -10,9 +10,10 @@
 * Do not edit the class manually.
 */package io.swagger.server.models
 
+import io.swagger.server.models.ObjectRef
 
 /**
- *  * @param versionName  * @param versionCode */
-data class CulebraInfo (    val versionName: kotlin.String,    val versionCode: kotlin.Int
+ *  * @param obj */
+data class InlineResponse2001 (    val obj: ObjectRef? = null
 ) {
 }

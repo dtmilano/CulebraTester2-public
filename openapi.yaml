@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.59
+  version: 2.0.60
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1500,6 +1500,30 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Returns the number of child elements directly under this object.
+  /uiObject2/{oid}/getChildren:
+    get:
+      description: Returns a collection of the child elements directly under this object.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  properties:
+                    obj:
+                      $ref: '#/components/schemas/ObjectRef'
+                  type: object
+                type: array
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
   /uiObject2/{oid}/getContentDescription:
     get:
       description: The target object should have been found using `findObject` with
