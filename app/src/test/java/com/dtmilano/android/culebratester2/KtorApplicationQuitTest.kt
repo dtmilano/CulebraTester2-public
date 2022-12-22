@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 
 // We need Robolectric to run these tests because some classes use Log.[we]
 @RunWith(RobolectricTestRunner::class)
-@Config(minSdk = 26, maxSdk = 31)
+@Config(minSdk = 26, maxSdk = 33)
 class KtorApplicationQuitTest {
     companion object {
 

@@ -81,7 +81,7 @@ import kotlin.text.Regex.Companion.escape
 @KtorExperimentalLocationsAPI
 // We need Robolectric to run these tests because some classes use Log.[we]
 @RunWith(RobolectricTestRunner::class)
-@Config(minSdk = 26, maxSdk = 31)
+@Config(minSdk = 26, maxSdk = 33)
 class KtorApplicationTest {
     lateinit var uiObject: UiObject
     lateinit var uiObject2: UiObject2
@@ -869,6 +869,27 @@ class KtorApplicationTest {
                 assert(response.content?.startsWith(StatusCode.OBJECT_NOT_FOUND.message()) == true)
             }
             assertEquals(0, objectStore.size())
+        }
+    }
+
+    @Test
+    fun `test find object post selector with has child`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            hasChild = Selector(text = "Pattern:^${MATCHES}$")
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objectRef = jsonResponse<ObjectRef>()
+                assertTrue(objectRef.oid > 0)
+                assertEquals(MOCK_CLASS_NAME, objectRef.className)
+            }
         }
     }
 

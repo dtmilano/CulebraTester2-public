@@ -12,6 +12,7 @@ import com.google.gson.Gson
  */
 fun Selector(obj: UiObject2): Selector = Selector(
     obj.isCheckable, obj.isChecked, obj.className, obj.isClickable, null, obj.contentDescription,
+    null,
     obj.applicationPackage, obj.resourceName, obj.isScrollable, obj.text, null, null
 )
 
@@ -25,6 +26,7 @@ fun Selector(obj: UiObject): Selector = Selector(
     obj.isClickable,
     null,
     obj.contentDescription,
+    null,
     obj.packageName,
     null,
     obj.isScrollable,
@@ -67,7 +69,7 @@ fun Selector.toBySelector(): BySelector {
     // missing enabled
     // missing focusable
     // missing focused
-    // missing hasChild
+    hasChild?.let { bySelector = bySelector?.hasChild(hasChild.toBySelector()) ?: By.hasChild(hasChild.toBySelector())}
     pkg?.let { bySelector = bySelector?.pkg(pkg) ?: By.pkg(pkg) }
     res?.let { bySelector = bySelector?.res(res) ?: By.res(res) }
     // missing selected
@@ -105,6 +107,7 @@ fun Selector.toUiSelector(): UiSelector {
     clickable?.let { uiSelector.clickable(clickable) }
     // no depth in UiSelector
     desc?.let { uiSelector.description(desc) }
+    hasChild?.let { uiSelector.childSelector(hasChild.toUiSelector()) }
     pkg?.let { uiSelector.packageName(pkg) }
     res?.let { uiSelector.resourceId(res) }
     scrollable?.let { uiSelector.scrollable(scrollable) }
