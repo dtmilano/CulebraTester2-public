@@ -894,6 +894,27 @@ class KtorApplicationTest {
     }
 
     @Test
+    fun `test find object post selector with has descendants`() {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Post, "/v2/uiDevice/findObject") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(
+                    Gson().toJson(
+                        Selector(
+                            hasDescendant = Selector(text = "Pattern:^${MATCHES}$")
+                        )
+                    )
+                )
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objectRef = jsonResponse<ObjectRef>()
+                assertTrue(objectRef.oid > 0)
+                assertEquals(MOCK_CLASS_NAME, objectRef.className)
+            }
+        }
+    }
+
+    @Test
     fun `test find all objects post selector with text pattern`() {
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Post, "/v2/uiDevice/findObjects") {
