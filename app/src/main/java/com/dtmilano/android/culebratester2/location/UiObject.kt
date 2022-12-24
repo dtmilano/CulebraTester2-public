@@ -140,7 +140,9 @@ class UiObject {
         }
 
         fun response(): Selector {
-            uiObject(oid, objectStore)?.let { return@response Selector(it) }
+            uiObject(oid, objectStore)?.let {
+                return@response Selector(it)
+            }
             throw notFound(oid)
         }
     }
@@ -217,7 +219,7 @@ class UiObject {
 
         fun response(): StringResponse {
             uiObject(oid, objectStore)?.let {
-                return@response StringResponse("className",it.className)
+                return@response StringResponse("className", it.className)
             }
             throw notFound(oid)
         }
@@ -244,7 +246,7 @@ class UiObject {
 
         fun response(): StringResponse {
             uiObject(oid, objectStore)?.let {
-                return@response StringResponse("contentDescription",it.contentDescription)
+                return@response StringResponse("contentDescription", it.contentDescription)
             }
             throw notFound(oid)
         }

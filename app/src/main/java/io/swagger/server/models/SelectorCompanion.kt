@@ -28,12 +28,28 @@ fun Selector(obj: UiObject): Selector = Selector(
     obj.contentDescription,
     null, null,
     obj.packageName,
-    null,
+    resourceIdFromUiObject(obj), // UiObject has no way of retrieving the resource id
     obj.isScrollable,
     obj.text,
     null,
     null
 )
+
+/**
+ * UiObject has no way of retrieving the resource id.
+ * Therefore we parse the string that contains it.
+ */
+fun resourceIdFromUiObject(obj: UiObject): String? {
+    return resourceIdFromSelector(obj.selector)
+}
+
+fun resourceIdFromSelector(selector: UiSelector): String? {
+    // UiSelector[RESOURCE_ID=com.google.android.calculator:id/op_add]
+    // UiSelector[CLASS=android.widget.ImageButton, RESOURCE_ID=com.google.android.calculator:id/op_add]
+    val r = Regex("RESOURCE_ID=([^], ]+)")
+    r.find(selector.toString())?.let { return it.groupValues[1] }
+    return null
+}
 
 /**
  * Returns a [BySelector] from Selector values
@@ -48,7 +64,7 @@ fun Selector.toBySelector(): BySelector {
     val patternPrefix = "Pattern:"
     var bySelector: BySelector? = null
 
-    checkable?.let { bySelector = bySelector?.checkable(checkable) ?: By.checkable(checkable) }
+    checkable?.let { bySelector = By.checkable(checkable) }
     checked?.let { bySelector = bySelector?.checked(checked) ?: By.checked(checked) }
     clazz?.let { bySelector = bySelector?.clazz(clazz) ?: By.clazz(clazz) }
     clickable?.let { bySelector = bySelector?.clickable(clickable) ?: By.clickable(clickable) }

@@ -43,6 +43,8 @@ import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.StringResponse
 import io.swagger.server.models.SwipeBody
 import io.swagger.server.models.Text
+import io.swagger.server.models.resourceIdFromSelector
+import io.swagger.server.models.resourceIdFromUiObject
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
@@ -1873,5 +1875,12 @@ class KtorApplicationTest {
                 assertEquals(1, objectStore.size())
             }
         }
+    }
+
+    @Test
+    fun `test resource from uiobject selector`() {
+        val res = "my_resource_id"
+        val selector = UiSelector().className(MOCK_CLASS_NAME).resourceId(res)
+        assertEquals(resourceIdFromSelector(selector), res)
     }
 }
