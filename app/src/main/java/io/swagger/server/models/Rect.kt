@@ -12,7 +12,7 @@
 
 
 /**
- *  * @param device  * @param x  * @param y  * @param artWidth  * @param artHeight  * @param screenshotWidth  * @param screenshotX  * @param screenshotY */
-data class DisplayRealSize (    val device: kotlin.String,    val x: kotlin.Int,    val y: kotlin.Int,    val artWidth: kotlin.Int? = null,    val artHeight: kotlin.Int? = null,    val screenshotWidth: kotlin.Int? = null,    val screenshotX: kotlin.Int? = null,    val screenshotY: kotlin.Int? = null
+ * Rect holds four integer coordinates for a rectangle. The rectangle is represented by the coordinates of its 4 edges (left, top, right bottom). * @param left  * @param top  * @param right  * @param bottom */
+data class Rect (    val left: kotlin.Int,    val top: kotlin.Int,    val right: kotlin.Int,    val bottom: kotlin.Int
 ) {
 }

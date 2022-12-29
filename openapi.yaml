@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.64
+  version: 2.0.65
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1227,6 +1227,26 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: This basically returns immediately whether the view represented by this UiObject exists or not. If you need to wait longer for this view, then see waitForExists.
+  /uiObject/{oid}/getBounds:
+    get:
+      description: Returns the view's bounds property. See getVisibleBounds.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rect'
+          description: OK
+        default:
+          $ref: '#/components/responses/error'
+      summary: Returns the view's bounds property.
   /uiObject/{oid}/getChildCount:
     get:
       description: Counts the child views immediately under the present UiObject.
@@ -2336,6 +2356,28 @@ components:
           description: product name of the device
       example:
         productName: sailfish
+    Rect:
+      description: Rect holds four integer coordinates for a rectangle. The rectangle is represented by the coordinates of its 4 edges (left, top, right bottom).
+      type: object
+      properties:
+        left:
+          type: integer
+        top:
+          type: integer
+        right:
+          type: integer
+        bottom:
+          type: integer
+      required:
+        - left
+        - top
+        - right
+        - bottom
+      example:
+        left: 100
+        top: 100
+        right: 900
+        bottom: 600
     Text:
       description: Some text.
       type: object

@@ -386,6 +386,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject.GetBounds> {
+                call.respond(it.response())
+            }
+
             get<UiObject.GetChildCount> {
                 call.respond(it.response())
             }

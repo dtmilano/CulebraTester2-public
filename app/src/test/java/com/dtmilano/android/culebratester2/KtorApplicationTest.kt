@@ -37,6 +37,7 @@ import io.swagger.server.models.NumberResponse
 import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.PerformTwoPointerGestureBody
 import io.swagger.server.models.ProductName
+import io.swagger.server.models.Rect
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusCode
 import io.swagger.server.models.StatusResponse
@@ -44,7 +45,6 @@ import io.swagger.server.models.StringResponse
 import io.swagger.server.models.SwipeBody
 import io.swagger.server.models.Text
 import io.swagger.server.models.resourceIdFromSelector
-import io.swagger.server.models.resourceIdFromUiObject
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
@@ -235,6 +235,7 @@ class KtorApplicationTest {
             on { className } doReturn MOCK_CLASS_NAME
             on { text } doReturn "Hello Culebra!"
             on { contentDescription } doReturn "Hello Culebra content description"
+            on { bounds } doReturn android.graphics.Rect(100, 100, 600, 900)
         }
 
         uiObject22 = mock<UiObject2> {
@@ -1016,6 +1017,22 @@ class KtorApplicationTest {
                 val booleanResponse = jsonResponse<BooleanResponse>()
                 assertEquals(booleanResponse.name, "exists")
                 assertFalse(booleanResponse.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test uiobject get bounds`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getBounds").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val rect = jsonResponse<Rect>()
+                assertEquals(100, rect.top)
+                assertEquals(100, rect.left)
+                assertEquals(600, rect.right)
+                assertEquals(900, rect.bottom)
             }
         }
     }

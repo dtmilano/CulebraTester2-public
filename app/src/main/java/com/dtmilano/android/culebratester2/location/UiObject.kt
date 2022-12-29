@@ -1,6 +1,10 @@
 package com.dtmilano.android.culebratester2.location
 
 import android.graphics.Point
+import androidx.core.graphics.component1
+import androidx.core.graphics.component2
+import androidx.core.graphics.component3
+import androidx.core.graphics.component4
 import com.dtmilano.android.culebratester2.CulebraTesterApplication
 import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
@@ -13,6 +17,7 @@ import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.BooleanResponse
 import io.swagger.server.models.NumberResponse
 import io.swagger.server.models.PerformTwoPointerGestureBody
+import io.swagger.server.models.Rect
 import io.swagger.server.models.Selector
 import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.StringResponse
@@ -168,6 +173,33 @@ class UiObject {
         fun response(): BooleanResponse {
             uiObject(oid, objectStore)?.let {
                 return@response BooleanResponse("exists", it.exists())
+            }
+            throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/getBounds")
+    /*inner*/ class GetBounds(
+        val oid: Int,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): Rect {
+            uiObject(oid, objectStore)?.let {
+                val (top, left, right, bottom) = it.bounds
+                return@response Rect(left = left, top = top, right = right, bottom = bottom)
             }
             throw notFound(oid)
         }
