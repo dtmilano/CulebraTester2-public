@@ -10,15 +10,18 @@ import com.dtmilano.android.culebratester2.Holder
 import com.dtmilano.android.culebratester2.HolderHolder
 import com.dtmilano.android.culebratester2.ObjectStore
 import com.dtmilano.android.culebratester2.utils.BySelectorBundle
+import com.dtmilano.android.culebratester2.utils.uiSelectorBundleFromString
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.swagger.experimental.HttpException
 import io.swagger.server.models.BooleanResponse
 import io.swagger.server.models.NumberResponse
+import io.swagger.server.models.ObjectRef
 import io.swagger.server.models.PerformTwoPointerGestureBody
 import io.swagger.server.models.Rect
 import io.swagger.server.models.Selector
+import io.swagger.server.models.StatusCode
 import io.swagger.server.models.StatusResponse
 import io.swagger.server.models.StringResponse
 import java.math.BigDecimal
@@ -202,6 +205,42 @@ class UiObject {
                 return@response Rect(left = left, top = top, right = right, bottom = bottom)
             }
             throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/getChild")
+    /*inner*/ class GetChild(
+        val oid: Int,
+        private val uiSelector: String? = null,
+        private val parent: UiObject2 = UiObject2()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): ObjectRef {
+            uiSelector?.let {
+                val usb = uiSelectorBundleFromString(it)
+                val obj = holder.uiDevice.findObject(usb.selector)
+                if (obj != null) {
+                    val oid = objectStore.put(obj)
+                    return@response ObjectRef(oid, obj.className)
+                }
+            }
+            throw HttpException(
+                HttpStatusCode.NotFound,
+                StatusCode.OBJECT_NOT_FOUND.message("getChild could not find any object matching selector")
+            )
+
         }
     }
 

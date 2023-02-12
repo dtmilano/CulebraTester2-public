@@ -390,6 +390,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject.GetChild> {
+                call.respond(it.response())
+            }
+
             get<UiObject.GetChildCount> {
                 call.respond(it.response())
             }

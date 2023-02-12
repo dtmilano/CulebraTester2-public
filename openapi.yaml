@@ -9,7 +9,7 @@ info:
     - the server should have been started using `./culebratester2 start-server`
 
     then you will be able to invoke the API and see the responses.
-  version: 2.0.65
+  version: 2.0.66
 servers:
   - url: http://localhost:9987/v2
 paths:
@@ -1247,6 +1247,56 @@ paths:
         default:
           $ref: '#/components/responses/error'
       summary: Returns the view's bounds property.
+  /uiObject/{oid}/getChild:
+    get:
+      description: Creates a new UiObject for a child view that is under the present UiObject.
+      parameters:
+        - description: The object ID
+          in: path
+          name: oid
+          required: true
+          schema:
+            type: integer
+        - description: 'the selector sets the resource name criteria for matching. A
+          UI element will be considered a match if its resource name exactly matches
+          the selector parameter and all other criteria for this selector are met.
+          The format of the selector string is
+
+          `sel@[\$]value,...`
+
+          Where `sel` can be one of - clazz or className - clickable - depth - desc
+          - index - instance - package - parentIndex - res - scrollable - text
+
+          `@` replaces the `=` sign that is used to separate parameters and values
+          in the URL. If the first character of value is `$` then a `Pattern` is created.'
+          example: res@com.android.calendar:id/d0_label,instance@1
+          in: query
+          name: uiSelector
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                className: android.widget.TextView
+                oid: 1
+              schema:
+                $ref: '#/components/schemas/ObjectRef'
+          description: Object found
+        '404':
+          content:
+            application/json:
+              example:
+                errorMessage: Object not found
+                errorStatusResponse: 1001
+                status: ERROR
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+          description: Object not found
+        default:
+          $ref: '#/components/responses/error'
+      summary: The child
   /uiObject/{oid}/getChildCount:
     get:
       description: Counts the child views immediately under the present UiObject.
