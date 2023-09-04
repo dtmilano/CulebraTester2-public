@@ -191,7 +191,7 @@ then
 
         install|i)
             shift
-            ./gradlew installDebug installDebugAndroidTest
+            ANDROID_SERIAL="${D#-s }" ./gradlew installDebug installDebugAndroidTest
             ;;
 
         uninstall|u)
