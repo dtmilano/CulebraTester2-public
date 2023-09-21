@@ -8,12 +8,29 @@
 #
 # bash <(curl -s https://raw.githubusercontent.com/dtmilano/CulebraTester2-public/master/culebratester2) [opts...] [args...]
 #
+# or locally if you have cloned this repo
+#
+# ./culebratester2 [opts...] [args...]
+#
+#
+# For interactive use this script also uses "android-select-device" to select the target device.
+# It can be installed from https://gist.github.com/dtmilano/4537110'.
+# If you have multiple devices connecte and don't want to use "android-select-device" just specify the target serial number
+# on the command line either when it's executed remotely or locally
+#
+# bash <(curl -sL https://git.io/JT5nc) --serialno ABCDE1234 [args...]
+# 
+# ./culebratester2 --serialno ABCDE1234 [args...]
+#
+
+
+# shellcheck disable=SC2086
 
 set -u
 
 ORIGINAL_PKG='com.dtmilano.android.culebratester2'
 PKG=${CULEBRATESTER2_PKG:-$ORIGINAL_PKG}
-PKGRE=$(sed 's@\.@\\.@g' <<<"$PKG")
+PKGRE=${PKG//\./\\.}
 
 usage() {
     printf '%s' "$usage"
@@ -30,23 +47,31 @@ _help() {
     printf '%s' "$usage"
     printf '\n'
     printf 'positional arguments:\n'
-    printf ' forward-port          uses adb to forward port %d\n' "$port"
+    printf ' forward-port                 uses adb to forward port %d\n' "$port"
     printf '     [--local-port PORT] [--remote-port PORT]\n'
-    printf ' install               installs on device\n'
-    printf ' run-instrumentation   runs the instrumentation and starts the server\n'
-    printf ' start-server          starts the server on the device\n'
-    printf ' uninstall             uninstalls pkgs on device\n'
+    printf ' run-instrumentation          runs the instrumentation and starts the server\n'
+    printf ' start-server                 starts the server on the device\n'
+    printf ' install                      installs on device\n'
+    printf ' uninstall                    uninstalls pkgs on device\n'
     printf '\n'
     printf 'optional arguments:\n'
-    printf ' -h, --help            show this help message and exit\n'
-    printf ' -n, --dryrun          does not execute the commands\n'
+    printf ' -h, --help                   show this help message and exit\n'
+    printf ' -n, --dryrun                 does not execute the commands\n'
+    printf ' -v, --verbose                prints verbose output\n'
+    printf ' -s, --serialno SERIALNO      use the specific device\n'
     exit 0
+}
+
+check_device() {
+    if ! adb $D get-state &> /dev/null; then
+        fatal "Cannot connect to device: $D"
+    fi
 }
 
 check_installed() {
     pkgs=$(adb $D shell pm list packages)
-    if [[ $? -ne 0 ]]
-    then
+    # shellcheck disable=SC2181
+    if [[ $? -ne 0 ]]; then
         fatal 'Cannot get the installed packages.'
     fi
     n=$(grep -c "$PKGRE" <<<"$pkgs")
@@ -57,13 +82,11 @@ check_installed() {
 
         1)
             # we are missing one
-            if ! grep "$PKGRE\.test\$" <<<"$pkgs"
-            then
+            if ! grep "$PKGRE\.test\$" <<<"$pkgs"; then
                 fatal 'app found but instrumentation apk has not been installed.'
             fi
 
-            if ! grep "$PKGRE\$" <<<"$pkgs"
-            then
+            if ! grep "$PKGRE\$" <<<"$pkgs"; then
                 fatal 'instrumentation found but app apk has not been installed.'
             fi
             ;;
@@ -82,13 +105,11 @@ forward_port() {
     local local_port=$port
     local remote_port=$port
 
-    while [[ $# -ge 1 ]]
-    do
+    while [[ $# -ge 1 ]]; do
         case "$1" in
             '--local-port')
                 shift
-                if [[ $# -lt 1 ]]
-                then
+                if [[ $# -lt 1 ]]; then
                     fatal 'Missing PORT in forward-port'
                 fi
                 local_port=$1
@@ -96,8 +117,7 @@ forward_port() {
 
             '--remote-port')
                 shift
-                if [[ $# -lt 1 ]]
-                then
+                if [[ $# -lt 1 ]]; then
                     fatal 'Missing PORT in forward-port'
                 fi
                 remote_port=$1
@@ -110,14 +130,15 @@ forward_port() {
         shift
     done
 
+    [[ "$verbose" == true ]] && printf 'Forwarding port local:%d => remote:%d\n' "$local_port" "$remote_port"
     # adb forward [--no-rebind] LOCAL REMOTE
-    if ! $dryrun adb $D forward tcp:$local_port tcp:$remote_port
-    then
+    if ! $dryrun adb $D forward tcp:"$local_port" tcp:"$remote_port"; then
         fatal "Could not forward port local:$local_port remote:$remote_port"
     fi
 }
 
 run_instrumentation() {
+    printf '%s🐍 Starting CulebraTester2-public service...%s\n' "$green" "$sgr0"
     $dryrun adb $D shell pm grant "$PKG" 'android.permission.DUMP' && \
     $dryrun adb $D shell pm grant "$PKG" 'android.permission.PACKAGE_USAGE_STATS' && \
     $dryrun adb $D shell pm grant "$PKG" 'android.permission.CHANGE_CONFIGURATION' && \
@@ -130,79 +151,135 @@ uninstall_pkgs() {
 }
 
 
-if [[ "$0" =~ ^/dev/fd ]]
-then
+if [[ "$0" =~ ^/dev/fd ]]; then
     progname='culebratester2'
 else
-    progname="$(basename $0)"
+    progname="$(basename "$0")"
 fi
 port=9987
-if [[ -n "$TERM" ]] && type tput >/dev/null 2>&1
-then
+if [[ -n "$TERM" ]] && type tput &>/dev/null; then
     smul=$(tput smul)
     rmul=$(tput rmul)
     red=$(tput setaf 1)
+    green=$(tput setaf 2)
     sgr0=$(tput sgr0)
 else
     smul=
     rmul=
     red=
+    green=
     sgr0=
 fi
-dryrun=
-printf -v usage 'usage: %s [-h|--help] [-n|-dryrun] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall | %su%sninstall }\n' "$progname" \
+printf -v usage 'usage: %s [-h|--help] [-v|--verbose] [-x|--debig] [-n|-dryrun] [-s|--serialno SERIALNO] {%sf%sorward-port | %sr%sun-instrumentation | %ss%start-server | %si%snstall | %su%sninstall }\n' "$progname" \
         "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul" "$smul" "$rmul"
 
-if [[ $# -ge 1 ]]
-then
-    if [[ "$1" == '-h' || "$1" == '--help' ]]
-    then
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    '--help')
+        set -- "$@" '-h'
+        ;;
+    '--verbose')
+        set -- "$@" '-v'
+        ;;
+    '--debug')
+        set -- "$@" '-x'
+        ;;
+    '--dryrun')
+        set -- "$@" '-n'
+        ;;
+    '--serialno')
+        set -- "$@" '-s'
+        ;;
+    *)
+        set -- "$@" "$arg"
+        ;;
+  esac
+done
+
+# Default behavior
+verbose=false
+debug=false
+dryrun=
+serialno=
+
+OPTIND=1
+while getopts ":hvxns:" opt
+do
+  case "$opt" in
+    'h')
         _help
-    fi
+        ;;
 
-    if [[ "$1" == '-n' || "$1" == '--dryrun' ]]
-    then
-        dryrun=echo
-        shift
-    fi
+    'v')
+        verbose=true
+        ;;
 
-    if ! which android-select-device >/dev/null
-    then
-       fatal 'Missing "android-select-device". Install from https://gist.github.com/dtmilano/4537110'
-    fi
-    [[ -z "${D+X}" ]] && export D=$(android-select-device)
+    'x')
+        debug=true
+        ;;
 
-    case "$1" in
-        forward-port|f)
-            shift
-            forward_port "$@"
-            ;;
+	'n')
+		dryrun='echo'
+		;;
 
-        run-instrumentation|r)
-            shift
-            run_instrumentation
-            ;;
+    's')
+        serialno="$OPTARG"
+        ;;
+    '?')
+        usage
+        ;;
+  esac
+done
+shift $(( OPTIND - 1 ))
 
-        start-server|s)
-            shift
-            check_installed
-            forward_port "$@" && run_instrumentation
-            ;;
-
-        install|i)
-            shift
-            ANDROID_SERIAL="${D#-s }" ./gradlew installDebug installDebugAndroidTest
-            ;;
-
-        uninstall|u)
-            shift
-            uninstall_pkgs
-            ;;
-
-        *)
-            usage
-            ;;
-    esac
-else
+if [[ $# -lt 1 ]]; then
     usage
 fi
+
+[[ "$debug" == true ]] && set -x
+
+if [[ -n "${serialno}" ]]; then
+    D="-s ${serialno}"
+else
+    if ! type android-select-device &>/dev/null; then
+       fatal 'Missing "android-select-device". Install from https://gist.github.com/dtmilano/4537110'
+    fi
+    D=$(android-select-device)
+fi
+
+case "$1" in
+   forward-port|f)
+       shift
+       forward_port "$@"
+       ;;
+
+   run-instrumentation|r)
+       shift
+       check_device
+       run_instrumentation
+       ;;
+
+   start-server|s)
+       shift
+       check_device
+       check_installed
+       forward_port "$@" && run_instrumentation
+       ;;
+
+   install|i)
+       shift
+       ANDROID_SERIAL="${D#-s }" ./gradlew installDebug installDebugAndroidTest
+       ;;
+
+   uninstall|u)
+       shift
+       check_device
+       uninstall_pkgs
+       ;;
+
+   *)
+       usage
+       ;;
+esac
+
