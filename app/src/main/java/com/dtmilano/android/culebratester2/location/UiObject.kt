@@ -27,7 +27,7 @@ import io.swagger.server.models.StringResponse
 import java.math.BigDecimal
 import javax.inject.Inject
 
-private const val TAG = "UiObject2"
+private const val TAG = "UiObject"
 
 /**
  * See https://github.com/ktorio/ktor/issues/1660 for the reason why we need the extra parameter
@@ -158,7 +158,7 @@ class UiObject {
     @Location("/{oid}/exists")
     /*inner*/ class Exists(
         val oid: Int,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -184,7 +184,7 @@ class UiObject {
     @Location("/{oid}/getBounds")
     /*inner*/ class GetBounds(
         val oid: Int,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -212,7 +212,7 @@ class UiObject {
     /*inner*/ class GetChild(
         val oid: Int,
         private val uiSelector: String? = null,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -247,7 +247,7 @@ class UiObject {
     @Location("/{oid}/getChildCount")
     /*inner*/ class GetChildCount(
         val oid: Int,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -273,7 +273,7 @@ class UiObject {
     @Location("/{oid}/getClassName")
     /*inner*/ class GetClassName(
         val oid: Int,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -300,7 +300,7 @@ class UiObject {
     @Location("/{oid}/getContentDescription")
     /*inner*/ class GetContentDescription(
         val oid: Int,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -368,7 +368,7 @@ class UiObject {
         val oid: Int,
         private val percentage: Int,
         private val steps: Int,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -399,7 +399,7 @@ class UiObject {
         val oid: Int,
         private val percentage: Int,
         private val steps: Int,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
@@ -429,7 +429,7 @@ class UiObject {
     /*inner*/ class WaitForExists(
         val oid: Int,
         private val timeout: Long,
-        private val parent: UiObject2 = UiObject2()
+        private val parent: UiObject = UiObject()
     ) {
         private var holder: Holder
 
