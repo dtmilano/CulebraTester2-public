@@ -235,7 +235,7 @@ class KtorApplicationTest {
             on { className } doReturn MOCK_CLASS_NAME
             on { text } doReturn "Hello Culebra!"
             on { contentDescription } doReturn "Hello Culebra content description"
-            on { bounds } doReturn android.graphics.Rect(100, 100, 600, 900)
+            on { bounds } doReturn android.graphics.Rect(100, 200, 600, 900)
         }
 
         uiObject22 = mock<UiObject2> {
@@ -1029,8 +1029,8 @@ class KtorApplicationTest {
             handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getBounds").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val rect = jsonResponse<Rect>()
-                assertEquals(100, rect.top)
                 assertEquals(100, rect.left)
+                assertEquals(200, rect.top)
                 assertEquals(600, rect.right)
                 assertEquals(900, rect.bottom)
             }
