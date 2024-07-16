@@ -201,7 +201,7 @@ class UiObject {
 
         fun response(): Rect {
             uiObject(oid, objectStore)?.let {
-                val (top, left, right, bottom) = it.bounds
+                val (left, top, right, bottom) = it.bounds
                 return@response Rect(left = left, top = top, right = right, bottom = bottom)
             }
             throw notFound(oid)
