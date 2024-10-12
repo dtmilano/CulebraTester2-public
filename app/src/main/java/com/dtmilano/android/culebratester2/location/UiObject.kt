@@ -228,19 +228,24 @@ class UiObject {
         }
 
         fun response(): ObjectRef {
-            uiSelector?.let {
-                val usb = uiSelectorBundleFromString(it)
-                val obj = holder.uiDevice.findObject(usb.selector)
-                if (obj != null) {
-                    val oid = objectStore.put(obj)
-                    return@response ObjectRef(oid, obj.className)
+            uiSelector?.let { uis ->
+                val usb = uiSelectorBundleFromString(uis)
+                uiObject(oid, objectStore)?.let { obj ->
+                    obj.getChild(usb.selector)?.let {
+                        val newOid = objectStore.put(it)
+                        return@response ObjectRef(newOid, it.className)
+                    }
+                    throw HttpException(
+                        HttpStatusCode.NotFound,
+                        StatusCode.OBJECT_NOT_FOUND.message("getChild could not find any object matching selector")
+                    )
                 }
+                throw notFound(oid)
             }
             throw HttpException(
-                HttpStatusCode.NotFound,
-                StatusCode.OBJECT_NOT_FOUND.message("getChild could not find any object matching selector")
+                HttpStatusCode.InternalServerError,
+                StatusCode.ARGUMENT_MISSING.message("uiSelector must be provided and not empty")
             )
-
         }
     }
 
@@ -320,6 +325,47 @@ class UiObject {
                 return@response StringResponse("contentDescription", it.contentDescription)
             }
             throw notFound(oid)
+        }
+    }
+
+    @Location("/{oid}/getFromParent")
+    /*inner*/ class GetFromParent(
+        val oid: Int,
+        private val uiSelector: String? = null,
+        private val parent: UiObject = UiObject()
+    ) {
+        private var holder: Holder
+
+        @Inject
+        lateinit var holderHolder: HolderHolder
+
+        @Inject
+        lateinit var objectStore: ObjectStore
+
+        init {
+            CulebraTesterApplication().appComponent.inject(this)
+            holder = holderHolder.instance
+        }
+
+        fun response(): ObjectRef {
+            uiSelector?.let { uis ->
+                val usb = uiSelectorBundleFromString(uis)
+                uiObject(oid, objectStore)?.let { obj ->
+                    obj.getFromParent(usb.selector)?.let {
+                        val newOid = objectStore.put(it)
+                        return@response ObjectRef(newOid, it.className)
+                    }
+                    throw HttpException(
+                        HttpStatusCode.NotFound,
+                        StatusCode.OBJECT_NOT_FOUND.message("getFromParent could not find any object matching selector")
+                    )
+                }
+                throw notFound(oid)
+            }
+            throw HttpException(
+                HttpStatusCode.InternalServerError,
+                StatusCode.ARGUMENT_MISSING.message("uiSelector must be provided and not empty")
+            )
         }
     }
 

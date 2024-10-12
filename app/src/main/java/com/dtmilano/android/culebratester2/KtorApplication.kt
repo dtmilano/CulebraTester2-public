@@ -406,6 +406,10 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(it.response())
             }
 
+            get<UiObject.GetFromParent> {
+                call.respond(it.response())
+            }
+
             post<UiObject.PerformTwoPointerGesture.Post> {
                 // We have to get the body as ktor doesn't do it
                 // see https://github.com/ktorio/ktor/issues/190

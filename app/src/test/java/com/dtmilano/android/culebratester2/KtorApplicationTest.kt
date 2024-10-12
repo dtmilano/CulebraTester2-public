@@ -86,6 +86,7 @@ import kotlin.text.Regex.Companion.escape
 @Config(minSdk = 26, maxSdk = 33)
 class KtorApplicationTest {
     lateinit var uiObject: UiObject
+    lateinit var uiObject1: UiObject
     lateinit var uiObject2: UiObject2
     lateinit var uiObject22: UiObject2
     lateinit var uiObject23: UiObject2
@@ -236,6 +237,13 @@ class KtorApplicationTest {
             on { text } doReturn "Hello Culebra!"
             on { contentDescription } doReturn "Hello Culebra content description"
             on { bounds } doReturn android.graphics.Rect(100, 200, 600, 900)
+        }
+
+        uiObject1 = mock {
+            on { className } doReturn MOCK_CLASS_NAME
+            on { text } doReturn "Hello Culebra 1!"
+            on {getChild(any())} doReturn uiObject
+            on {getFromParent(any())} doReturn uiObject
         }
 
         uiObject22 = mock<UiObject2> {
@@ -1040,7 +1048,7 @@ class KtorApplicationTest {
     @Test
     fun `test uiobject get child`() {
         assertEquals(0, objectStore.size())
-        val oid = objectStore.put(uiObject)
+        val oid = objectStore.put(uiObject1)
         withTestApplication({ module(testing = true) }) {
             handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getChild?uiSelector=clazz@$MATCHES").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
@@ -1086,6 +1094,19 @@ class KtorApplicationTest {
                 val stringResponse = jsonResponse<StringResponse>()
                 assertEquals(stringResponse.name, "contentDescription")
                 assertEquals("Hello Culebra content description", stringResponse.value)
+            }
+        }
+    }
+
+    fun `test uiobject get from parent`() {
+        assertEquals(0, objectStore.size())
+        val oid = objectStore.put(uiObject1)
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/v2/uiObject/$oid/getFromParent?uiSelector=clazz@$MATCHES").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val objRef = jsonResponse<ObjectRef>()
+                assertEquals(2, objRef.oid)
+                assertEquals(2, objectStore.size())
             }
         }
     }
