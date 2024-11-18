@@ -69,7 +69,7 @@ check_device() {
 }
 
 check_installed() {
-    pkgs=$(adb $D shell pm list packages)
+    pkgs=$(adb $D shell pm list packages --user 0)
     # shellcheck disable=SC2181
     if [[ $? -ne 0 ]]; then
         fatal 'Cannot get the installed packages.'
@@ -139,9 +139,10 @@ forward_port() {
 
 run_instrumentation() {
     printf '%s🐍 Starting CulebraTester2-public service...%s\n' "$green" "$sgr0"
-    $dryrun adb $D shell pm grant "$PKG" 'android.permission.DUMP' && \
-    $dryrun adb $D shell pm grant "$PKG" 'android.permission.PACKAGE_USAGE_STATS' && \
-    $dryrun adb $D shell pm grant "$PKG" 'android.permission.CHANGE_CONFIGURATION' && \
+    # grant [--user USER_ID] [--all-permissions] PACKAGE PERMISSION
+    $dryrun adb $D shell pm grant --user 0 "$PKG" 'android.permission.DUMP' && \
+    $dryrun adb $D shell pm grant --user 0 "$PKG" 'android.permission.PACKAGE_USAGE_STATS' && \
+    $dryrun adb $D shell pm grant --user 0 "$PKG" 'android.permission.CHANGE_CONFIGURATION' && \
     $dryrun adb $D shell am instrument -w -r -e debug false -e class "$ORIGINAL_PKG.UiAutomatorHelper" \
                 "$PKG.test/androidx.test.runner.AndroidJUnitRunner"
 }
